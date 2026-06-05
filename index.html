@@ -1,0 +1,1666 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>人生调音台｜5分钟调出你的个人使用说明</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23111217'/%3E%3Cpath d='M18 42V22M32 48V16M46 38V26' stroke='%2320e6d2' stroke-width='7' stroke-linecap='round'/%3E%3Ccircle cx='18' cy='31' r='7' fill='%23ffb84d'/%3E%3Ccircle cx='32' cy='26' r='7' fill='%23b7f34a'/%3E%3Ccircle cx='46' cy='34' r='7' fill='%23ff6fae'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg: #0f1016;
+      --panel: #171b25;
+      --panel-2: #222733;
+      --ink: #f7f2e8;
+      --muted: #aeb3c1;
+      --line: rgba(255, 255, 255, 0.13);
+      --cyan: #20e6d2;
+      --lime: #b7f34a;
+      --orange: #ffb84d;
+      --pink: #ff6fae;
+      --red: #ff5c5c;
+      --shadow: rgba(0, 0, 0, 0.32);
+      --radius: 8px;
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(32, 230, 210, 0.11), transparent 28rem),
+        radial-gradient(circle at 80% 20%, rgba(255, 111, 174, 0.08), transparent 24rem),
+        linear-gradient(145deg, #0e1016 0%, #151824 58%, #111217 100%);
+      color: var(--ink);
+      font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+      letter-spacing: 0;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px clamp(16px, 4vw, 48px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(15, 16, 22, 0.78);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 7px;
+      background:
+        linear-gradient(90deg, transparent 20%, rgba(255, 255, 255, 0.16) 20% 24%, transparent 24% 40%, rgba(255, 255, 255, 0.16) 40% 44%, transparent 44% 60%, rgba(255, 255, 255, 0.16) 60% 64%, transparent 64%),
+        linear-gradient(135deg, rgba(32, 230, 210, 0.9), rgba(183, 243, 74, 0.85));
+      box-shadow: 0 0 24px rgba(32, 230, 210, 0.16);
+    }
+
+    .brand-title {
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .progress-wrap {
+      width: min(360px, 42vw);
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--cyan), var(--lime), var(--orange));
+      transition: width 320ms ease;
+    }
+
+    .stage {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: clamp(24px, 4vw, 54px) 0 48px;
+    }
+
+    .screen {
+      display: none;
+      animation: rise 360ms ease both;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero {
+      min-height: calc(100vh - 108px);
+      display: grid;
+      grid-template-columns: minmax(0, 0.88fr) minmax(340px, 1.12fr);
+      align-items: center;
+      gap: clamp(24px, 4vw, 58px);
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      color: var(--lime);
+      background: rgba(183, 243, 74, 0.08);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .kicker::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--lime);
+      box-shadow: 0 0 16px var(--lime);
+    }
+
+    h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(48px, 9vw, 112px);
+      line-height: 0.95;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      max-width: 600px;
+      margin: 0 0 28px;
+      color: #d8d5cd;
+      font-size: clamp(18px, 2vw, 23px);
+      line-height: 1.65;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .primary-btn,
+    .secondary-btn,
+    .icon-btn {
+      min-height: 46px;
+      border-radius: var(--radius);
+      color: #081011;
+      background: linear-gradient(135deg, var(--cyan), var(--lime));
+      padding: 0 18px;
+      font-weight: 850;
+      box-shadow: 0 14px 34px rgba(32, 230, 210, 0.18);
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    }
+
+    .secondary-btn {
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: none;
+    }
+
+    .icon-btn {
+      display: inline-grid;
+      place-items: center;
+      width: 46px;
+      padding: 0;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: none;
+    }
+
+    .primary-btn:hover,
+    .secondary-btn:hover,
+    .icon-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 42px rgba(32, 230, 210, 0.18);
+    }
+
+    .microcopy {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 560px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: #111;
+      box-shadow: 0 28px 84px rgba(0, 0, 0, 0.42);
+    }
+
+    .hero-visual img {
+      width: 100%;
+      height: 100%;
+      min-height: 560px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .hero-visual::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 56%, rgba(15, 16, 22, 0.5));
+      pointer-events: none;
+    }
+
+    .track-strip {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .track-chip {
+      min-height: 54px;
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 7px;
+      background: rgba(15, 16, 22, 0.64);
+      backdrop-filter: blur(12px);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .track-chip span {
+      display: block;
+      height: 4px;
+      margin-top: 9px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      overflow: hidden;
+    }
+
+    .track-chip span::after {
+      content: "";
+      display: block;
+      height: 100%;
+      width: 38%;
+      border-radius: inherit;
+      background: var(--cyan);
+      box-shadow: 0 0 14px currentColor;
+    }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .main-panel,
+    .side-panel,
+    .result-panel {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035)),
+        rgba(23, 27, 37, 0.88);
+      box-shadow: 0 18px 56px var(--shadow);
+    }
+
+    .main-panel {
+      min-height: 620px;
+      padding: clamp(18px, 3vw, 32px);
+    }
+
+    .side-panel {
+      position: sticky;
+      top: 86px;
+      padding: 16px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1.08;
+    }
+
+    .section-note {
+      margin: 10px 0 24px;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .mascot {
+      display: grid;
+      grid-template-columns: 68px 1fr;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .mascot img {
+      width: 68px;
+      height: 68px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .bubble {
+      position: relative;
+      min-height: 68px;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #eee9de;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .bubble::before {
+      content: "";
+      position: absolute;
+      left: -7px;
+      top: 24px;
+      width: 12px;
+      height: 12px;
+      transform: rotate(45deg);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .meters {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .meter {
+      display: grid;
+      grid-template-columns: 64px 1fr 36px;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .meter-track {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--cyan);
+      transition: width 260ms ease;
+    }
+
+    .calibration-options,
+    .future-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .choice-card,
+    .sample-card,
+    .noise-card,
+    .future-card {
+      min-height: 110px;
+      padding: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.055);
+      color: var(--ink);
+      text-align: left;
+      transition: transform 170ms ease, border-color 170ms ease, background 170ms ease;
+    }
+
+    .choice-card:hover,
+    .sample-card:hover,
+    .noise-card:hover,
+    .future-card:hover,
+    .future-card.selected {
+      transform: translateY(-2px);
+      border-color: rgba(32, 230, 210, 0.6);
+      background: rgba(32, 230, 210, 0.09);
+    }
+
+    .choice-card strong,
+    .future-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+    .sample-board {
+      display: grid;
+      gap: 18px;
+    }
+
+    .sample-card {
+      position: relative;
+      min-height: 430px;
+      display: grid;
+      grid-template-rows: 1fr;
+      padding: 0;
+      overflow: hidden;
+      cursor: default;
+      background:
+        linear-gradient(135deg, rgba(32, 230, 210, 0.08), transparent 36%),
+        linear-gradient(225deg, rgba(255, 111, 174, 0.08), transparent 34%),
+        rgba(255, 255, 255, 0.055);
+    }
+
+    .sample-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(15, 16, 22, 0.12), rgba(15, 16, 22, 0.76)),
+        radial-gradient(circle at 50% 42%, transparent 0 28%, rgba(15, 16, 22, 0.42) 72%);
+      pointer-events: none;
+    }
+
+    .sample-card.pulse {
+      animation: cardPulse 280ms ease both;
+    }
+
+    .sample-card.pulse .comic-frame img {
+      transform: scale(1.035);
+    }
+
+    @keyframes cardPulse {
+      0% { border-color: rgba(255, 255, 255, 0.12); box-shadow: 0 0 0 rgba(32, 230, 210, 0); }
+      48% { border-color: rgba(183, 243, 74, 0.76); box-shadow: 0 0 34px rgba(183, 243, 74, 0.22); }
+      100% { border-color: rgba(255, 255, 255, 0.12); box-shadow: 0 18px 56px var(--shadow); }
+    }
+
+    .comic-frame,
+    .comic-frame img {
+      width: 100%;
+      height: 100%;
+    }
+
+    .comic-frame img {
+      display: block;
+      object-fit: cover;
+      transition: transform 320ms ease;
+    }
+
+    .sample-copy {
+      position: absolute;
+      inset: auto 18px 18px;
+      z-index: 2;
+      display: grid;
+      gap: 14px;
+      padding: clamp(16px, 3vw, 24px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      background: rgba(17, 18, 24, 0.76);
+      backdrop-filter: blur(16px);
+    }
+
+    .card-index {
+      color: var(--lime);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .sample-text {
+      max-width: 740px;
+      margin: 0;
+      font-size: clamp(23px, 3.8vw, 40px);
+      line-height: 1.25;
+      font-weight: 850;
+    }
+
+    .beat-toast {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 13px;
+      border: 1px solid rgba(183, 243, 74, 0.22);
+      border-radius: 8px;
+      background: rgba(183, 243, 74, 0.08);
+      color: #edfdd1;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .beat-toast::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--lime);
+      box-shadow: 0 0 18px var(--lime);
+      flex: none;
+    }
+
+    .action-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .answer-btn {
+      min-height: 58px;
+      border-radius: var(--radius);
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      font-weight: 850;
+      transition: transform 170ms ease, border-color 170ms ease, background 170ms ease;
+    }
+
+    .answer-btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    .answer-btn[data-choice="near"] {
+      background: rgba(183, 243, 74, 0.11);
+    }
+
+    .answer-btn[data-choice="far"] {
+      background: rgba(255, 92, 92, 0.10);
+    }
+
+    .noise-duel {
+      display: grid;
+      grid-template-columns: 1fr 74px 1fr;
+      align-items: stretch;
+      gap: 14px;
+      margin-top: 32px;
+    }
+
+    .noise-card {
+      min-height: 230px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font-size: clamp(24px, 4vw, 38px);
+      line-height: 1.25;
+      font-weight: 850;
+    }
+
+    .versus {
+      display: grid;
+      place-items: center;
+      color: var(--orange);
+      font-weight: 900;
+      font-size: 20px;
+    }
+
+    .future-card {
+      min-height: 168px;
+    }
+
+    .future-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .future-card .cost {
+      color: #f3d6aa;
+    }
+
+    .result-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 350px;
+      gap: 22px;
+    }
+
+    .result-panel {
+      padding: clamp(18px, 3vw, 32px);
+    }
+
+    .mix-header {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 18px;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .mix-header img {
+      width: 92px;
+      height: 92px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .result-title {
+      margin: 0;
+      font-size: clamp(32px, 5vw, 58px);
+      line-height: 1.06;
+    }
+
+    .result-subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .result-block {
+      padding: 18px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.11);
+    }
+
+    .result-block h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+    }
+
+    .result-block p,
+    .result-block li {
+      color: #ddd8cf;
+      line-height: 1.75;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #efe9de;
+      font-size: 13px;
+      font-weight: 760;
+    }
+
+    .tag::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--cyan);
+    }
+
+    .share-stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .share-card {
+      position: relative;
+      min-height: 220px;
+      padding: 18px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      background:
+        linear-gradient(135deg, rgba(32, 230, 210, 0.16), transparent 45%),
+        linear-gradient(225deg, rgba(255, 111, 174, 0.15), transparent 45%),
+        #171b25;
+      overflow: hidden;
+    }
+
+    .share-card::after {
+      content: "";
+      position: absolute;
+      right: -22px;
+      bottom: -24px;
+      width: 112px;
+      height: 112px;
+      background: url("assets/bpm-dog-avatar.png") center / cover no-repeat;
+      border-radius: 8px;
+      opacity: 0.18;
+      transform: rotate(-5deg);
+      pointer-events: none;
+    }
+
+    .share-card h3 {
+      margin: 0 0 14px;
+      font-size: 22px;
+    }
+
+    .share-card p {
+      margin: 8px 0;
+      color: #ebe5da;
+      line-height: 1.6;
+    }
+
+    .share-card.album {
+      min-height: 300px;
+      display: grid;
+      align-content: space-between;
+      background:
+        linear-gradient(135deg, rgba(32, 230, 210, 0.28), transparent 42%),
+        linear-gradient(225deg, rgba(183, 243, 74, 0.17), transparent 38%),
+        linear-gradient(180deg, #10131b, #1e2430);
+    }
+
+    .share-card.album::after {
+      opacity: 0.34;
+      width: 138px;
+      height: 138px;
+    }
+
+    .album-bars {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .album-bar {
+      height: 20px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.10);
+      overflow: hidden;
+    }
+
+    .album-bar span {
+      display: block;
+      height: 100%;
+      width: 70%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--cyan), var(--lime));
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 920px) {
+      .hero,
+      .game-grid,
+      .result-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: auto;
+      }
+
+      .hero-visual,
+      .hero-visual img {
+        min-height: 380px;
+      }
+
+      .side-panel {
+        position: static;
+      }
+
+      .track-strip {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .noise-duel {
+        grid-template-columns: 1fr;
+      }
+
+      .versus {
+        min-height: 42px;
+      }
+
+      .future-grid,
+      .calibration-options {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .topbar {
+        padding: 12px 14px;
+      }
+
+      .brand-title {
+        max-width: 130px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .progress-wrap {
+        width: 36vw;
+      }
+
+      .stage {
+        width: min(100% - 24px, 1180px);
+      }
+
+      .sample-text {
+        font-size: 25px;
+      }
+
+      .action-row {
+        grid-template-columns: 1fr;
+      }
+
+      .mix-header {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <div class="brand-title">人生调音台</div>
+      </div>
+      <div class="progress-wrap" aria-label="游戏进度">
+        <div class="progress" id="progress"></div>
+      </div>
+    </header>
+
+    <main class="stage">
+      <section class="screen active" id="screen-home">
+        <div class="hero">
+          <div class="hero-copy">
+            <div class="kicker">5 分钟自我显影小游戏</div>
+            <h1>人生<br>调音台</h1>
+            <p class="subtitle">不用选正确答案。靠近让你发亮的，静音让你耗电的，最后生成一份可以转发的《个人使用说明》。</p>
+            <div class="cta-row">
+              <button class="primary-btn" id="startBtn">开始调音</button>
+              <span class="microcopy">BPM 小狗会全程陪你听完，不会乱给你贴标签。</span>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <img src="assets/life-mixer-hero.png" alt="人生调音台主视觉">
+            <div class="track-strip" aria-hidden="true">
+              <div class="track-chip">心动<span></span></div>
+              <div class="track-chip">底噪<span></span></div>
+              <div class="track-chip">边界<span></span></div>
+              <div class="track-chip">未来<span></span></div>
+              <div class="track-chip">说明书<span></span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-calibrate">
+        <div class="game-grid">
+          <div class="main-panel">
+            <h2 class="section-title">开机校准</h2>
+            <p class="section-note">你今天为什么想调一调自己？这不会决定你是谁，只会影响最后说明书的语气。</p>
+            <div class="calibration-options" id="calibrationOptions"></div>
+          </div>
+          <aside class="side-panel">
+            <div class="mascot">
+              <img src="assets/bpm-dog-avatar.png" alt="BPM 小狗">
+              <div class="bubble" id="mascotBubble">好，别端着。我们先听听你今天为什么想来。</div>
+            </div>
+            <div class="meters" id="meters"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-heart">
+        <div class="game-grid">
+          <div class="main-panel">
+            <h2 class="section-title">心动采样</h2>
+            <p class="section-note">看到场景后，选身体先有反应的那个。靠近、无感、远离，都可以。</p>
+            <div class="sample-board">
+              <div class="sample-card" id="heartCard" role="group" aria-label="当前心动采样卡">
+                <span class="comic-frame">
+                  <img id="heartComic" src="assets/comic-expression.png" alt="心动采样漫画场景">
+                </span>
+                <span class="sample-copy">
+                  <span class="card-index" id="heartIndex">01 / 18</span>
+                  <span class="sample-text" id="heartText"></span>
+                </span>
+              </div>
+              <div class="beat-toast" id="beatToast">别选正确答案，选身体先响的那个。</div>
+              <div class="action-row">
+                <button class="answer-btn" data-choice="near">靠近，亮一下</button>
+                <button class="answer-btn" data-choice="neutral">无感，先路过</button>
+                <button class="answer-btn" data-choice="far">远离，静音</button>
+              </div>
+            </div>
+          </div>
+          <aside class="side-panel">
+            <div class="mascot">
+              <img src="assets/bpm-dog-avatar.png" alt="BPM 小狗">
+              <div class="bubble" id="heartBubble">这不是兴趣测试，这是找你的电量入口。</div>
+            </div>
+            <div class="meters" id="heartMeters"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-noise">
+        <div class="game-grid">
+          <div class="main-panel">
+            <h2 class="section-title">底噪消除</h2>
+            <p class="section-note">如果必须忍一个，你更不能忍哪个？讨厌不是坏脾气，有时候是边界在报警。</p>
+            <span class="card-index" id="noiseIndex">01 / 12</span>
+            <div class="noise-duel">
+              <button class="noise-card" id="noiseA"></button>
+              <div class="versus">VS</div>
+              <button class="noise-card" id="noiseB"></button>
+            </div>
+          </div>
+          <aside class="side-panel">
+            <div class="mascot">
+              <img src="assets/bpm-dog-avatar.png" alt="BPM 小狗">
+              <div class="bubble" id="noiseBubble">你不用喜欢所有环境，真的。</div>
+            </div>
+            <div class="meters" id="noiseMeters"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-future">
+        <div class="game-grid">
+          <div class="main-panel">
+            <h2 class="section-title">未来试音</h2>
+            <p class="section-note">选择 3 个你愿意走进去的未来身份。重点不是羡慕什么，是你愿意为哪种生活付代价。</p>
+            <div class="future-grid" id="futureGrid"></div>
+          </div>
+          <aside class="side-panel">
+            <div class="mascot">
+              <img src="assets/bpm-dog-avatar.png" alt="BPM 小狗">
+              <div class="bubble" id="futureBubble">请选择 3 个。光环不重要，代价才是真心话。</div>
+            </div>
+            <div class="tag-row" id="futureSelected"></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="screen" id="screen-result">
+        <div class="result-layout">
+          <div class="result-panel">
+            <div class="mix-header">
+              <img src="assets/bpm-dog-avatar.png" alt="BPM 小狗">
+              <div>
+                <h2 class="result-title">我的个人使用说明 v0.1</h2>
+                <p class="result-subtitle" id="resultIntro"></p>
+              </div>
+            </div>
+            <div class="result-block">
+              <h3>我的人生主旋律</h3>
+              <p id="melodyText"></p>
+              <div class="tag-row" id="melodyTags"></div>
+            </div>
+            <div class="result-block">
+              <h3>我会被这些事情点亮</h3>
+              <ul id="sparkList"></ul>
+            </div>
+            <div class="result-block">
+              <h3>我的底噪来源</h3>
+              <ul id="noiseList"></ul>
+            </div>
+            <div class="result-block">
+              <h3>我低电量时的样子</h3>
+              <p id="lowBatteryText"></p>
+            </div>
+            <div class="result-block">
+              <h3>如何更好地使用我</h3>
+              <ul id="manualList"></ul>
+            </div>
+            <div class="result-block">
+              <h3>我正在成为的人</h3>
+              <p id="becomingText"></p>
+            </div>
+            <div class="result-block">
+              <h3>和 MBTI 的一点点对照</h3>
+              <p id="mbtiText"></p>
+            </div>
+            <div class="cta-row">
+              <button class="primary-btn" id="restartBtn">重新调一次</button>
+              <button class="secondary-btn" id="downloadBtn">下载专辑分享卡</button>
+              <button class="secondary-btn" id="copyBtn">复制朋友圈文案</button>
+            </div>
+          </div>
+
+          <aside class="share-stack">
+            <div class="share-card album" id="albumShare">
+              <div>
+                <div class="kicker">我的人生主旋律</div>
+                <h3 id="shareAlbumTitle"></h3>
+                <div class="album-bars" id="shareBars"></div>
+              </div>
+              <p id="shareAlbumMeta"></p>
+            </div>
+            <div class="share-card">
+              <h3>如何更好地使用我</h3>
+              <p id="shareManual"></p>
+            </div>
+            <div class="share-card">
+              <h3>BPM 小狗听完后说：</h3>
+              <p id="shareRoast"></p>
+            </div>
+            <div class="share-card">
+              <h3>朋友挑战</h3>
+              <p id="shareChallenge"></p>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <canvas id="shareCanvas" width="1080" height="1440" class="hidden"></canvas>
+
+  <script>
+    const melodyKeys = ["创造", "解释", "探索", "组织", "连接", "表达", "秩序", "精进", "自由", "照护"];
+    const melodyColors = {
+      "创造": "#20e6d2",
+      "解释": "#b7f34a",
+      "探索": "#ffb84d",
+      "组织": "#7aa7ff",
+      "连接": "#ff6fae",
+      "表达": "#ff8f5c",
+      "秩序": "#b9c3d9",
+      "精进": "#c6ff7a",
+      "自由": "#6df0ff",
+      "照护": "#ffd166"
+    };
+
+    const calibration = [
+      ["lost", "我有点迷茫", "你不是没有方向，只是几条音轨混在一起，暂时听不清主旋律。"],
+      ["know", "我想更了解自己", "你这次调音更像一次校准，不是从零认识自己，而是把模糊感变清楚。"],
+      ["tired", "我最近有点耗电", "你现在最需要的可能不是更努力，而是找到哪些事情正在偷你的电。"],
+      ["share", "我想生成一份能给别人看的说明书", "这份说明书适合拿去沟通，但请记得，它是当前版本，不是最终判决。"]
+    ];
+
+    const heartCards = [
+      ["把一个复杂问题讲到别人终于懂了", ["解释", "连接"]],
+      ["一个人安静做东西，做到忘记时间", ["创造", "精进"]],
+      ["在混乱现场快速组织大家行动", ["组织", "秩序"]],
+      ["研究一个冷门问题，越挖越兴奋", ["探索", "解释"]],
+      ["站出来表达观点，现场有人被打动", ["表达", "连接"]],
+      ["设计一个小工具，让别人用起来更省力", ["创造", "组织"]],
+      ["把一堆乱文件、乱流程、乱想法整理清楚", ["秩序", "组织"]],
+      ["陪一个人慢慢说出真正想说的话", ["连接", "照护"]],
+      ["去一个陌生地方，重新观察生活", ["探索", "自由"]],
+      ["长期训练一项技能，直到身体记住它", ["精进", "秩序"]],
+      ["做一场小型分享，让别人重新理解一件事", ["表达", "解释"]],
+      ["给一个团队搭好节奏，让大家都知道下一步", ["组织", "照护"]],
+      ["把脑子里的想法做成一张图、一篇文或一个作品", ["创造", "解释"]],
+      ["在没有标准答案的问题里自己摸路", ["探索", "自由"]],
+      ["让一个紧张的人放松下来", ["照护", "连接"]],
+      ["被很多人看见、讨论、转发你的表达", ["表达", "创造"]],
+      ["优化一个流程，让它以后少出错", ["秩序", "组织"]],
+      ["一整天没人管你，你自己安排节奏并完成作品", ["自由", "创造"]],
+      ["发现一个别人忽略的细节，并证明它很关键", ["探索", "解释"]],
+      ["把大家吵成一团的问题拆成几个可解决的小问题", ["组织", "解释"]],
+      ["把某个普通人的故事讲得让人记住", ["表达", "照护"]],
+      ["维护一个稳定的小空间，让人来了就安心", ["照护", "秩序"]],
+      ["为一个作品反复修改，直到它真的变好", ["精进", "创造"]],
+      ["找到一种更自由、更适合自己的生活方式", ["自由", "探索"]],
+      ["帮朋友分析困局，但不替他做决定", ["解释", "照护"]],
+      ["组织一次活动，让不同的人自然连接起来", ["连接", "组织"]],
+      ["学一个难技能，虽然慢，但每天都能进步一点", ["精进", "探索"]],
+      ["用一句话讲中别人心里说不出的感受", ["表达", "连接"]],
+      ["把旧规则重新设计得更公平、更顺手", ["秩序", "创造"]],
+      ["在没人催的情况下，自己给自己设目标", ["自由", "精进"]],
+      ["进入一个新领域，从零搭起理解框架", ["探索", "解释"]],
+      ["让一个项目从想法变成能运行的东西", ["创造", "组织"]],
+      ["做一件不显眼但能长期帮到人的事", ["照护", "秩序"]],
+      ["在公开场合临场回应一个尖锐问题", ["表达", "探索"]],
+      ["把别人的混乱需求翻译成清楚方案", ["解释", "组织"]],
+      ["留出一段只属于自己的时间，慢慢恢复", ["自由", "照护"]]
+    ];
+
+    const comicByDimension = {
+      "表达": "assets/comic-expression.png",
+      "创造": "assets/comic-creation.png",
+      "精进": "assets/comic-creation.png",
+      "组织": "assets/comic-organize.png",
+      "探索": "assets/comic-explore.png",
+      "自由": "assets/comic-explore.png",
+      "连接": "assets/comic-connect.png",
+      "照护": "assets/comic-connect.png",
+      "秩序": "assets/comic-order.png",
+      "解释": "assets/comic-order.png"
+    };
+
+    const heartQuips = {
+      near: [
+        "啪！这条音轨亮了。你刚才不是在选择，是在漏电光。",
+        "收到，这个场景对你像充电口，不像任务。",
+        "BPM 小狗记下了：这里有你的心跳声。"
+      ],
+      neutral: [
+        "路过也算答案。有些场景不讨厌，但也不值得你开最大音量。",
+        "无感不是冷漠，是这条音轨暂时没接上电。",
+        "好，这张先静置。人生不是每件事都要有反应。"
+      ],
+      far: [
+        "静音成功。你不是挑剔，只是这个场景有点不通电。",
+        "这条先拉低。不是所有热闹都值得你入场。",
+        "BPM 小狗听见了：这里可能不是你的主场。"
+      ]
+    };
+
+    const noisePairs = [
+      [["别人临时改规则", "失控"], ["别人不给反馈", "隐形"]],
+      [["每天重复无意义工作", "空转"], ["每天被迫高强度社交", "低质社交"]],
+      [["被催着马上回复", "打断"], ["长期没有清晰目标", "模糊"]],
+      [["有人替你做决定", "压迫"], ["有人批评你但不说标准", "否定"]],
+      [["事情很稳定但没有成长", "空转"], ["事情很刺激但完全失控", "失控"]],
+      [["你做了很多但没人看见", "隐形"], ["你被看见但不能做自己", "压迫"]],
+      [["一天被切成很多碎片", "打断"], ["一天都在无效寒暄", "低质社交"]],
+      [["目标一直变", "失控"], ["目标从来没说清", "模糊"]],
+      [["只有一句“你不行”", "否定"], ["只有一句“你自己看着办”", "模糊"]],
+      [["所有人都在催速度", "打断"], ["没有人在乎质量", "空转"]],
+      [["被要求一直合群", "低质社交"], ["被要求完全服从", "压迫"]],
+      [["你的贡献被当作理所当然", "隐形"], ["你的判断一直被打断", "打断"]],
+      [["每件事都要申请批准", "压迫"], ["每件事都没有负责人", "失控"]],
+      [["反馈很尖锐但没方法", "否定"], ["任务很多但没意义", "空转"]],
+      [["没有时间独处", "打断"], ["没有人真正回应你", "隐形"]],
+      [["每天都要表演情绪稳定", "低质社交"], ["每天都要猜别人标准", "模糊"]],
+      [["你认真做的事被敷衍对待", "隐形"], ["你在乎的边界被反复越过", "压迫"]],
+      [["不停试错但没人复盘", "失控"], ["不停执行但没人解释为什么", "空转"]]
+    ];
+
+    const futures = [
+      { id: "creator", name: "深度创作者", gain: "做出真正属于自己的作品。", cost: "长期无人喝彩、反复打磨和不确定性。", dims: ["创造", "精进", "自由"] },
+      { id: "explainer", name: "清晰解释者", gain: "把复杂世界讲给更多人听。", cost: "不断消化混乱、误解和信息噪音。", dims: ["解释", "探索", "表达"] },
+      { id: "organizer", name: "可靠组织者", gain: "把混乱的人和事带向秩序。", cost: "经常处理别人不愿碰的复杂问题。", dims: ["组织", "秩序", "照护"] },
+      { id: "wanderer", name: "自由探索者", gain: "不断接触新地方、新问题和新可能。", cost: "稳定感下降，很多路要自己试。", dims: ["探索", "自由", "创造"] },
+      { id: "speaker", name: "公共表达者", gain: "想法被更多人听见，影响更多人。", cost: "被误解、被评价、被放大。", dims: ["表达", "解释", "连接"] },
+      { id: "builder", name: "温柔建设者", gain: "让身边的人、关系和环境变好。", cost: "学习不把所有人的情绪都背在身上。", dims: ["照护", "连接", "组织"] },
+      { id: "system", name: "秩序设计师", gain: "设计系统、流程和规则，让事情更可靠。", cost: "别人可能只在系统坏掉时才想起你。", dims: ["秩序", "组织", "解释"] },
+      { id: "master", name: "技能修行者", gain: "在一件事上真正变强，获得扎实的底气。", cost: "忍受长期重复、慢反馈和孤独训练。", dims: ["精进", "创造", "秩序"] }
+    ];
+
+    const melodyTemplates = {
+      "创造": "你会被“把想法变成作品”的时刻点亮。脑子里的东西如果一直只是想法，你会有点憋；一旦它变成文章、图、产品、活动或任何可被看见的东西，你的电量会明显回来。",
+      "解释": "你很容易被“讲清楚”这件事点亮。复杂问题、混乱信息、说不明白的感受，到了你这里会被重新整理成别人能听懂的结构。",
+      "探索": "你对未知有天然反应。太确定、太重复、太一眼看到头的环境，会让你慢慢变暗；新问题、新地方、新领域，会让你重新开机。",
+      "组织": "你擅长把混乱变得可执行。别人看到一团乱，你会开始想：谁负责、先做什么、怎么拆、怎么推进。",
+      "连接": "你会被真实关系点亮。你不是只需要热闹，而是需要人与人之间真的接上电。",
+      "表达": "你需要一个能被听见的出口。观点、故事、情绪、判断，如果永远只能憋在心里，你会越来越低电量。",
+      "秩序": "你会被清晰、稳定、可靠的系统点亮。规则不是为了束缚你，而是为了让能量不被反复浪费。",
+      "精进": "你对“变强”有耐心。你不一定喜欢轻松，但你喜欢看到自己一点点掌握某件事。",
+      "自由": "你很需要自主感。你可以努力，也可以负责，但前提是你知道自己为什么做，并且保留一点选择空间。",
+      "照护": "你会被“让人、关系或环境变好”的事情点亮。你的作品不一定总是一个物件，也可能是一种被你维护出来的安心感。"
+    };
+
+    const noiseTemplates = {
+      "模糊": "你最耗电的不是困难，而是模糊。目标不清、标准不清、评价不清，会让你一直在心里开后台程序。",
+      "打断": "你需要完整时间。频繁切换、马上回复、不断被打断，会让你的思路像音轨被切碎。",
+      "空转": "你对无意义重复很敏感。如果一件事既没有成长，也没有反馈，还看不见价值，你会很快失去电量。",
+      "失控": "你可以接受变化，但很难长期待在完全失控的环境里。刺激不是问题，问题是没有规则、没有兜底、没有复盘。",
+      "压迫": "你很需要选择权。别人替你决定、过度控制你、反复越过你的边界，会让你立刻进入防御模式。",
+      "低质社交": "你不是不喜欢人，你是不喜欢低质量社交。长时间寒暄、表演合群、没有真实连接，会让你很累。",
+      "否定": "你可以接受批评，但需要标准和方法。只有否定、没有理由、没有改进方向，会让你开始怀疑交流本身。",
+      "隐形": "你不一定需要掌声，但你需要被认真看见。长期付出没有回应，会让你慢慢把自己收起来。"
+    };
+
+    const lowBattery = {
+      "模糊": "我可能会反复确认、迟迟不动手，看起来像拖延，其实是在等标准变清楚。",
+      "打断": "我可能会烦躁、走神、很难进入状态。不是我不配合，是音轨一直被切碎。",
+      "空转": "我可能会机械完成，但心里已经断电。表面在动，里面已经静音。",
+      "失控": "我可能会开始紧绷、预设坏结果，甚至提前撤退，因为系统没有兜底。",
+      "压迫": "我可能会变得防御、沉默，或者突然很想逃。那通常是选择权被拿走了。",
+      "低质社交": "我可能会突然安静，不是不喜欢你，是需要从噪音里退出来。",
+      "否定": "我可能会反复琢磨那句否定，真正卡住我的不是批评，而是没有方向。",
+      "隐形": "我可能会慢慢少说、少做、少期待。不是不在乎，是不想再把电交给黑洞。"
+    };
+
+    const futureTemplates = {
+      "深度创作者": "我正在成为一个能把内在世界做成作品、愿意忍受无人喝彩、并把真实表达留在世界里的人。",
+      "清晰解释者": "我正在成为一个能把复杂世界讲清楚、愿意消化混乱、并把结构感带给更多人的人。",
+      "可靠组织者": "我正在成为一个能把混乱带向行动、愿意处理复杂问题、并让一群人更稳地往前走的人。",
+      "自由探索者": "我正在成为一个不被单一路径锁死、愿意自己试路、并持续发现新可能的人。",
+      "公共表达者": "我正在成为一个敢让自己的声音被听见、愿意承受误解、并用表达影响他人的人。",
+      "温柔建设者": "我正在成为一个让人和关系慢慢变好、愿意长期照护、也学习不把所有情绪背在身上的人。",
+      "秩序设计师": "我正在成为一个能设计可靠系统、愿意做幕后结构、并减少世界运行损耗的人。",
+      "技能修行者": "我正在成为一个靠长期训练获得底气、愿意忍受慢反馈、并把能力练扎实的人。"
+    };
+
+    const experiments = {
+      "深度创作者": "连续 30 天，每周交付一个小作品，不追求完美，只追求可被看见。",
+      "清晰解释者": "选一个你真正关心的复杂问题，连续 4 周，每周写一篇普通人能看懂的解释。",
+      "可靠组织者": "找一件混乱的小事，把它整理成一个流程、清单或协作规则。",
+      "自由探索者": "每周探索一个陌生领域，并记录“我被什么点亮”。",
+      "公共表达者": "连续 4 周，每周公开表达一个真实观点，并观察谁被你连接到。",
+      "温柔建设者": "选择一段关系或一个小空间，连续 30 天做一个让它更好的微动作。",
+      "秩序设计师": "找一个反复消耗你的流程，把它改造成一个更稳定的小系统。",
+      "技能修行者": "选一项技能，连续 30 天记录练习、反馈和下一步调整。"
+    };
+
+    const manualAdvice = {
+      "创造": "请给我一个可以做出来的出口，而不只是空谈想法。",
+      "解释": "请给我复杂材料和清楚问题，我会努力把它讲明白。",
+      "探索": "请允许我保留一点试路空间，太死的路线会让我变暗。",
+      "组织": "请告诉我目标、资源和限制，我会把下一步拆出来。",
+      "连接": "请真实一点和我交流，热闹不等于连接。",
+      "表达": "请给我被听见的机会，也给我真实反馈。",
+      "秩序": "请把规则和标准说清楚，我会更稳定地交付。",
+      "精进": "请给我练习和反馈的循环，我会一点点变强。",
+      "自由": "请给我选择空间，我会更愿意负责。",
+      "照护": "请提醒我也照顾自己，不要把所有电量都交出去。"
+    };
+
+    const roastRules = {
+      "创造|空转": "你不是懒，你是对没有意义的事情电量过敏。",
+      "解释|模糊": "你不是想太多，你只是受不了一团雾还被要求立刻出发。",
+      "探索|压迫": "你不是叛逆，你是真的需要一点自己选路的空间。",
+      "连接|低质社交": "你不是不喜欢人，你是不喜欢没有真实连接的热闹。",
+      "秩序|失控": "你不是扫兴，你只是想让大家别每次都靠临场救火。",
+      "精进|隐形": "你不是非要掌声，你只是希望认真这件事被认真对待。"
+    };
+
+    let state = {};
+    resetState();
+
+    const $ = (id) => document.getElementById(id);
+
+    function resetState() {
+      state = {
+        calibration: calibration[1],
+        heartSet: sample(heartCards, 18),
+        noiseSet: sample(noisePairs, 12),
+        heartIndex: 0,
+        noiseIndex: 0,
+        locked: false,
+        lastHeartFeedback: "",
+        melody: Object.fromEntries(melodyKeys.map(k => [k, 0])),
+        noise: Object.fromEntries(["模糊", "打断", "空转", "失控", "压迫", "低质社交", "否定", "隐形"].map(k => [k, 0])),
+        nearScenes: [],
+        futureChoices: [],
+        result: null
+      };
+    }
+
+    function sample(arr, count) {
+      return [...arr].sort(() => Math.random() - 0.5).slice(0, count);
+    }
+
+    function showScreen(id, progress) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+      $(id).classList.add("active");
+      $("progress").style.width = `${progress}%`;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function ranked(obj) {
+      return Object.entries(obj).sort((a, b) => b[1] - a[1]);
+    }
+
+    function renderMeters(targetId, sourceObj, type = "melody") {
+      const target = $(targetId);
+      if (!target) return;
+      const top = ranked(sourceObj).slice(0, type === "melody" ? 8 : 6);
+      const max = Math.max(1, ...top.map(([, v]) => v));
+      target.innerHTML = top.map(([key, value]) => {
+        const color = type === "melody" ? (melodyColors[key] || "#20e6d2") : "#ff5c5c";
+        return `
+          <div class="meter">
+            <span>${key}</span>
+            <span class="meter-track"><span class="meter-fill" style="width:${Math.max(4, value / max * 100)}%; background:${color}"></span></span>
+            <span>${value}</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function init() {
+      $("startBtn").addEventListener("click", () => {
+        renderCalibration();
+        showScreen("screen-calibrate", 10);
+      });
+
+      document.querySelectorAll(".answer-btn").forEach(btn => {
+        btn.addEventListener("click", () => answerHeart(btn.dataset.choice));
+      });
+
+      $("noiseA").addEventListener("click", () => answerNoise(0));
+      $("noiseB").addEventListener("click", () => answerNoise(1));
+      $("restartBtn").addEventListener("click", () => {
+        resetState();
+        showScreen("screen-home", 0);
+      });
+      $("downloadBtn").addEventListener("click", downloadShareCard);
+      $("copyBtn").addEventListener("click", copyShareText);
+    }
+
+    function renderCalibration() {
+      $("calibrationOptions").innerHTML = calibration.map(([id, label, intro]) => `
+        <button class="choice-card" data-id="${id}">
+          <strong>${label}</strong>
+          <span>${intro}</span>
+        </button>
+      `).join("");
+      document.querySelectorAll("#calibrationOptions .choice-card").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.calibration = calibration.find(item => item[0] === btn.dataset.id);
+          renderHeart();
+          showScreen("screen-heart", 22);
+        });
+      });
+      renderMeters("meters", state.melody);
+    }
+
+    function renderHeart() {
+      const card = state.heartSet[state.heartIndex];
+      $("heartIndex").textContent = `${String(state.heartIndex + 1).padStart(2, "0")} / ${state.heartSet.length}`;
+      $("heartText").textContent = card[0];
+      $("heartComic").src = comicForDims(card[1]);
+      $("heartComic").alt = `${card[1].join("、")}漫画场景`;
+      $("beatToast").textContent = state.lastHeartFeedback || "别选正确答案，选身体先响的那个。";
+      $("heartBubble").textContent = state.lastHeartFeedback || (state.heartIndex < 3
+        ? "这不是兴趣测试，这是找你的电量入口。"
+        : "有些事情没错，只是不通你的电。");
+      renderMeters("heartMeters", state.melody);
+      showScreen("screen-heart", 22 + state.heartIndex / state.heartSet.length * 28);
+    }
+
+    function answerHeart(choice) {
+      if (state.locked) return;
+      state.locked = true;
+      const [text, dims] = state.heartSet[state.heartIndex];
+      const delta = choice === "near" ? 2 : choice === "far" ? -1 : 0;
+      dims.forEach(dim => state.melody[dim] += delta);
+      if (choice === "near") state.nearScenes.push({ text, dims });
+      state.lastHeartFeedback = feedbackForHeart(choice, dims);
+      $("beatToast").textContent = state.lastHeartFeedback;
+      $("heartBubble").textContent = state.lastHeartFeedback;
+      $("heartCard").classList.add("pulse");
+      renderMeters("heartMeters", state.melody);
+      setTimeout(() => {
+        $("heartCard").classList.remove("pulse");
+        state.heartIndex += 1;
+        state.locked = false;
+        if (state.heartIndex >= state.heartSet.length) {
+          renderNoise();
+          showScreen("screen-noise", 52);
+        } else {
+          renderHeart();
+        }
+      }, 310);
+    }
+
+    function comicForDims(dims) {
+      const priority = ["表达", "创造", "组织", "探索", "连接", "照护", "秩序", "解释", "精进", "自由"];
+      const key = priority.find(dim => dims.includes(dim)) || dims[0];
+      return comicByDimension[key] || "assets/comic-creation.png";
+    }
+
+    function feedbackForHeart(choice, dims) {
+      const pool = heartQuips[choice] || heartQuips.neutral;
+      const base = pool[Math.floor(Math.random() * pool.length)];
+      if (choice === "near") return `${base} ${dims[0]}音轨 +2。`;
+      if (choice === "far") return `${base} ${dims[0]}音轨先降一点。`;
+      return base;
+    }
+
+    function renderNoise() {
+      const pair = state.noiseSet[state.noiseIndex];
+      $("noiseIndex").textContent = `${String(state.noiseIndex + 1).padStart(2, "0")} / ${state.noiseSet.length}`;
+      $("noiseA").textContent = pair[0][0];
+      $("noiseB").textContent = pair[1][0];
+      $("noiseBubble").textContent = state.noiseIndex < 4
+        ? "讨厌不是坏脾气，有时候是边界在报警。"
+        : "你不用喜欢所有环境，真的。";
+      renderMeters("noiseMeters", state.noise, "noise");
+      showScreen("screen-noise", 52 + state.noiseIndex / state.noiseSet.length * 22);
+    }
+
+    function answerNoise(which) {
+      const selected = state.noiseSet[state.noiseIndex][which];
+      state.noise[selected[1]] += 2;
+      state.noiseIndex += 1;
+      if (state.noiseIndex >= state.noiseSet.length) {
+        renderFuture();
+        showScreen("screen-future", 76);
+      } else {
+        renderNoise();
+      }
+    }
+
+    function renderFuture() {
+      $("futureGrid").innerHTML = futures.map(item => `
+        <button class="future-card ${state.futureChoices.includes(item.id) ? "selected" : ""}" data-id="${item.id}">
+          <strong>${item.name}</strong>
+          <p>你会得到：${item.gain}</p>
+          <p class="cost">你要承担：${item.cost}</p>
+        </button>
+      `).join("");
+
+      document.querySelectorAll(".future-card").forEach(card => {
+        card.addEventListener("click", () => toggleFuture(card.dataset.id));
+      });
+      renderFutureSelected();
+    }
+
+    function toggleFuture(id) {
+      if (state.futureChoices.includes(id)) {
+        state.futureChoices = state.futureChoices.filter(x => x !== id);
+      } else if (state.futureChoices.length < 3) {
+        state.futureChoices.push(id);
+      }
+      if (state.futureChoices.length === 3) {
+        $("futureBubble").textContent = "收到。BPM 小狗正在把光环和代价一起混进去。";
+        setTimeout(() => {
+          buildResult();
+          renderResult();
+          showScreen("screen-result", 100);
+        }, 460);
+      } else {
+        $("futureBubble").textContent = `请选择 3 个。现在选了 ${state.futureChoices.length} 个。`;
+        renderFuture();
+      }
+    }
+
+    function renderFutureSelected() {
+      const selected = state.futureChoices.map(id => futures.find(f => f.id === id).name);
+      $("futureSelected").innerHTML = selected.map(name => `<span class="tag">${name}</span>`).join("");
+    }
+
+    function buildResult() {
+      const topMelody = ranked(state.melody).filter(([, v]) => v > -99).slice(0, 3).map(([k, v]) => ({ key: k, value: v }));
+      const topNoise = ranked(state.noise).slice(0, 3).map(([k, v]) => ({ key: k, value: v }));
+      const topMelodyKeys = topMelody.map(m => m.key);
+      const futureScores = state.futureChoices.map((id, index) => {
+        const f = futures.find(item => item.id === id);
+        const orderScore = [3, 2, 1][index];
+        const match = f.dims.filter(dim => topMelodyKeys.includes(dim)).length;
+        return { ...f, score: orderScore + match };
+      }).sort((a, b) => b.score - a.score);
+      const future = futureScores[0] || futures[0];
+      const spark = state.nearScenes.slice(-18)
+        .sort((a, b) => scoreScene(b, topMelodyKeys) - scoreScene(a, topMelodyKeys))
+        .slice(0, 3);
+      const advice = [
+        manualAdvice[topMelody[0].key],
+        noiseAdvice(topNoise[0].key),
+        "如果要反馈我，请给我理由、标准和下一步，而不是只丢一句评价。"
+      ];
+      const mbti = mbtiHint(topMelodyKeys, topNoise.map(n => n.key));
+      const roast = roastRules[`${topMelody[0].key}|${topNoise[0].key}`] || defaultRoast(topMelody[0].key, topNoise[0].key);
+      state.result = { topMelody, topNoise, future, spark, advice, mbti, roast };
+    }
+
+    function scoreScene(scene, topKeys) {
+      return scene.dims.reduce((sum, dim) => sum + (topKeys.includes(dim) ? 2 : 0), 0);
+    }
+
+    function noiseAdvice(noise) {
+      const map = {
+        "模糊": "请尽量把目标和判断标准说清楚，我不是怕难，是怕一团雾。",
+        "打断": "请给我一段不被切碎的时间，我会自己把东西调出来。",
+        "空转": "请让我看见这件事的意义、反馈或成长路径。",
+        "失控": "请告诉我规则、边界和谁来兜底，我可以接受变化，但不想盲飞。",
+        "压迫": "请保留我的选择权，越被控制，我越难真正投入。",
+        "低质社交": "请用真实交流替代无效热闹，我不是不喜欢人。",
+        "否定": "请给我具体反馈，而不是没有标准的否定。",
+        "隐形": "请认真看见我的投入，哪怕只是一个具体回应。"
+      };
+      return map[noise];
+    }
+
+    function mbtiHint(melodies, noises) {
+      const hints = [];
+      if (melodies.some(m => ["探索", "解释", "创造"].includes(m))) hints.push("你可能带有一点 N 型的想象力和抽象连接能力");
+      if (melodies.some(m => ["组织", "秩序"].includes(m))) hints.push("你可能也有 J 式的结构需求");
+      if (melodies.some(m => ["连接", "照护"].includes(m))) hints.push("你会在关系回应里显出 F 式敏感");
+      if (melodies.some(m => ["解释", "秩序"].includes(m))) hints.push("你也会重视 T 式的标准和逻辑反馈");
+      if (noises.includes("打断") || melodies.includes("自由")) hints.push("你的恢复方式可能更需要 I 式的完整空间");
+      return `这不是 MBTI 类型判断，只是一个参考坐标：${hints.slice(0, 2).join("；")}。人生调音台更关心的是，你在什么场景里会发亮，以及什么环境会让你失真。`;
+    }
+
+    function defaultRoast(melody, noise) {
+      return `你的主旋律是${melody}，但${noise}一来就容易破音。BPM 小狗建议：先别硬撑，先把底噪静音。`;
+    }
+
+    function renderResult() {
+      const r = state.result;
+      $("resultIntro").textContent = state.calibration[2];
+      $("melodyText").textContent = `我的主旋律是 ${r.topMelody[0].key}，副旋律是 ${r.topMelody[1].key}，隐藏旋律是 ${r.topMelody[2].key}。${melodyTemplates[r.topMelody[0].key]}`;
+      $("melodyTags").innerHTML = r.topMelody.map((m, i) => `<span class="tag" style="--cyan:${melodyColors[m.key]}">${i + 1}. ${m.key} ${Math.max(0, m.value)}</span>`).join("");
+      $("sparkList").innerHTML = r.spark.map(s => `<li>当我能${trimScene(s.text)}。</li>`).join("");
+      $("noiseList").innerHTML = r.topNoise.map(n => `<li><strong>${n.key}</strong>：${noiseTemplates[n.key]}</li>`).join("");
+      $("lowBatteryText").textContent = lowBattery[r.topNoise[0].key];
+      $("manualList").innerHTML = r.advice.map(item => `<li>${item}</li>`).join("");
+      $("becomingText").textContent = `${futureTemplates[r.future.name]} 30 天小实验：${experiments[r.future.name]}`;
+      $("mbtiText").textContent = r.mbti;
+
+      $("shareAlbumTitle").textContent = `${r.topMelody[0].key} / ${r.topMelody[1].key} / ${r.topMelody[2].key}`;
+      $("shareAlbumMeta").textContent = `底噪：${r.topNoise.map(n => n.key).join(" / ")}｜当前版本：${r.future.name}`;
+      $("shareBars").innerHTML = r.topMelody.map((m, i) => `
+        <div class="album-bar"><span style="width:${Math.max(18, 92 - i * 18)}%; background:linear-gradient(90deg, ${melodyColors[m.key]}, #f7f2e8)"></span></div>
+      `).join("");
+      $("shareManual").textContent = `请给我：${r.advice.slice(0, 2).join(" / ")} 请避免：${r.topNoise.map(n => n.key).join(" / ")}。`;
+      $("shareRoast").textContent = `“${r.roast}”`;
+      $("shareChallenge").textContent = `把这张发出去，让朋友猜：你最亮的到底是 ${r.topMelody[0].key}，还是最容易被 ${r.topNoise[0].key} 静音？`;
+    }
+
+    function trimScene(text) {
+      return text.replace(/^把/, "把").replace(/。$/, "");
+    }
+
+    async function downloadShareCard() {
+      const canvas = $("shareCanvas");
+      const ctx = canvas.getContext("2d");
+      const r = state.result;
+      const dog = new Image();
+      dog.src = "assets/bpm-dog-avatar.png";
+      await dog.decode();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const gradient = ctx.createLinearGradient(0, 0, 1080, 1440);
+      gradient.addColorStop(0, "#10131b");
+      gradient.addColorStop(0.54, "#17212c");
+      gradient.addColorStop(1, "#0f1016");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 1080, 1440);
+
+      ctx.globalAlpha = 0.95;
+      drawGlow(ctx, 170, 170, 260, "#20e6d2");
+      drawGlow(ctx, 880, 260, 240, "#ff6fae");
+      drawGlow(ctx, 620, 1120, 280, "#b7f34a");
+      ctx.globalAlpha = 1;
+
+      roundImage(ctx, dog, 660, 120, 260, 260, 28);
+      ctx.fillStyle = "#f7f2e8";
+      ctx.font = "900 80px PingFang SC, Microsoft YaHei, sans-serif";
+      wrapCanvasText(ctx, "我的人生主旋律", 90, 170, 540, 88);
+      ctx.font = "700 34px PingFang SC, Microsoft YaHei, sans-serif";
+      ctx.fillStyle = "#b7f34a";
+      ctx.fillText("人生调音台 · v0.1", 92, 350);
+
+      const labels = r.topMelody.map(m => m.key);
+      labels.forEach((label, i) => {
+        const y = 500 + i * 120;
+        const w = 760 - i * 120;
+        ctx.fillStyle = "rgba(255,255,255,0.10)";
+        roundRect(ctx, 92, y, 840, 38, 20, true);
+        const bar = ctx.createLinearGradient(92, y, 92 + w, y);
+        bar.addColorStop(0, melodyColors[label]);
+        bar.addColorStop(1, "#f7f2e8");
+        ctx.fillStyle = bar;
+        roundRect(ctx, 92, y, w, 38, 20, true);
+        ctx.fillStyle = "#f7f2e8";
+        ctx.font = "800 42px PingFang SC, Microsoft YaHei, sans-serif";
+        ctx.fillText(label, 92, y - 24);
+      });
+
+      ctx.fillStyle = "#f7f2e8";
+      ctx.font = "900 48px PingFang SC, Microsoft YaHei, sans-serif";
+      ctx.fillText("BPM 小狗听完后说：", 92, 945);
+      ctx.font = "700 42px PingFang SC, Microsoft YaHei, sans-serif";
+      wrapCanvasText(ctx, `“${r.roast}”`, 92, 1018, 850, 58);
+
+      ctx.fillStyle = "rgba(255,255,255,0.72)";
+      ctx.font = "600 30px PingFang SC, Microsoft YaHei, sans-serif";
+      wrapCanvasText(ctx, `底噪：${r.topNoise.map(n => n.key).join(" / ")}｜当前版本：${r.future.name}`, 92, 1270, 880, 44);
+
+      const link = document.createElement("a");
+      link.download = "人生调音台-我的人生主旋律.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+
+    async function copyShareText() {
+      const r = state.result;
+      const text = `我刚玩了《人生调音台》，我的人生主旋律是：${r.topMelody.map(m => m.key).join(" / ")}。\\n底噪是：${r.topNoise.map(n => n.key).join(" / ")}。\\nBPM 小狗听完后说：“${r.roast}”\\n\\n这不是 MBTI 判决书，是一份当前版本的个人使用说明。`;
+      try {
+        await navigator.clipboard.writeText(text);
+        $("shareRoast").textContent = "“已复制。现在你可以发朋友圈，让朋友来猜自己是哪条音轨。”";
+      } catch (error) {
+        $("shareRoast").textContent = `“复制失败也没关系，手动摘这一句：${r.roast}”`;
+      }
+    }
+
+    function drawGlow(ctx, x, y, radius, color) {
+      const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      g.addColorStop(0, color);
+      g.addColorStop(1, "transparent");
+      ctx.fillStyle = g;
+      ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+    }
+
+    function roundRect(ctx, x, y, w, h, r, fill) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      if (fill) ctx.fill();
+    }
+
+    function roundImage(ctx, img, x, y, w, h, r) {
+      ctx.save();
+      roundRect(ctx, x, y, w, h, r, false);
+      ctx.clip();
+      ctx.drawImage(img, x, y, w, h);
+      ctx.restore();
+    }
+
+    function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight) {
+      let line = "";
+      const chars = [...text];
+      for (let i = 0; i < chars.length; i++) {
+        const test = line + chars[i];
+        if (ctx.measureText(test).width > maxWidth && line) {
+          ctx.fillText(line, x, y);
+          line = chars[i];
+          y += lineHeight;
+        } else {
+          line = test;
+        }
+      }
+      if (line) ctx.fillText(line, x, y);
+    }
+
+    init();
+  </script>
+</body>
+</html>
