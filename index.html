@@ -253,6 +253,88 @@
       pointer-events: none;
     }
 
+    .mix-intro {
+      min-height: calc(100vh - 108px);
+      display: grid;
+      place-items: center;
+    }
+
+    .intro-console {
+      width: min(760px, 100%);
+      padding: clamp(24px, 4vw, 42px);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(32, 230, 210, 0.16), transparent 18rem),
+        radial-gradient(circle at 78% 30%, rgba(255, 184, 77, 0.12), transparent 18rem),
+        rgba(23, 27, 37, 0.9);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.38);
+      text-align: center;
+    }
+
+    .intro-dog {
+      width: 118px;
+      height: 118px;
+      margin: 0 auto 18px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 0 34px rgba(32, 230, 210, 0.18);
+    }
+
+    .intro-console h2 {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 64px);
+      line-height: 1.08;
+    }
+
+    .intro-console p {
+      margin: 12px auto 24px;
+      max-width: 560px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .intro-bars {
+      display: grid;
+      gap: 12px;
+      margin: 0 auto;
+      max-width: 560px;
+    }
+
+    .intro-bar {
+      height: 16px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.09);
+      overflow: hidden;
+    }
+
+    .intro-bar span {
+      display: block;
+      width: 24%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--cyan), var(--lime), var(--orange));
+      animation: introMix 1050ms ease-in-out infinite alternate;
+    }
+
+    .intro-bar:nth-child(2) span {
+      width: 42%;
+      animation-delay: 120ms;
+      background: linear-gradient(90deg, var(--pink), var(--orange));
+    }
+
+    .intro-bar:nth-child(3) span {
+      width: 32%;
+      animation-delay: 240ms;
+      background: linear-gradient(90deg, #7aa7ff, var(--cyan));
+    }
+
+    @keyframes introMix {
+      from { transform: translateX(-8%); filter: brightness(0.9); }
+      to { transform: translateX(82%); filter: brightness(1.25); }
+    }
+
     .track-strip {
       position: absolute;
       left: 18px;
@@ -333,6 +415,29 @@
       margin: 10px 0 24px;
       color: var(--muted);
       line-height: 1.75;
+    }
+
+    .stage-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 8px 10px;
+      border: 1px solid rgba(255, 184, 77, 0.22);
+      border-radius: 999px;
+      color: #ffe1ac;
+      background: rgba(255, 184, 77, 0.08);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .stage-pill::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--orange);
+      box-shadow: 0 0 16px var(--orange);
     }
 
     .mascot {
@@ -560,12 +665,18 @@
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.13);
       font-weight: 850;
-      transition: transform 170ms ease, border-color 170ms ease, background 170ms ease;
+      transition: transform 170ms ease, border-color 170ms ease, background 170ms ease, opacity 170ms ease;
     }
 
     .answer-btn:hover {
       transform: translateY(-2px);
       border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    .answer-btn:disabled {
+      cursor: wait;
+      opacity: 0.62;
+      transform: none;
     }
 
     .answer-btn[data-choice="near"] {
@@ -652,6 +763,49 @@
     .result-subtitle {
       margin: 8px 0 0;
       color: var(--muted);
+    }
+
+    .result-hero-card {
+      position: relative;
+      margin: 0 0 18px;
+      padding: clamp(18px, 3vw, 26px);
+      border: 1px solid rgba(183, 243, 74, 0.2);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(183, 243, 74, 0.12), transparent 38%),
+        linear-gradient(225deg, rgba(32, 230, 210, 0.12), transparent 42%),
+        rgba(255, 255, 255, 0.055);
+      overflow: hidden;
+    }
+
+    .result-hero-card::after {
+      content: "";
+      position: absolute;
+      right: -28px;
+      top: -34px;
+      width: 128px;
+      height: 128px;
+      background: url("assets/bpm-dog-avatar.png") center / cover no-repeat;
+      border-radius: 8px;
+      opacity: 0.2;
+      transform: rotate(6deg);
+    }
+
+    .result-hero-card h3 {
+      margin: 0 0 10px;
+      color: var(--lime);
+      font-size: 15px;
+    }
+
+    .result-hero-card p {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      max-width: 680px;
+      font-size: clamp(24px, 3.6vw, 40px);
+      font-weight: 900;
+      line-height: 1.25;
+      color: var(--ink);
     }
 
     .result-block {
@@ -890,6 +1044,21 @@
         </div>
       </section>
 
+      <section class="screen" id="screen-intro">
+        <div class="mix-intro">
+          <div class="intro-console">
+            <img class="intro-dog" src="assets/bpm-dog-avatar.png" alt="BPM 小狗">
+            <h2>BPM 小狗正在校准耳机</h2>
+            <p>接下来别装成熟，也别选标准答案。我们只听三种声音：心动、底噪、你愿意承担的未来。</p>
+            <div class="intro-bars" aria-hidden="true">
+              <div class="intro-bar"><span></span></div>
+              <div class="intro-bar"><span></span></div>
+              <div class="intro-bar"><span></span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="screen" id="screen-calibrate">
         <div class="game-grid">
           <div class="main-panel">
@@ -910,6 +1079,7 @@
       <section class="screen" id="screen-heart">
         <div class="game-grid">
           <div class="main-panel">
+            <div class="stage-pill" id="heartStage">第一段：先找电量入口</div>
             <h2 class="section-title">心动采样</h2>
             <p class="section-note">看到场景后，选身体先有反应的那个。靠近、无感、远离，都可以。</p>
             <div class="sample-board">
@@ -988,6 +1158,10 @@
                 <h2 class="result-title">我的个人使用说明 v0.1</h2>
                 <p class="result-subtitle" id="resultIntro"></p>
               </div>
+            </div>
+            <div class="result-hero-card">
+              <h3>BPM 小狗先给一句结论</h3>
+              <p id="resultOneLine"></p>
             </div>
             <div class="result-block">
               <h3>我的人生主旋律</h3>
@@ -1257,6 +1431,12 @@
       "精进|隐形": "你不是非要掌声，你只是希望认真这件事被认真对待。"
     };
 
+    const heartStageCopy = [
+      "第一段：先找电量入口",
+      "第二段：看看你会为谁亮灯",
+      "第三段：确认真正的主旋律"
+    ];
+
     let state = {};
     resetState();
 
@@ -1313,8 +1493,11 @@
 
     function init() {
       $("startBtn").addEventListener("click", () => {
-        renderCalibration();
-        showScreen("screen-calibrate", 10);
+        showScreen("screen-intro", 5);
+        setTimeout(() => {
+          renderCalibration();
+          showScreen("screen-calibrate", 10);
+        }, 1180);
       });
 
       document.querySelectorAll(".answer-btn").forEach(btn => {
@@ -1350,11 +1533,13 @@
 
     function renderHeart() {
       const card = state.heartSet[state.heartIndex];
+      const stageIndex = Math.min(2, Math.floor(state.heartIndex / 6));
+      $("heartStage").textContent = heartStageCopy[stageIndex];
       $("heartIndex").textContent = `${String(state.heartIndex + 1).padStart(2, "0")} / ${state.heartSet.length}`;
       $("heartText").textContent = card[0];
       $("heartComic").src = comicForDims(card[1]);
       $("heartComic").alt = `${card[1].join("、")}漫画场景`;
-      $("beatToast").textContent = state.lastHeartFeedback || "别选正确答案，选身体先响的那个。";
+      $("beatToast").textContent = state.lastHeartFeedback || stageHint(state.heartIndex);
       $("heartBubble").textContent = state.lastHeartFeedback || (state.heartIndex < 3
         ? "这不是兴趣测试，这是找你的电量入口。"
         : "有些事情没错，只是不通你的电。");
@@ -1365,6 +1550,7 @@
     function answerHeart(choice) {
       if (state.locked) return;
       state.locked = true;
+      setAnswerDisabled(true);
       const [text, dims] = state.heartSet[state.heartIndex];
       const delta = choice === "near" ? 2 : choice === "far" ? -1 : 0;
       dims.forEach(dim => state.melody[dim] += delta);
@@ -1377,7 +1563,11 @@
       setTimeout(() => {
         $("heartCard").classList.remove("pulse");
         state.heartIndex += 1;
+        if (state.heartIndex === 6 || state.heartIndex === 12) {
+          state.lastHeartFeedback = stageHint(state.heartIndex);
+        }
         state.locked = false;
+        setAnswerDisabled(false);
         if (state.heartIndex >= state.heartSet.length) {
           renderNoise();
           showScreen("screen-noise", 52);
@@ -1385,6 +1575,19 @@
           renderHeart();
         }
       }, 310);
+    }
+
+    function setAnswerDisabled(disabled) {
+      document.querySelectorAll(".answer-btn").forEach(btn => {
+        btn.disabled = disabled;
+      });
+    }
+
+    function stageHint(index) {
+      if (index === 0) return "别选正确答案，选身体先响的那个。";
+      if (index === 6) return "第二段开始。现在别管别人怎么看，听自己的电量。";
+      if (index === 12) return "最后 6 轨。真正的主旋律通常藏在重复出现的心动里。";
+      return "继续采样。你靠近什么，调音台已经在记。";
     }
 
     function comicForDims(dims) {
@@ -1485,7 +1688,8 @@
       ];
       const mbti = mbtiHint(topMelodyKeys, topNoise.map(n => n.key));
       const roast = roastRules[`${topMelody[0].key}|${topNoise[0].key}`] || defaultRoast(topMelody[0].key, topNoise[0].key);
-      state.result = { topMelody, topNoise, future, spark, advice, mbti, roast };
+      const oneLine = resultOneLine(topMelody[0].key, topNoise[0].key, future.name);
+      state.result = { topMelody, topNoise, future, spark, advice, mbti, roast, oneLine };
     }
 
     function scoreScene(scene, topKeys) {
@@ -1520,9 +1724,26 @@
       return `你的主旋律是${melody}，但${noise}一来就容易破音。BPM 小狗建议：先别硬撑，先把底噪静音。`;
     }
 
+    function resultOneLine(melody, noise, future) {
+      const map = {
+        "创造": `你不是缺想法，你是需要一个能把想法做出来的出口；一旦被${noise}打断，就很容易断电。`,
+        "解释": `你的强项是把混乱讲清楚，但${noise}会让你像被迫在雾里开麦。`,
+        "探索": `你会被未知点亮，但${noise}一上来，你的冒险感会立刻变成警报声。`,
+        "组织": `你能把混乱带向行动，但如果${noise}太重，你会先替所有人耗尽电。`,
+        "连接": `你要的不是热闹，是接得上的真实关系；${noise}会让你把自己收起来。`,
+        "表达": `你需要被听见，但不是被随便评价；${noise}会让你的声音开始失真。`,
+        "秩序": `你不是扫兴，你是在保护能量不被反复浪费；${noise}会让你特别难受。`,
+        "精进": `你相信慢慢变强，但${noise}会让认真这件事显得像白费力气。`,
+        "自由": `你可以负责，但需要保留选择权；${noise}会让你马上想逃离。`,
+        "照护": `你能让人和关系变好，但${noise}会让你的温柔变成透支。`
+      };
+      return `${map[melody] || defaultRoast(melody, noise)} 当前最像的未来版本：${future}。`;
+    }
+
     function renderResult() {
       const r = state.result;
       $("resultIntro").textContent = state.calibration[2];
+      $("resultOneLine").textContent = r.oneLine;
       $("melodyText").textContent = `我的主旋律是 ${r.topMelody[0].key}，副旋律是 ${r.topMelody[1].key}，隐藏旋律是 ${r.topMelody[2].key}。${melodyTemplates[r.topMelody[0].key]}`;
       $("melodyTags").innerHTML = r.topMelody.map((m, i) => `<span class="tag" style="--cyan:${melodyColors[m.key]}">${i + 1}. ${m.key} ${Math.max(0, m.value)}</span>`).join("");
       $("sparkList").innerHTML = r.spark.map(s => `<li>当我能${trimScene(s.text)}。</li>`).join("");
