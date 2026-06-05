@@ -39,6 +39,19 @@
       letter-spacing: 0;
     }
 
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px);
+      background-size: 52px 52px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent 82%);
+      pointer-events: none;
+    }
+
     button, input {
       font: inherit;
     }
@@ -58,9 +71,9 @@
       position: sticky;
       top: 0;
       z-index: 20;
-      display: flex;
+      display: grid;
+      grid-template-columns: auto minmax(120px, 1fr) minmax(160px, 360px);
       align-items: center;
-      justify-content: space-between;
       gap: 16px;
       padding: 14px clamp(16px, 4vw, 48px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -91,8 +104,32 @@
       white-space: nowrap;
     }
 
+    .phase-label {
+      justify-self: center;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 32px;
+      padding: 0 12px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.055);
+      color: #dcd8ce;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .phase-label::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 14px var(--cyan);
+    }
+
     .progress-wrap {
-      width: min(360px, 42vw);
       height: 8px;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.08);
@@ -104,7 +141,8 @@
       width: 0%;
       border-radius: inherit;
       background: linear-gradient(90deg, var(--cyan), var(--lime), var(--orange));
-      transition: width 320ms ease;
+      transition: width 420ms cubic-bezier(.2,.8,.2,1);
+      box-shadow: 0 0 24px rgba(32, 230, 210, 0.28);
     }
 
     .stage {
@@ -187,6 +225,7 @@
     .primary-btn,
     .secondary-btn,
     .icon-btn {
+      position: relative;
       min-height: 46px;
       border-radius: var(--radius);
       color: #081011;
@@ -195,6 +234,17 @@
       font-weight: 850;
       box-shadow: 0 14px 34px rgba(32, 230, 210, 0.18);
       transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+      overflow: hidden;
+    }
+
+    .primary-btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent 18%, rgba(255, 255, 255, 0.36) 42%, transparent 62%);
+      transform: translateX(-120%);
+      transition: transform 520ms ease;
+      pointer-events: none;
     }
 
     .secondary-btn {
@@ -222,9 +272,42 @@
       box-shadow: 0 18px 42px rgba(32, 230, 210, 0.18);
     }
 
+    .primary-btn:hover::after {
+      transform: translateX(120%);
+    }
+
     .microcopy {
       color: var(--muted);
       font-size: 14px;
+    }
+
+    .hero-promises {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 640px;
+      margin-top: 28px;
+    }
+
+    .promise {
+      min-height: 76px;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.055);
+    }
+
+    .promise strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .promise span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
     }
 
     .hero-visual {
@@ -530,7 +613,6 @@
     }
 
     .choice-card:hover,
-    .sample-card:hover,
     .noise-card:hover,
     .future-card:hover,
     .future-card.selected {
@@ -673,6 +755,10 @@
       border-color: rgba(255, 255, 255, 0.28);
     }
 
+    .answer-btn:active {
+      transform: translateY(0) scale(0.99);
+    }
+
     .answer-btn:disabled {
       cursor: wait;
       opacity: 0.62;
@@ -680,11 +766,23 @@
     }
 
     .answer-btn[data-choice="near"] {
-      background: rgba(183, 243, 74, 0.11);
+      background:
+        linear-gradient(135deg, rgba(183, 243, 74, 0.16), rgba(32, 230, 210, 0.08)),
+        rgba(255, 255, 255, 0.08);
+      border-color: rgba(183, 243, 74, 0.22);
+    }
+
+    .answer-btn[data-choice="neutral"] {
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(122, 167, 255, 0.08)),
+        rgba(255, 255, 255, 0.06);
     }
 
     .answer-btn[data-choice="far"] {
-      background: rgba(255, 92, 92, 0.10);
+      background:
+        linear-gradient(135deg, rgba(255, 92, 92, 0.14), rgba(255, 111, 174, 0.08)),
+        rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 92, 92, 0.22);
     }
 
     .noise-duel {
@@ -705,6 +803,19 @@
       font-weight: 850;
     }
 
+    .noise-label {
+      display: block;
+      margin-bottom: 14px;
+      color: var(--red);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .noise-text {
+      display: block;
+    }
+
     .versus {
       display: grid;
       place-items: center;
@@ -715,6 +826,10 @@
 
     .future-card {
       min-height: 168px;
+    }
+
+    .future-card.selected {
+      box-shadow: inset 0 0 0 1px rgba(183, 243, 74, 0.18), 0 18px 44px rgba(32, 230, 210, 0.12);
     }
 
     .future-card p {
@@ -905,6 +1020,11 @@
         linear-gradient(180deg, #10131b, #1e2430);
     }
 
+    .share-card.album h3 {
+      font-size: 28px;
+      line-height: 1.2;
+    }
+
     .share-card.album::after {
       opacity: 0.34;
       width: 138px;
@@ -972,6 +1092,22 @@
       .calibration-options {
         grid-template-columns: 1fr;
       }
+
+      .hero-promises {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        grid-template-columns: auto 1fr;
+      }
+
+      .progress-wrap {
+        grid-column: 1 / -1;
+      }
+
+      .phase-label {
+        justify-self: end;
+      }
     }
 
     @media (max-width: 560px) {
@@ -986,7 +1122,7 @@
       }
 
       .progress-wrap {
-        width: 36vw;
+        width: auto;
       }
 
       .stage {
@@ -995,6 +1131,14 @@
 
       .sample-text {
         font-size: 25px;
+      }
+
+      .sample-card {
+        min-height: 390px;
+      }
+
+      .sample-copy {
+        inset: auto 10px 10px;
       }
 
       .action-row {
@@ -1014,6 +1158,7 @@
         <div class="brand-mark" aria-hidden="true"></div>
         <div class="brand-title">人生调音台</div>
       </div>
+      <div class="phase-label" id="phaseLabel">待机</div>
       <div class="progress-wrap" aria-label="游戏进度">
         <div class="progress" id="progress"></div>
       </div>
@@ -1029,6 +1174,20 @@
             <div class="cta-row">
               <button class="primary-btn" id="startBtn">开始调音</button>
               <span class="microcopy">BPM 小狗会全程陪你听完，不会乱给你贴标签。</span>
+            </div>
+            <div class="hero-promises">
+              <div class="promise">
+                <strong>像小游戏</strong>
+                <span>快速选择、即时亮轨、BPM 小狗吐槽。</span>
+              </div>
+              <div class="promise">
+                <strong>像社交测试</strong>
+                <span>结果可以截图、复制、发给朋友猜。</span>
+              </div>
+              <div class="promise">
+                <strong>像说明书</strong>
+                <span>不贴死标签，只生成当前版本的使用指南。</span>
+              </div>
             </div>
           </div>
           <div class="hero-visual">
@@ -1467,7 +1626,21 @@
       document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
       $(id).classList.add("active");
       $("progress").style.width = `${progress}%`;
+      $("phaseLabel").textContent = phaseName(id);
       window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function phaseName(id) {
+      const map = {
+        "screen-home": "待机",
+        "screen-intro": "校准耳机",
+        "screen-calibrate": "开机校准",
+        "screen-heart": "心动采样",
+        "screen-noise": "底噪消除",
+        "screen-future": "未来试音",
+        "screen-result": "生成说明书"
+      };
+      return map[id] || "调音中";
     }
 
     function ranked(obj) {
@@ -1607,8 +1780,8 @@
     function renderNoise() {
       const pair = state.noiseSet[state.noiseIndex];
       $("noiseIndex").textContent = `${String(state.noiseIndex + 1).padStart(2, "0")} / ${state.noiseSet.length}`;
-      $("noiseA").textContent = pair[0][0];
-      $("noiseB").textContent = pair[1][0];
+      $("noiseA").innerHTML = `<span class="noise-label">更不能忍</span><span class="noise-text">${pair[0][0]}</span>`;
+      $("noiseB").innerHTML = `<span class="noise-label">更不能忍</span><span class="noise-text">${pair[1][0]}</span>`;
       $("noiseBubble").textContent = state.noiseIndex < 4
         ? "讨厌不是坏脾气，有时候是边界在报警。"
         : "你不用喜欢所有环境，真的。";
