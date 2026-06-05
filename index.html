@@ -61,6 +61,11 @@
       cursor: pointer;
     }
 
+    button:focus-visible {
+      outline: 2px solid var(--lime);
+      outline-offset: 3px;
+    }
+
     .app {
       min-height: 100vh;
       display: grid;
@@ -621,6 +626,14 @@
       background: rgba(32, 230, 210, 0.09);
     }
 
+    .choice-card:disabled,
+    .noise-card:disabled,
+    .future-card:disabled {
+      cursor: wait;
+      opacity: 0.66;
+      transform: none;
+    }
+
     .choice-card strong,
     .future-card strong {
       display: block;
@@ -1149,6 +1162,17 @@
         grid-template-columns: 1fr;
       }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 1ms !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1388,6 +1412,25 @@
   <canvas id="shareCanvas" width="1080" height="1440" class="hidden"></canvas>
 
   <script>
+    const GAME_CONFIG = {
+      heartSampleCount: 18,
+      noiseSampleCount: 12,
+      futureChoiceLimit: 3,
+      heartAdvanceDelay: 310,
+      noiseAdvanceDelay: 180,
+      resultBuildDelay: 460,
+      progress: {
+        intro: 5,
+        calibration: 10,
+        heartStart: 22,
+        heartSpan: 28,
+        noiseStart: 52,
+        noiseSpan: 22,
+        future: 76,
+        result: 100
+      }
+    };
+
     const melodyKeys = ["创造", "解释", "探索", "组织", "连接", "表达", "秩序", "精进", "自由", "照护"];
     const melodyColors = {
       "创造": "#20e6d2",
@@ -1604,8 +1647,8 @@
     function resetState() {
       state = {
         calibration: calibration[1],
-        heartSet: sample(heartCards, 18),
-        noiseSet: sample(noisePairs, 12),
+        heartSet: sample(heartCards, GAME_CONFIG.heartSampleCount),
+        noiseSet: sample(noisePairs, GAME_CONFIG.noiseSampleCount),
         heartIndex: 0,
         noiseIndex: 0,
         locked: false,
@@ -1619,7 +1662,20 @@
     }
 
     function sample(arr, count) {
-      return [...arr].sort(() => Math.random() - 0.5).slice(0, count);
+      return shuffle(arr).slice(0, count);
+    }
+
+    function shuffle(arr) {
+      const result = [...arr];
+      for (let i = result.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+      return result;
+    }
+
+    function formatIndex(index, total) {
+      return `${String(index + 1).padStart(2, "0")} / ${total}`;
     }
 
     function showScreen(id, progress) {
@@ -1651,13 +1707,14 @@
       const target = $(targetId);
       if (!target) return;
       const top = ranked(sourceObj).slice(0, type === "melody" ? 8 : 6);
-      const max = Math.max(1, ...top.map(([, v]) => v));
+      const max = Math.max(1, ...top.map(([, v]) => Math.max(0, v)));
       target.innerHTML = top.map(([key, value]) => {
         const color = type === "melody" ? (melodyColors[key] || "#20e6d2") : "#ff5c5c";
+        const width = value > 0 ? Math.max(4, value / max * 100) : 0;
         return `
           <div class="meter">
             <span>${key}</span>
-            <span class="meter-track"><span class="meter-fill" style="width:${Math.max(4, value / max * 100)}%; background:${color}"></span></span>
+            <span class="meter-track"><span class="meter-fill" style="width:${width}%; background:${color}"></span></span>
             <span>${value}</span>
           </div>
         `;
@@ -1666,10 +1723,10 @@
 
     function init() {
       $("startBtn").addEventListener("click", () => {
-        showScreen("screen-intro", 5);
+        showScreen("screen-intro", GAME_CONFIG.progress.intro);
         setTimeout(() => {
           renderCalibration();
-          showScreen("screen-calibrate", 10);
+          showScreen("screen-calibrate", GAME_CONFIG.progress.calibration);
         }, 1180);
       });
 
@@ -1698,7 +1755,7 @@
         btn.addEventListener("click", () => {
           state.calibration = calibration.find(item => item[0] === btn.dataset.id);
           renderHeart();
-          showScreen("screen-heart", 22);
+          showScreen("screen-heart", GAME_CONFIG.progress.heartStart);
         });
       });
       renderMeters("meters", state.melody);
@@ -1708,7 +1765,7 @@
       const card = state.heartSet[state.heartIndex];
       const stageIndex = Math.min(2, Math.floor(state.heartIndex / 6));
       $("heartStage").textContent = heartStageCopy[stageIndex];
-      $("heartIndex").textContent = `${String(state.heartIndex + 1).padStart(2, "0")} / ${state.heartSet.length}`;
+      $("heartIndex").textContent = formatIndex(state.heartIndex, state.heartSet.length);
       $("heartText").textContent = card[0];
       $("heartComic").src = comicForDims(card[1]);
       $("heartComic").alt = `${card[1].join("、")}漫画场景`;
@@ -1717,7 +1774,7 @@
         ? "这不是兴趣测试，这是找你的电量入口。"
         : "有些事情没错，只是不通你的电。");
       renderMeters("heartMeters", state.melody);
-      showScreen("screen-heart", 22 + state.heartIndex / state.heartSet.length * 28);
+      showScreen("screen-heart", GAME_CONFIG.progress.heartStart + state.heartIndex / state.heartSet.length * GAME_CONFIG.progress.heartSpan);
     }
 
     function answerHeart(choice) {
@@ -1743,11 +1800,11 @@
         setAnswerDisabled(false);
         if (state.heartIndex >= state.heartSet.length) {
           renderNoise();
-          showScreen("screen-noise", 52);
+          showScreen("screen-noise", GAME_CONFIG.progress.noiseStart);
         } else {
           renderHeart();
         }
-      }, 310);
+      }, GAME_CONFIG.heartAdvanceDelay);
     }
 
     function setAnswerDisabled(disabled) {
@@ -1779,31 +1836,43 @@
 
     function renderNoise() {
       const pair = state.noiseSet[state.noiseIndex];
-      $("noiseIndex").textContent = `${String(state.noiseIndex + 1).padStart(2, "0")} / ${state.noiseSet.length}`;
+      $("noiseIndex").textContent = formatIndex(state.noiseIndex, state.noiseSet.length);
       $("noiseA").innerHTML = `<span class="noise-label">更不能忍</span><span class="noise-text">${pair[0][0]}</span>`;
       $("noiseB").innerHTML = `<span class="noise-label">更不能忍</span><span class="noise-text">${pair[1][0]}</span>`;
+      setNoiseDisabled(false);
       $("noiseBubble").textContent = state.noiseIndex < 4
         ? "讨厌不是坏脾气，有时候是边界在报警。"
         : "你不用喜欢所有环境，真的。";
       renderMeters("noiseMeters", state.noise, "noise");
-      showScreen("screen-noise", 52 + state.noiseIndex / state.noiseSet.length * 22);
+      showScreen("screen-noise", GAME_CONFIG.progress.noiseStart + state.noiseIndex / state.noiseSet.length * GAME_CONFIG.progress.noiseSpan);
     }
 
     function answerNoise(which) {
+      if (state.locked) return;
+      state.locked = true;
+      setNoiseDisabled(true);
       const selected = state.noiseSet[state.noiseIndex][which];
       state.noise[selected[1]] += 2;
       state.noiseIndex += 1;
-      if (state.noiseIndex >= state.noiseSet.length) {
-        renderFuture();
-        showScreen("screen-future", 76);
-      } else {
-        renderNoise();
-      }
+      setTimeout(() => {
+        state.locked = false;
+        if (state.noiseIndex >= state.noiseSet.length) {
+          renderFuture();
+          showScreen("screen-future", GAME_CONFIG.progress.future);
+        } else {
+          renderNoise();
+        }
+      }, GAME_CONFIG.noiseAdvanceDelay);
+    }
+
+    function setNoiseDisabled(disabled) {
+      $("noiseA").disabled = disabled;
+      $("noiseB").disabled = disabled;
     }
 
     function renderFuture() {
       $("futureGrid").innerHTML = futures.map(item => `
-        <button class="future-card ${state.futureChoices.includes(item.id) ? "selected" : ""}" data-id="${item.id}">
+        <button class="future-card ${state.futureChoices.includes(item.id) ? "selected" : ""}" data-id="${item.id}" aria-pressed="${state.futureChoices.includes(item.id)}" ${state.locked ? "disabled" : ""}>
           <strong>${item.name}</strong>
           <p>你会得到：${item.gain}</p>
           <p class="cost">你要承担：${item.cost}</p>
@@ -1817,20 +1886,24 @@
     }
 
     function toggleFuture(id) {
+      if (state.locked) return;
       if (state.futureChoices.includes(id)) {
         state.futureChoices = state.futureChoices.filter(x => x !== id);
-      } else if (state.futureChoices.length < 3) {
+      } else if (state.futureChoices.length < GAME_CONFIG.futureChoiceLimit) {
         state.futureChoices.push(id);
       }
-      if (state.futureChoices.length === 3) {
+      if (state.futureChoices.length === GAME_CONFIG.futureChoiceLimit) {
+        state.locked = true;
+        renderFuture();
         $("futureBubble").textContent = "收到。BPM 小狗正在把光环和代价一起混进去。";
         setTimeout(() => {
           buildResult();
           renderResult();
-          showScreen("screen-result", 100);
-        }, 460);
+          showScreen("screen-result", GAME_CONFIG.progress.result);
+          state.locked = false;
+        }, GAME_CONFIG.resultBuildDelay);
       } else {
-        $("futureBubble").textContent = `请选择 3 个。现在选了 ${state.futureChoices.length} 个。`;
+        $("futureBubble").textContent = `请选择 ${GAME_CONFIG.futureChoiceLimit} 个。现在选了 ${state.futureChoices.length} 个。`;
         renderFuture();
       }
     }
@@ -1851,9 +1924,7 @@
         return { ...f, score: orderScore + match };
       }).sort((a, b) => b.score - a.score);
       const future = futureScores[0] || futures[0];
-      const spark = state.nearScenes.slice(-18)
-        .sort((a, b) => scoreScene(b, topMelodyKeys) - scoreScene(a, topMelodyKeys))
-        .slice(0, 3);
+      const spark = selectSparkScenes(topMelodyKeys);
       const advice = [
         manualAdvice[topMelody[0].key],
         noiseAdvice(topNoise[0].key),
@@ -1863,6 +1934,18 @@
       const roast = roastRules[`${topMelody[0].key}|${topNoise[0].key}`] || defaultRoast(topMelody[0].key, topNoise[0].key);
       const oneLine = resultOneLine(topMelody[0].key, topNoise[0].key, future.name);
       state.result = { topMelody, topNoise, future, spark, advice, mbti, roast, oneLine };
+    }
+
+    function selectSparkScenes(topMelodyKeys) {
+      const nearMatches = state.nearScenes.slice(-GAME_CONFIG.heartSampleCount)
+        .sort((a, b) => scoreScene(b, topMelodyKeys) - scoreScene(a, topMelodyKeys))
+        .slice(0, 3);
+      if (nearMatches.length) return nearMatches;
+
+      return state.heartSet
+        .map(([text, dims]) => ({ text, dims, fallback: true }))
+        .sort((a, b) => scoreScene(b, topMelodyKeys) - scoreScene(a, topMelodyKeys))
+        .slice(0, 3);
     }
 
     function scoreScene(scene, topKeys) {
@@ -1890,7 +1973,10 @@
       if (melodies.some(m => ["连接", "照护"].includes(m))) hints.push("你会在关系回应里显出 F 式敏感");
       if (melodies.some(m => ["解释", "秩序"].includes(m))) hints.push("你也会重视 T 式的标准和逻辑反馈");
       if (noises.includes("打断") || melodies.includes("自由")) hints.push("你的恢复方式可能更需要 I 式的完整空间");
-      return `这不是 MBTI 类型判断，只是一个参考坐标：${hints.slice(0, 2).join("；")}。人生调音台更关心的是，你在什么场景里会发亮，以及什么环境会让你失真。`;
+      const hintText = hints.length
+        ? hints.slice(0, 2).join("；")
+        : "你这次的音轨比较均衡，暂时不适合硬贴到某一个字母组合上";
+      return `这不是 MBTI 类型判断，只是一个参考坐标：${hintText}。人生调音台更关心的是，你在什么场景里会发亮，以及什么环境会让你失真。`;
     }
 
     function defaultRoast(melody, noise) {
@@ -1919,7 +2005,10 @@
       $("resultOneLine").textContent = r.oneLine;
       $("melodyText").textContent = `我的主旋律是 ${r.topMelody[0].key}，副旋律是 ${r.topMelody[1].key}，隐藏旋律是 ${r.topMelody[2].key}。${melodyTemplates[r.topMelody[0].key]}`;
       $("melodyTags").innerHTML = r.topMelody.map((m, i) => `<span class="tag" style="--cyan:${melodyColors[m.key]}">${i + 1}. ${m.key} ${Math.max(0, m.value)}</span>`).join("");
-      $("sparkList").innerHTML = r.spark.map(s => `<li>当我能${trimScene(s.text)}。</li>`).join("");
+      $("sparkList").innerHTML = r.spark.map(s => {
+        const prefix = s.fallback ? "相对没那么排斥：" : "当我能";
+        return `<li>${prefix}${trimScene(s.text)}。</li>`;
+      }).join("");
       $("noiseList").innerHTML = r.topNoise.map(n => `<li><strong>${n.key}</strong>：${noiseTemplates[n.key]}</li>`).join("");
       $("lowBatteryText").textContent = lowBattery[r.topNoise[0].key];
       $("manualList").innerHTML = r.advice.map(item => `<li>${item}</li>`).join("");
@@ -1941,75 +2030,126 @@
     }
 
     async function downloadShareCard() {
+      if (!state.result) return;
+      const button = $("downloadBtn");
+      const originalLabel = button.textContent;
+      button.disabled = true;
+      button.textContent = "正在生成";
       const canvas = $("shareCanvas");
       const ctx = canvas.getContext("2d");
       const r = state.result;
-      const dog = new Image();
-      dog.src = "assets/bpm-dog-avatar.png";
-      await dog.decode();
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const gradient = ctx.createLinearGradient(0, 0, 1080, 1440);
-      gradient.addColorStop(0, "#10131b");
-      gradient.addColorStop(0.54, "#17212c");
-      gradient.addColorStop(1, "#0f1016");
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, 1080, 1440);
+      const dog = await loadImage("assets/bpm-dog-avatar.png");
 
-      ctx.globalAlpha = 0.95;
-      drawGlow(ctx, 170, 170, 260, "#20e6d2");
-      drawGlow(ctx, 880, 260, 240, "#ff6fae");
-      drawGlow(ctx, 620, 1120, 280, "#b7f34a");
-      ctx.globalAlpha = 1;
+      try {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const gradient = ctx.createLinearGradient(0, 0, 1080, 1440);
+        gradient.addColorStop(0, "#10131b");
+        gradient.addColorStop(0.54, "#17212c");
+        gradient.addColorStop(1, "#0f1016");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 1080, 1440);
 
-      roundImage(ctx, dog, 660, 120, 260, 260, 28);
-      ctx.fillStyle = "#f7f2e8";
-      ctx.font = "900 80px PingFang SC, Microsoft YaHei, sans-serif";
-      wrapCanvasText(ctx, "我的人生主旋律", 90, 170, 540, 88);
-      ctx.font = "700 34px PingFang SC, Microsoft YaHei, sans-serif";
-      ctx.fillStyle = "#b7f34a";
-      ctx.fillText("人生调音台 · v0.1", 92, 350);
+        ctx.globalAlpha = 0.95;
+        drawGlow(ctx, 170, 170, 260, "#20e6d2");
+        drawGlow(ctx, 880, 260, 240, "#ff6fae");
+        drawGlow(ctx, 620, 1120, 280, "#b7f34a");
+        ctx.globalAlpha = 1;
 
-      const labels = r.topMelody.map(m => m.key);
-      labels.forEach((label, i) => {
-        const y = 500 + i * 120;
-        const w = 760 - i * 120;
-        ctx.fillStyle = "rgba(255,255,255,0.10)";
-        roundRect(ctx, 92, y, 840, 38, 20, true);
-        const bar = ctx.createLinearGradient(92, y, 92 + w, y);
-        bar.addColorStop(0, melodyColors[label]);
-        bar.addColorStop(1, "#f7f2e8");
-        ctx.fillStyle = bar;
-        roundRect(ctx, 92, y, w, 38, 20, true);
+        if (dog) roundImage(ctx, dog, 660, 120, 260, 260, 28);
         ctx.fillStyle = "#f7f2e8";
-        ctx.font = "800 42px PingFang SC, Microsoft YaHei, sans-serif";
-        ctx.fillText(label, 92, y - 24);
-      });
+        ctx.font = "900 80px PingFang SC, Microsoft YaHei, sans-serif";
+        wrapCanvasText(ctx, "我的人生主旋律", 90, 170, 540, 88);
+        ctx.font = "700 34px PingFang SC, Microsoft YaHei, sans-serif";
+        ctx.fillStyle = "#b7f34a";
+        ctx.fillText("人生调音台 · v0.1", 92, 350);
 
-      ctx.fillStyle = "#f7f2e8";
-      ctx.font = "900 48px PingFang SC, Microsoft YaHei, sans-serif";
-      ctx.fillText("BPM 小狗听完后说：", 92, 945);
-      ctx.font = "700 42px PingFang SC, Microsoft YaHei, sans-serif";
-      wrapCanvasText(ctx, `“${r.roast}”`, 92, 1018, 850, 58);
+        const labels = r.topMelody.map(m => m.key);
+        labels.forEach((label, i) => {
+          const y = 500 + i * 120;
+          const w = 760 - i * 120;
+          ctx.fillStyle = "rgba(255,255,255,0.10)";
+          roundRect(ctx, 92, y, 840, 38, 20, true);
+          const bar = ctx.createLinearGradient(92, y, 92 + w, y);
+          bar.addColorStop(0, melodyColors[label]);
+          bar.addColorStop(1, "#f7f2e8");
+          ctx.fillStyle = bar;
+          roundRect(ctx, 92, y, w, 38, 20, true);
+          ctx.fillStyle = "#f7f2e8";
+          ctx.font = "800 42px PingFang SC, Microsoft YaHei, sans-serif";
+          ctx.fillText(label, 92, y - 24);
+        });
 
-      ctx.fillStyle = "rgba(255,255,255,0.72)";
-      ctx.font = "600 30px PingFang SC, Microsoft YaHei, sans-serif";
-      wrapCanvasText(ctx, `底噪：${r.topNoise.map(n => n.key).join(" / ")}｜当前版本：${r.future.name}`, 92, 1270, 880, 44);
+        ctx.fillStyle = "#f7f2e8";
+        ctx.font = "900 48px PingFang SC, Microsoft YaHei, sans-serif";
+        ctx.fillText("BPM 小狗听完后说：", 92, 945);
+        ctx.font = "700 42px PingFang SC, Microsoft YaHei, sans-serif";
+        wrapCanvasText(ctx, `“${r.roast}”`, 92, 1018, 850, 58);
 
-      const link = document.createElement("a");
-      link.download = "人生调音台-我的人生主旋律.png";
-      link.href = canvas.toDataURL("image/png");
-      link.click();
+        ctx.fillStyle = "rgba(255,255,255,0.72)";
+        ctx.font = "600 30px PingFang SC, Microsoft YaHei, sans-serif";
+        wrapCanvasText(ctx, `底噪：${r.topNoise.map(n => n.key).join(" / ")}｜当前版本：${r.future.name}`, 92, 1270, 880, 44);
+
+        const link = document.createElement("a");
+        link.download = "人生调音台-我的人生主旋律.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+        flashButtonLabel("downloadBtn", "已下载", originalLabel);
+      } catch (error) {
+        console.warn("Share card download failed:", error);
+        flashButtonLabel("downloadBtn", "下载失败", originalLabel);
+      } finally {
+        button.disabled = false;
+      }
     }
 
     async function copyShareText() {
+      if (!state.result) return;
       const r = state.result;
-      const text = `我刚玩了《人生调音台》，我的人生主旋律是：${r.topMelody.map(m => m.key).join(" / ")}。\\n底噪是：${r.topNoise.map(n => n.key).join(" / ")}。\\nBPM 小狗听完后说：“${r.roast}”\\n\\n这不是 MBTI 判决书，是一份当前版本的个人使用说明。`;
+      const text = `我刚玩了《人生调音台》，我的人生主旋律是：${r.topMelody.map(m => m.key).join(" / ")}。\\n底噪是：${r.topNoise.map(n => n.key).join(" / ")}。\\nBPM 小狗听完后说：“${r.roast}”\\n\\n这不是 MBTI 判决书，是一份当前版本的个人使用说明。\\n来玩：${location.href}`;
       try {
-        await navigator.clipboard.writeText(text);
-        $("shareRoast").textContent = "“已复制。现在你可以发朋友圈，让朋友来猜自己是哪条音轨。”";
+        await writeClipboardText(text);
+        flashButtonLabel("copyBtn", "已复制");
       } catch (error) {
-        $("shareRoast").textContent = `“复制失败也没关系，手动摘这一句：${r.roast}”`;
+        console.warn("Clipboard copy failed:", error);
+        flashButtonLabel("copyBtn", "复制失败");
       }
+    }
+
+    function loadImage(src) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = src;
+      });
+    }
+
+    async function writeClipboardText(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.setAttribute("readonly", "");
+      area.style.position = "fixed";
+      area.style.left = "-9999px";
+      document.body.appendChild(area);
+      area.select();
+      const ok = document.execCommand("copy");
+      area.remove();
+      if (!ok) throw new Error("Legacy copy command failed");
+    }
+
+    function flashButtonLabel(id, label, fallbackLabel) {
+      const button = $(id);
+      const original = fallbackLabel || button.dataset.originalLabel || button.textContent;
+      button.dataset.originalLabel = original;
+      button.textContent = label;
+      clearTimeout(button._labelTimer);
+      button._labelTimer = setTimeout(() => {
+        button.textContent = original;
+      }, 1400);
     }
 
     function drawGlow(ctx, x, y, radius, color) {
