@@ -1094,6 +1094,14 @@
       min-height: 168px;
     }
 
+    .future-alias {
+      display: block;
+      margin-top: 4px;
+      color: var(--lime);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
     .future-card.selected {
       box-shadow: inset 0 0 0 1px rgba(183, 243, 74, 0.18), 0 18px 44px rgba(32, 230, 210, 0.12);
     }
@@ -1827,42 +1835,46 @@
     ];
 
     const heartCards = [
-      ["把一个复杂问题讲到别人终于懂了", ["解释", "连接"]],
-      ["一个人安静做东西，做到忘记时间", ["创造", "精进"]],
-      ["在混乱现场快速组织大家行动", ["组织", "秩序"]],
-      ["研究一个冷门问题，越挖越兴奋", ["探索", "解释"]],
-      ["站出来表达观点，现场有人被打动", ["表达", "连接"]],
-      ["设计一个小工具，让别人用起来更省力", ["创造", "组织"]],
-      ["把一堆乱文件、乱流程、乱想法整理清楚", ["秩序", "组织"]],
-      ["陪一个人慢慢说出真正想说的话", ["连接", "照护"]],
-      ["去一个陌生地方，重新观察生活", ["探索", "自由"]],
-      ["长期训练一项技能，直到身体记住它", ["精进", "秩序"]],
-      ["做一场小型分享，让别人重新理解一件事", ["表达", "解释"]],
-      ["给一个团队搭好节奏，让大家都知道下一步", ["组织", "照护"]],
-      ["把脑子里的想法做成一张图、一篇文或一个作品", ["创造", "解释"]],
-      ["在没有标准答案的问题里自己摸路", ["探索", "自由"]],
-      ["让一个紧张的人放松下来", ["照护", "连接"]],
-      ["被很多人看见、讨论、转发你的表达", ["表达", "创造"]],
-      ["优化一个流程，让它以后少出错", ["秩序", "组织"]],
-      ["一整天没人管你，你自己安排节奏并完成作品", ["自由", "创造"]],
-      ["发现一个别人忽略的细节，并证明它很关键", ["探索", "解释"]],
-      ["把大家吵成一团的问题拆成几个可解决的小问题", ["组织", "解释"]],
-      ["把某个普通人的故事讲得让人记住", ["表达", "照护"]],
-      ["维护一个稳定的小空间，让人来了就安心", ["照护", "秩序"]],
-      ["为一个作品反复修改，直到它真的变好", ["精进", "创造"]],
-      ["找到一种更自由、更适合自己的生活方式", ["自由", "探索"]],
-      ["帮朋友分析困局，但不替他做决定", ["解释", "照护"]],
-      ["组织一次活动，让不同的人自然连接起来", ["连接", "组织"]],
-      ["学一个难技能，虽然慢，但每天都能进步一点", ["精进", "探索"]],
-      ["用一句话讲中别人心里说不出的感受", ["表达", "连接"]],
-      ["把旧规则重新设计得更公平、更顺手", ["秩序", "创造"]],
-      ["在没人催的情况下，自己给自己设目标", ["自由", "精进"]],
-      ["进入一个新领域，从零搭起理解框架", ["探索", "解释"]],
-      ["让一个项目从想法变成能运行的东西", ["创造", "组织"]],
-      ["做一件不显眼但能长期帮到人的事", ["照护", "秩序"]],
-      ["在公开场合临场回应一个尖锐问题", ["表达", "探索"]],
-      ["把别人的混乱需求翻译成清楚方案", ["解释", "组织"]],
-      ["留出一段只属于自己的时间，慢慢恢复", ["自由", "照护"]]
+      ["别人讲了十分钟没讲明白，你用一句人话把全场救回来", ["解释", "连接"]],
+      ["没人催你、没人开会、没人问“在吗”，你突然做出了一个很像样的东西", ["自由", "创造"]],
+      ["群聊快冷场了，你丢出一句话，大家突然开始接梗", ["表达", "连接"]],
+      ["朋友发来一大段崩溃小作文，你三句话帮 TA 找到真正卡住的点", ["解释", "照护"]],
+      ["你本来只想查一个小问题，结果一路挖到凌晨两点，还觉得再给我五分钟", ["探索", "解释"]],
+      ["桌面、文件夹、脑子都乱成一团，你整理完以后世界像重新开机", ["秩序", "组织"]],
+      ["一个想法在脑子里晃了很久，你终于把它做成了一张图、一段文或一个小作品", ["创造", "表达"]],
+      ["聚会里大家都在客套，你问了一个真问题，空气突然变得有人味", ["连接", "表达"]],
+      ["大家吵成一锅粥，你悄悄画出三步路线，混乱开始排队", ["组织", "秩序"]],
+      ["你改了朋友的一句朋友圈文案，TA 说：对，就是这个感觉", ["表达", "照护"]],
+      ["你把一个麻烦流程做成清单，后面的人都少踩了坑", ["秩序", "照护"]],
+      ["你在陌生城市随便拐进一条小路，突然觉得生活还可以换一种玩法", ["探索", "自由"]],
+      ["一个技能练到第十七遍时，身体突然懂了，心里小声放烟花", ["精进", "秩序"]],
+      ["有人只说了半句话，你听出了他真正不好意思说出口的部分", ["连接", "照护"]],
+      ["别人觉得这事没救了，你开始拆变量、找入口、做第一个能动的小版本", ["创造", "组织"]],
+      ["你站出来说了一句不太讨好的真话，结果有人私聊你：谢谢你说出来", ["表达", "精进"]],
+      ["你给一群人安排好节奏、分工和下一步，大家终于不用互相猜", ["组织", "连接"]],
+      ["你发现一个所有人都忽略的小细节，并证明它就是关键按钮", ["探索", "精进"]],
+      ["你把一堆碎信息拼成一张地图，别人第一次知道自己站在哪里", ["解释", "秩序"]],
+      ["你为一个作品改到第八版，终于看到它从“差点意思”变成“就是它”", ["精进", "创造"]],
+      ["你让一个紧绷的人慢慢松下来，像帮他把音量从刺耳调回舒服", ["照护", "连接"]],
+      ["你给旧规则换了一个更公平、更顺手的设计，大家嘴上不说但用得很诚实", ["秩序", "创造"]],
+      ["你没有等标准答案出现，而是自己试了一条路，还真的试出了一点光", ["探索", "自由"]],
+      ["你把一个普通人的故事讲出来，旁边的人突然安静认真听", ["表达", "照护"]],
+      ["你维护了一个稳定的小空间，别人来了不用表演，可以先喘口气", ["照护", "秩序"]],
+      ["你组织了一次小活动，不是热闹，而是让几个原本不认识的人真的接上了", ["连接", "组织"]],
+      ["你进入一个新领域，从满屏黑话里搭出第一套自己的理解框架", ["探索", "解释"]],
+      ["你在没人看见的地方做了一个小改动，后来所有人都默默受益", ["照护", "秩序"]],
+      ["你在公开场合被问到尖锐问题，心跳加速但脑子突然特别清楚", ["表达", "探索"]],
+      ["你把别人一句“反正很乱”翻译成目标、限制、风险和下一步", ["解释", "组织"]],
+      ["你给自己留出一段不解释、不汇报、不迎合的时间，电量一点点回来了", ["自由", "照护"]],
+      ["你把一个笨重工具改得顺手一点，别人用完说：怎么早没有这个", ["创造", "组织"]],
+      ["你把一个难概念讲成生活里的比喻，对方眼睛突然亮了一下", ["解释", "创造"]],
+      ["你在一堆选项里没有随大流，而是选了更像自己的那条路", ["自由", "精进"]],
+      ["你陪朋友复盘失败，但没有急着安慰，而是一起找到下一次怎么赢", ["照护", "解释"]],
+      ["你把混乱现场的情绪先接住，再把事情一件件放回轨道", ["组织", "照护"]],
+      ["你做了一个没人要求的小作品，只是因为想到它会让你自己偷笑", ["创造", "自由"]],
+      ["你听到一个冷门观点，别人划走了，你却觉得这里面可能藏着新地图", ["探索", "创造"]],
+      ["你用很短的一段话说中大家不敢承认的感受，弹幕突然全是“对”", ["表达", "连接"]],
+      ["你把一个长期拖延的技能拆成每天能完成的小格子，终于开始升级", ["精进", "组织"]]
     ];
 
     const comicByDimension = {
@@ -1897,35 +1909,41 @@
     };
 
     const noisePairs = [
-      [["别人临时改规则", "失控"], ["别人不给反馈", "隐形"]],
-      [["每天重复无意义工作", "空转"], ["每天被迫高强度社交", "低质社交"]],
-      [["被催着马上回复", "打断"], ["长期没有清晰目标", "模糊"]],
-      [["有人替你做决定", "压迫"], ["有人批评你但不说标准", "否定"]],
-      [["事情很稳定但没有成长", "空转"], ["事情很刺激但完全失控", "失控"]],
-      [["你做了很多但没人看见", "隐形"], ["你被看见但不能做自己", "压迫"]],
-      [["一天被切成很多碎片", "打断"], ["一天都在无效寒暄", "低质社交"]],
-      [["目标一直变", "失控"], ["目标从来没说清", "模糊"]],
-      [["只有一句“你不行”", "否定"], ["只有一句“你自己看着办”", "模糊"]],
-      [["所有人都在催速度", "打断"], ["没有人在乎质量", "空转"]],
-      [["被要求一直合群", "低质社交"], ["被要求完全服从", "压迫"]],
-      [["你的贡献被当作理所当然", "隐形"], ["你的判断一直被打断", "打断"]],
-      [["每件事都要申请批准", "压迫"], ["每件事都没有负责人", "失控"]],
-      [["反馈很尖锐但没方法", "否定"], ["任务很多但没意义", "空转"]],
-      [["没有时间独处", "打断"], ["没有人真正回应你", "隐形"]],
-      [["每天都要表演情绪稳定", "低质社交"], ["每天都要猜别人标准", "模糊"]],
-      [["你认真做的事被敷衍对待", "隐形"], ["你在乎的边界被反复越过", "压迫"]],
-      [["不停试错但没人复盘", "失控"], ["不停执行但没人解释为什么", "空转"]]
+      [["会议里有人说“我们先对齐一下”，但没人知道要齐到哪里", "模糊"], ["你刚进入状态，手机弹出一句“在吗”", "打断"]],
+      [["对方说“你自由发挥”，做完以后说“不是这个感觉”", "否定"], ["群里 99+ 条消息，真正有用的信息藏在第 73 条", "打断"]],
+      [["明明是朋友局，突然变成资源局、人脉局、表现局", "低质社交"], ["你认真提建议，对方只回了一个“收到”", "隐形"]],
+      [["需求改了三版，但每一版都说“就小改一下”", "失控"], ["所有人都在催速度，但没人愿意说清楚方向", "模糊"]],
+      [["你做完了 90%，有人突然说：我们从头想一下", "失控"], ["你被安排进一个不想去的热闹场合，还要显得很开心", "低质社交"]],
+      [["你负责善后，但功劳在总结页里自动消失", "隐形"], ["别人替你决定“这对你很好”，完全没问你想不想要", "压迫"]],
+      [["一个任务没有意义、没有反馈、没有尽头，但每天都要打卡", "空转"], ["每件事都要审批，连改个标题都像申请登月", "压迫"]],
+      [["你刚想深想一下，旁边的人已经问第三遍“好了没”", "打断"], ["批评很多，标准没有，建议约等于“你自己悟”", "否定"]],
+      [["大家都说随便聊聊，最后变成谁更成功的隐形比赛", "低质社交"], ["目标每天变，复盘从不来，锅倒是很准时", "失控"]],
+      [["你花了很多心思做细节，对方说“差不多就行”", "隐形"], ["事情稳定到像电梯背景音乐，但你完全没有成长感", "空转"]],
+      [["你被要求一直在线，好像离开十分钟世界就会倒塌", "打断"], ["一句“你不行”扔过来，理由、方法、上下文全缺席", "否定"]],
+      [["你在乎的边界被反复越过，对方还说“别这么敏感”", "压迫"], ["每天都在寒暄、点赞、客套，但没有一句真正接上", "低质社交"]],
+      [["所有人都默认你会接住，但没人问你还有没有电", "隐形"], ["任务很多，但像在原地跑步机上冲刺", "空转"]],
+      [["规则写得像雾，出了事却要求你精准负责", "模糊"], ["不停试错但没人复盘，像把人生交给随机播放", "失控"]],
+      [["你刚把节奏调顺，又被临时拉去救另一个火", "打断"], ["对方只给情绪不给信息，还要你立刻理解", "模糊"]],
+      [["你要一直合群、一直积极、一直别扫兴", "低质社交"], ["你提出不同意见，对方把它听成“不服从”", "压迫"]],
+      [["你认真做的事被当成理所当然，像自动续费的付出", "隐形"], ["你学不到东西，却要假装这叫历练", "空转"]],
+      [["每次快完成时，都有人说：我突然有个新想法", "失控"], ["反馈像弹幕一样密，但真正有用的建议一条没有", "否定"]],
+      [["你需要一段完整时间，别人却把你切成十八个小窗口", "打断"], ["你明明不想去，却被一句“大家都去”轻轻绑架", "压迫"]],
+      [["你负责把混乱变清楚，最后别人说“本来就挺简单的”", "隐形"], ["流程复杂到像密室逃脱，但奖品只是继续工作", "空转"]],
+      [["标准藏在领导脑子里，你只能靠猜口味通关", "模糊"], ["本来只想吃顿饭，结果被迫营业两小时", "低质社交"]],
+      [["你还没表达完，对方已经开始替你总结你想说什么", "打断"], ["你试着解释，对方只想证明自己早就对", "否定"]],
+      [["你想慢慢做好，环境却只奖励谁嗓门更大", "压迫"], ["大家都在忙，但没人知道忙完会变成什么", "空转"]],
+      [["你越负责，越容易被默认可以再多负责一点", "隐形"], ["每个人都能提需求，但没有人愿意做取舍", "失控"]]
     ];
 
     const futures = [
-      { id: "creator", name: "深度创作者", gain: "做出真正属于自己的作品。", cost: "长期无人喝彩、反复打磨和不确定性。", dims: ["创造", "精进", "自由"] },
-      { id: "explainer", name: "清晰解释者", gain: "把复杂世界讲给更多人听。", cost: "不断消化混乱、误解和信息噪音。", dims: ["解释", "探索", "表达"] },
-      { id: "organizer", name: "可靠组织者", gain: "把混乱的人和事带向秩序。", cost: "经常处理别人不愿碰的复杂问题。", dims: ["组织", "秩序", "照护"] },
-      { id: "wanderer", name: "自由探索者", gain: "不断接触新地方、新问题和新可能。", cost: "稳定感下降，很多路要自己试。", dims: ["探索", "自由", "创造"] },
-      { id: "speaker", name: "公共表达者", gain: "想法被更多人听见，影响更多人。", cost: "被误解、被评价、被放大。", dims: ["表达", "解释", "连接"] },
-      { id: "builder", name: "温柔建设者", gain: "让身边的人、关系和环境变好。", cost: "学习不把所有人的情绪都背在身上。", dims: ["照护", "连接", "组织"] },
-      { id: "system", name: "秩序设计师", gain: "设计系统、流程和规则，让事情更可靠。", cost: "别人可能只在系统坏掉时才想起你。", dims: ["秩序", "组织", "解释"] },
-      { id: "master", name: "技能修行者", gain: "在一件事上真正变强，获得扎实的底气。", cost: "忍受长期重复、慢反馈和孤独训练。", dims: ["精进", "创造", "秩序"] }
+      { id: "creator", name: "深度创作者", alias: "灵感做饭人", gain: "把脑子里的火花端成真正能被看见的作品。", cost: "要忍受冷启动、反复打磨和没人立刻鼓掌。", dims: ["创造", "精进", "自由"] },
+      { id: "explainer", name: "清晰解释者", alias: "人间翻译器", gain: "把复杂世界翻译成普通人终于能懂的一句话。", cost: "要不断消化混乱、误解和信息噪音。", dims: ["解释", "探索", "表达"] },
+      { id: "organizer", name: "可靠组织者", alias: "混乱降噪师", gain: "把一团乱的人和事调回能行动的节拍。", cost: "经常处理别人不愿碰的复杂问题。", dims: ["组织", "秩序", "照护"] },
+      { id: "wanderer", name: "自由探索者", alias: "城市支线玩家", gain: "不断发现新地方、新问题和新可能。", cost: "稳定感会下降，很多路要自己先试。", dims: ["探索", "自由", "创造"] },
+      { id: "speaker", name: "公共表达者", alias: "不想静音的发声者", gain: "让你的想法被更多人听见，甚至影响别人。", cost: "要承受误解、评价和被放大的感觉。", dims: ["表达", "解释", "连接"] },
+      { id: "builder", name: "温柔建设者", alias: "温柔基建人", gain: "让人、关系和环境慢慢变好。", cost: "要学习别把所有人的情绪都背在身上。", dims: ["照护", "连接", "组织"] },
+      { id: "system", name: "秩序设计师", alias: "世界省电工程师", gain: "设计系统、流程和规则，让大家少被反复消耗。", cost: "别人可能只在系统坏掉时才想起你。", dims: ["秩序", "组织", "解释"] },
+      { id: "master", name: "技能修行者", alias: "慢热升级型玩家", gain: "在一件事上真正变强，获得扎实的底气。", cost: "要忍受长期重复、慢反馈和孤独训练。", dims: ["精进", "创造", "秩序"] }
     ];
 
     const melodyTemplates = {
@@ -2648,7 +2666,8 @@
     function renderFuture() {
       $("futureGrid").innerHTML = futures.map(item => `
         <button class="future-card ${state.futureChoices.includes(item.id) ? "selected" : ""}" data-id="${item.id}" aria-pressed="${state.futureChoices.includes(item.id)}" ${state.locked ? "disabled" : ""}>
-          <strong>${item.name}</strong>
+          <strong>${item.alias}</strong>
+          <span class="future-alias">${item.name}</span>
           <p>你会得到：${item.gain}</p>
           <p class="cost">你要承担：${item.cost}</p>
         </button>
@@ -2687,7 +2706,7 @@
     }
 
     function renderFutureSelected() {
-      const selected = state.futureChoices.map(id => futures.find(f => f.id === id).name);
+      const selected = state.futureChoices.map(id => futureDisplayName(futures.find(f => f.id === id)));
       $("futureSelected").innerHTML = selected.map(name => `<span class="tag">${name}</span>`).join("");
     }
 
@@ -2710,10 +2729,17 @@
       ];
       const mbti = mbtiHint(topMelodyKeys, topNoise.map(n => n.key));
       const roast = roastRules[`${topMelody[0].key}|${topNoise[0].key}`] || defaultRoast(topMelody[0].key, topNoise[0].key);
-      const oneLine = resultOneLine(topMelody[0].key, topNoise[0].key, future.name);
+      const personaAlias = future.alias || future.name;
+      const oneLine = resultOneLine(topMelody[0].key, topNoise[0].key, personaAlias);
       const albumTitle = albumName(topMelody[0].key, topMelody[1].key, topNoise[0].key);
       const hiddenTrack = hiddenTrackLine(topMelody[0].key, topNoise[0].key);
-      state.result = { topMelody, topNoise, future, spark, advice, mbti, roast, oneLine, albumTitle, hiddenTrack };
+      const bgmLine = resultBgmLine(topMelody[0].key, topNoise[0].key, future);
+      state.result = { topMelody, topNoise, future, personaAlias, spark, advice, mbti, roast, oneLine, albumTitle, hiddenTrack, bgmLine };
+    }
+
+    function futureDisplayName(future) {
+      if (!future) return "";
+      return future.alias ? `${future.alias} / ${future.name}` : future.name;
     }
 
     function selectSparkScenes(topMelodyKeys) {
@@ -2805,6 +2831,22 @@
       return `《${primaryMap[primary] || primary}：${secondary}混音 ${noiseMap[noise] || ""}》`;
     }
 
+    function resultBgmLine(melody, noise, future) {
+      const melodyMap = {
+        "创造": "木片琴加一点闪光合成器，像灵感刚从锅里冒泡",
+        "解释": "轻快钢片琴加温柔低音，像把乱线慢慢理顺",
+        "探索": "小小拨片和空气回声，像城市支线任务刚刚解锁",
+        "组织": "稳稳的软鼓点和短促提示音，像混乱开始排队",
+        "连接": "暖 pad 加两颗八音盒音符，像有人终于接住了你",
+        "表达": "明亮主旋律往上走一点，像麦克风终于打开",
+        "秩序": "干净节拍加低频轻托，像世界突然少耗电 20%",
+        "精进": "慢慢叠起的短句，像练习条终于涨了一格",
+        "自由": "轻快跳音和一点风感，像把日程表撕开一角",
+        "照护": "柔软和弦加很小的铃声，像把灯调到刚刚好"
+      };
+      return `我的人生 BGM：${future.alias || future.name} / 78 BPM / ${noise} 静音版。${melodyMap[melody] || "轻快但有留白，适合慢慢把自己调回来"}。`;
+    }
+
     function hiddenTrackLine(melody, noise) {
       const map = {
         "创造": "别人以为你在发呆，其实你在等一个能落地的形状。",
@@ -2826,7 +2868,7 @@
       $("resultTitle").textContent = r.albumTitle;
       $("resultIntro").textContent = state.calibration[2];
       $("resultOneLine").textContent = r.oneLine;
-      $("melodyText").textContent = `我的主旋律是 ${r.topMelody[0].key}，副旋律是 ${r.topMelody[1].key}，隐藏旋律是 ${r.topMelody[2].key}。${melodyTemplates[r.topMelody[0].key]}`;
+      $("melodyText").textContent = `我的主旋律是 ${r.topMelody[0].key}，副旋律是 ${r.topMelody[1].key}，隐藏旋律是 ${r.topMelody[2].key}。当前可晒外号：${futureDisplayName(r.future)}。${melodyTemplates[r.topMelody[0].key]}`;
       $("melodyTags").innerHTML = r.topMelody.map((m, i) => `<span class="tag" style="--cyan:${melodyColors[m.key]}">${i + 1}. ${m.key} ${Math.max(0, m.value)}</span>`).join("");
       $("sparkList").innerHTML = r.spark.map(s => {
         const prefix = s.fallback ? "相对没那么排斥：" : "当我能";
@@ -2835,17 +2877,17 @@
       $("noiseList").innerHTML = r.topNoise.map(n => `<li><strong>${n.key}</strong>：${noiseTemplates[n.key]}</li>`).join("");
       $("lowBatteryText").textContent = lowBattery[r.topNoise[0].key];
       $("manualList").innerHTML = r.advice.map(item => `<li>${item}</li>`).join("");
-      $("becomingText").textContent = `${futureTemplates[r.future.name]} ${r.hiddenTrack} 30 天小实验：${experiments[r.future.name]}`;
+      $("becomingText").textContent = `${futureTemplates[r.future.name]} ${r.hiddenTrack} ${r.bgmLine} 30 天小实验：${experiments[r.future.name]}`;
       $("mbtiText").textContent = r.mbti;
 
       $("shareAlbumTitle").textContent = `${r.albumTitle}`;
-      $("shareAlbumMeta").textContent = `我先不公布答案。你猜我的主旋律是 ${r.topMelody[0].key}，还是最容易被 ${r.topNoise[0].key} 静音？`;
+      $("shareAlbumMeta").textContent = `外号：${r.personaAlias}。我先不公布答案，你猜我的主旋律是 ${r.topMelody[0].key}，还是最容易被 ${r.topNoise[0].key} 静音？`;
       $("shareBars").innerHTML = r.topMelody.map((m, i) => `
         <div class="album-bar"><span style="width:${Math.max(18, 92 - i * 18)}%; background:linear-gradient(90deg, ${melodyColors[m.key]}, #f7f2e8)"></span></div>
       `).join("");
       $("shareManual").textContent = `打开方式：${r.advice[0]} 避免事项：${r.topNoise[0].key} 太重时，我会开始失真。`;
       $("shareRoast").textContent = `朋友请注意：${r.advice[1]} BPM 小狗补一句：“${r.roast}”`;
-      $("shareChallenge").textContent = `发给朋友玩：先让 TA 猜你的 A-side 主旋律，再一起对照谁更懂谁。`;
+      $("shareChallenge").textContent = `发给朋友玩：先让 TA 猜你是 ${r.personaAlias}，还是另一个隐藏版本。${r.bgmLine}`;
     }
 
     function trimScene(text) {
@@ -2880,12 +2922,12 @@
         ctx.globalAlpha = 1;
 
         if (dog) roundImage(ctx, dog, 660, 120, 260, 260, 28);
-      ctx.fillStyle = "#f7f2e8";
-      ctx.font = "900 80px PingFang SC, Microsoft YaHei, sans-serif";
-      wrapCanvasText(ctx, r.albumTitle || "我的人生主旋律", 90, 160, 560, 82);
+        ctx.fillStyle = "#f7f2e8";
+        ctx.font = "900 80px PingFang SC, Microsoft YaHei, sans-serif";
+        wrapCanvasText(ctx, r.albumTitle || "我的人生主旋律", 90, 160, 560, 82);
         ctx.font = "700 34px PingFang SC, Microsoft YaHei, sans-serif";
         ctx.fillStyle = "#b7f34a";
-        ctx.fillText("人生调音台 · v0.1", 92, 350);
+        ctx.fillText(`人生调音台 · ${r.personaAlias}`, 92, 350);
 
         const labels = r.topMelody.map(m => m.key);
         labels.forEach((label, i) => {
@@ -2911,7 +2953,7 @@
 
         ctx.fillStyle = "rgba(255,255,255,0.72)";
         ctx.font = "600 30px PingFang SC, Microsoft YaHei, sans-serif";
-        wrapCanvasText(ctx, `底噪：${r.topNoise.map(n => n.key).join(" / ")}｜当前版本：${r.future.name}`, 92, 1270, 880, 44);
+        wrapCanvasText(ctx, `底噪：${r.topNoise.map(n => n.key).join(" / ")}｜${r.bgmLine}`, 92, 1248, 880, 42);
 
         const link = document.createElement("a");
         link.download = "人生调音台-我的人生主旋律.png";
@@ -2930,7 +2972,7 @@
       if (!state.result) return;
       lifeMixerAudio.playUi();
       const r = state.result;
-      const text = `我刚玩了《人生调音台》，生成了我的人生专辑：${r.albumTitle}。\\nA-side：${r.topMelody.map(m => m.key).join(" / ")}。\\nB-side 底噪：${r.topNoise.map(n => n.key).join(" / ")}。\\nBPM 小狗听完后说：“${r.roast}”\\n\\n你来猜猜我最亮的是哪条音轨。\\n来玩：${location.href}`;
+      const text = `我刚玩了《人生调音台》，生成了我的人生专辑：${r.albumTitle}。\\n我的可晒外号：${r.personaAlias}。\\nA-side：${r.topMelody.map(m => m.key).join(" / ")}。\\nB-side 底噪：${r.topNoise.map(n => n.key).join(" / ")}。\\n${r.bgmLine}\\nBPM 小狗听完后说：“${r.roast}”\\n\\n你来猜猜我最亮的是哪条音轨。\\n来玩：${location.href}`;
       try {
         await writeClipboardText(text);
         flashButtonLabel("copyBtn", "已复制");
