@@ -849,6 +849,7 @@
     }
 
     .meter-fill {
+      display: block;
       width: 0%;
       height: 100%;
       border-radius: inherit;
@@ -3225,7 +3226,7 @@
     function renderMeters(targetId, sourceObj, type = "melody") {
       const target = $(targetId);
       if (!target) return;
-      const top = ranked(sourceObj).slice(0, type === "melody" ? 8 : 6);
+      const top = meterRows(sourceObj, type === "melody" ? 8 : 6);
       const max = Math.max(1, ...top.map(([, v]) => Math.abs(v)));
       target.innerHTML = top.map(([key, value]) => {
         const color = type === "melody" ? (melodyColors[key] || "#44eadf") : (noiseColors[key] || "#ff5f6a");
@@ -3242,6 +3243,18 @@
           </div>
         `;
       }).join("");
+    }
+
+    function meterRows(sourceObj, limit) {
+      const entries = Object.entries(sourceObj);
+      const positives = entries.filter(([, value]) => value > 0).sort((a, b) => b[1] - a[1]);
+      const negatives = entries.filter(([, value]) => value < 0).sort((a, b) => a[1] - b[1]);
+      const zeros = entries.filter(([, value]) => value === 0);
+      const changed = [...positives, ...negatives];
+      const rows = changed.length >= limit
+        ? changed.slice(0, limit)
+        : [...changed, ...zeros.slice(0, limit - changed.length)];
+      return rows.sort((a, b) => b[1] - a[1]);
     }
 
     function hexToGlow(color) {
@@ -4042,54 +4055,82 @@
       const dog = await loadImage("assets/bpm-dog-avatar.png");
 
       try {
+        if (document.fonts && document.fonts.ready) await document.fonts.ready;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const gradient = ctx.createLinearGradient(0, 0, 1080, 1440);
-        gradient.addColorStop(0, "#10131b");
-        gradient.addColorStop(0.54, "#17212c");
-        gradient.addColorStop(1, "#0f1016");
+        gradient.addColorStop(0, "#0b1118");
+        gradient.addColorStop(0.52, "#141c28");
+        gradient.addColorStop(1, "#0b0d12");
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 1080, 1440);
 
-        ctx.globalAlpha = 0.95;
-        drawGlow(ctx, 170, 170, 260, "#20e6d2");
-        drawGlow(ctx, 880, 260, 240, "#ff6fae");
-        drawGlow(ctx, 620, 1120, 280, "#b7f34a");
+        ctx.globalAlpha = 0.9;
+        drawGlow(ctx, 160, 160, 320, "#44eadf");
+        drawGlow(ctx, 870, 220, 280, "#ff6fb1");
+        drawGlow(ctx, 620, 1080, 280, "#b6ff4a");
         ctx.globalAlpha = 1;
 
-        if (dog) roundImage(ctx, dog, 660, 120, 260, 260, 28);
-        ctx.fillStyle = "#f7f2e8";
-        ctx.font = "900 80px PingFang SC, Microsoft YaHei, sans-serif";
-        wrapCanvasText(ctx, r.albumTitle || "我的人生主旋律", 90, 160, 560, 82);
-        ctx.font = "700 34px PingFang SC, Microsoft YaHei, sans-serif";
-        ctx.fillStyle = "#b7f34a";
-        ctx.fillText(`人生调音台 · ${r.personaAlias}`, 92, 350);
+        drawCanvasGrid(ctx, 0, 0, 1080, 1440, 54);
 
-        const labels = r.topMelody.map(m => m.key);
-        labels.forEach((label, i) => {
-          const y = 500 + i * 120;
-          const w = 760 - i * 120;
-          ctx.fillStyle = "rgba(255,255,255,0.10)";
-          roundRect(ctx, 92, y, 840, 38, 20, true);
-          const bar = ctx.createLinearGradient(92, y, 92 + w, y);
-          bar.addColorStop(0, melodyColors[label]);
-          bar.addColorStop(1, "#f7f2e8");
-          ctx.fillStyle = bar;
-          roundRect(ctx, 92, y, w, 38, 20, true);
-          ctx.fillStyle = "#f7f2e8";
-          ctx.font = "800 42px PingFang SC, Microsoft YaHei, sans-serif";
-          ctx.fillText(label, 92, y - 24);
+        ctx.fillStyle = "rgba(255,255,255,0.06)";
+        roundRect(ctx, 64, 62, 952, 470, 28, true);
+        ctx.strokeStyle = "rgba(255,255,255,0.12)";
+        ctx.lineWidth = 2;
+        roundRect(ctx, 64, 62, 952, 470, 28, false, true);
+
+        drawCanvasPill(ctx, "PERSONAL ALBUM / READY TO SHARE", 92, 96, 360, "#b6ff4a", "#071011");
+        if (dog) roundImage(ctx, dog, 716, 120, 230, 230, 24);
+        drawCanvasPill(ctx, r.personaAlias, 720, 374, 220, "#44eadf", "#071011");
+
+        const titleParts = albumCanvasTitleParts(r.albumTitle || "我的人生主旋律");
+        ctx.fillStyle = "#fff8ea";
+        let titleBottom = drawFittedCanvasText(ctx, titleParts.primary, 92, 210, 580, {
+          weight: 950,
+          maxSize: 70,
+          minSize: 46,
+          lineHeight: 1.08,
+          maxLines: 2
+        });
+        ctx.fillStyle = "#fff8ea";
+        titleBottom = drawFittedCanvasText(ctx, titleParts.mix, 94, titleBottom + 16, 580, {
+          weight: 900,
+          maxSize: 42,
+          minSize: 32,
+          lineHeight: 1.12,
+          maxLines: 1
+        });
+        setCanvasFont(ctx, 32, 850);
+        ctx.fillStyle = "#b6ff4a";
+        ctx.fillText(`人生调音台 · ${r.topNoise[0].key} 静音版`, 94, Math.min(468, titleBottom + 40));
+
+        const maxMelody = Math.max(1, ...r.topMelody.map(m => Math.max(0, m.value)));
+        r.topMelody.forEach((m, i) => {
+          const color = melodyColors[m.key] || "#44eadf";
+          const y = 640 + i * 126;
+          const width = Math.max(0.28, Math.max(0, m.value) / maxMelody);
+          drawCanvasMeter(ctx, m.key, Math.max(0, m.value), 92, y, 860, 34, color, width);
         });
 
-        ctx.fillStyle = "#f7f2e8";
-        ctx.font = "900 48px PingFang SC, Microsoft YaHei, sans-serif";
-        ctx.fillText("拍宝听完后说：", 92, 945);
-        ctx.font = "700 42px PingFang SC, Microsoft YaHei, sans-serif";
-        wrapCanvasText(ctx, `“${r.roast}”`, 92, 1018, 850, 58);
+        ctx.fillStyle = "rgba(255,255,255,0.065)";
+        roundRect(ctx, 76, 990, 928, 216, 24, true);
+        ctx.strokeStyle = "rgba(255,255,255,0.12)";
+        ctx.lineWidth = 2;
+        roundRect(ctx, 76, 990, 928, 216, 24, false, true);
+        setCanvasFont(ctx, 42, 950);
+        ctx.fillStyle = "#fff8ea";
+        ctx.fillText("拍宝听完后说：", 108, 1058);
+        setCanvasFont(ctx, 36, 800);
+        ctx.fillStyle = "#f3eadb";
+        wrapCanvasText(ctx, `“${r.roast}”`, 108, 1118, 860, 48, 2);
 
-        ctx.fillStyle = "rgba(255,255,255,0.72)";
-        ctx.font = "600 30px PingFang SC, Microsoft YaHei, sans-serif";
-        wrapCanvasText(ctx, `朋友圈盲猜：${r.friendGuess.options.map((item, index) => `${String.fromCharCode(65 + index)}.${item.alias}`).join("  ")}`, 92, 1215, 880, 38);
-        wrapCanvasText(ctx, `底噪：${r.topNoise.map(n => n.key).join(" / ")}｜答案先藏起来：${r.friendGuess.answer}`, 92, 1320, 880, 38);
+        ctx.fillStyle = "rgba(8,12,18,0.48)";
+        roundRect(ctx, 76, 1244, 928, 118, 22, true);
+        const guessOptions = r.friendGuess.options.map((item, index) => `${String.fromCharCode(65 + index)}.${item.alias}`).join("   ");
+        setCanvasFont(ctx, 28, 800);
+        ctx.fillStyle = "rgba(255,248,234,0.78)";
+        wrapCanvasText(ctx, `朋友圈盲猜：${guessOptions}`, 108, 1294, 860, 36, 1);
+        ctx.fillStyle = "rgba(255,248,234,0.62)";
+        wrapCanvasText(ctx, `底噪：${r.topNoise.map(n => n.key).join(" / ")}  ·  答案先藏起来：${r.friendGuess.answer}`, 108, 1340, 860, 34, 1);
 
         const link = document.createElement("a");
         link.download = "人生调音台-我的人生主旋律.png";
@@ -4288,7 +4329,7 @@
       ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
     }
 
-    function roundRect(ctx, x, y, w, h, r, fill) {
+    function roundRect(ctx, x, y, w, h, r, fill, stroke = false) {
       ctx.beginPath();
       ctx.moveTo(x + r, y);
       ctx.arcTo(x + w, y, x + w, y + h, r);
@@ -4296,6 +4337,7 @@
       ctx.arcTo(x, y + h, x, y, r);
       ctx.arcTo(x, y, x + w, y, r);
       if (fill) ctx.fill();
+      if (stroke) ctx.stroke();
     }
 
     function roundImage(ctx, img, x, y, w, h, r) {
@@ -4306,13 +4348,133 @@
       ctx.restore();
     }
 
-    function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight) {
+    function setCanvasFont(ctx, size, weight = 800) {
+      ctx.font = `${weight} ${size}px "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif`;
+    }
+
+    function drawCanvasGrid(ctx, x, y, w, h, step) {
+      ctx.save();
+      ctx.strokeStyle = "rgba(255,255,255,0.035)";
+      ctx.lineWidth = 1;
+      for (let gx = x; gx <= x + w; gx += step) {
+        ctx.beginPath();
+        ctx.moveTo(gx, y);
+        ctx.lineTo(gx, y + h);
+        ctx.stroke();
+      }
+      for (let gy = y; gy <= y + h; gy += step) {
+        ctx.beginPath();
+        ctx.moveTo(x, gy);
+        ctx.lineTo(x + w, gy);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawCanvasPill(ctx, text, x, y, minWidth, bg, fg) {
+      setCanvasFont(ctx, 24, 950);
+      const width = Math.max(minWidth, ctx.measureText(text).width + 38);
+      ctx.fillStyle = bg;
+      roundRect(ctx, x, y, width, 42, 21, true);
+      ctx.fillStyle = fg;
+      ctx.fillText(text, x + 19, y + 29);
+    }
+
+    function drawFittedCanvasText(ctx, text, x, y, maxWidth, options = {}) {
+      const weight = options.weight || 900;
+      const minSize = options.minSize || 36;
+      const maxSize = options.maxSize || 72;
+      const maxLines = options.maxLines || 4;
+      let fontSize = maxSize;
+      let lines = [];
+
+      while (fontSize >= minSize) {
+        setCanvasFont(ctx, fontSize, weight);
+        lines = canvasTextLines(ctx, text, maxWidth);
+        if (lines.length <= maxLines) break;
+        fontSize -= 3;
+      }
+
+      const lineHeight = Math.round(fontSize * (options.lineHeight || 1.12));
+      lines.slice(0, maxLines).forEach((line, index) => {
+        const content = index === maxLines - 1 && lines.length > maxLines
+          ? `${line.slice(0, Math.max(1, line.length - 1))}…`
+          : line;
+        ctx.fillText(content, x, y + index * lineHeight);
+      });
+      return y + Math.min(lines.length, maxLines) * lineHeight;
+    }
+
+    function canvasTextLines(ctx, text, maxWidth) {
+      const lines = [];
+      let line = "";
+      [...String(text)].forEach(char => {
+        const test = line + char;
+        if (ctx.measureText(test).width > maxWidth && line) {
+          lines.push(line);
+          line = char;
+        } else {
+          line = test;
+        }
+      });
+      if (line) lines.push(line);
+      return lines;
+    }
+
+    function drawCanvasMeter(ctx, label, value, x, y, w, h, color, ratio) {
+      setCanvasFont(ctx, 38, 950);
+      ctx.fillStyle = "#fff8ea";
+      ctx.fillText(label, x, y - 22);
+      setCanvasFont(ctx, 28, 900);
+      ctx.fillStyle = "rgba(255,248,234,0.86)";
+      ctx.fillText(String(value), x + w - 24, y - 22);
+
+      ctx.fillStyle = "rgba(255,255,255,0.11)";
+      roundRect(ctx, x, y, w, h, h / 2, true);
+      ctx.save();
+      ctx.beginPath();
+      roundRect(ctx, x, y, w, h, h / 2, false);
+      ctx.clip();
+      ctx.strokeStyle = "rgba(255,255,255,0.08)";
+      ctx.lineWidth = 1;
+      for (let i = 0; i < w; i += 24) {
+        ctx.beginPath();
+        ctx.moveTo(x + i, y);
+        ctx.lineTo(x + i, y + h);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      const fillWidth = Math.max(28, Math.round(w * ratio));
+      const bar = ctx.createLinearGradient(x, y, x + fillWidth, y);
+      bar.addColorStop(0, color);
+      bar.addColorStop(1, "#fff8ea");
+      ctx.fillStyle = bar;
+      roundRect(ctx, x, y, fillWidth, h, h / 2, true);
+    }
+
+    function albumCanvasTitleParts(title) {
+      const clean = String(title).replace(/[《》]/g, "");
+      const [primary, ...rest] = clean.split("：");
+      return {
+        primary: primary || "我的人生主旋律",
+        mix: rest.join("：") || "人格专辑混音版"
+      };
+    }
+
+    function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines = Infinity) {
       let line = "";
       const chars = [...text];
+      let lines = 0;
       for (let i = 0; i < chars.length; i++) {
         const test = line + chars[i];
         if (ctx.measureText(test).width > maxWidth && line) {
+          if (lines >= maxLines - 1) {
+            ctx.fillText(`${line.slice(0, Math.max(1, line.length - 1))}…`, x, y);
+            return y;
+          }
           ctx.fillText(line, x, y);
+          lines += 1;
           line = chars[i];
           y += lineHeight;
         } else {
@@ -4320,6 +4482,7 @@
         }
       }
       if (line) ctx.fillText(line, x, y);
+      return y;
     }
 
     init();
