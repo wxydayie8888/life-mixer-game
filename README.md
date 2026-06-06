@@ -13,10 +13,13 @@
 - 8 个未来身份
 - 自动生成个人使用说明
 - 结果分享卡、下载专辑分享卡、复制朋友圈文案
-- Web Audio 程序化配乐和交互音效
+- 两首可切换 CC0 完整背景音乐 + Web Audio 交互音效
 
 ## 最近一版迭代
 
+- 接入 OpenGameArt 的两首 CC0 音乐：`Two Simple Game Music Loops` 的 menu loop 和 `Flowerbed Fields`
+- 顶部 HUD 新增音乐选择按钮，可在 Simple Loop / Flowerbed 两种 BGM 间切换，并记住玩家上次选择
+- 背景配乐改为真实 OGG 循环音频，Web Audio 保留为按钮、选择、结果揭晓等交互音效层
 - 结果页新增“朋友盲猜卡”：自动生成 A/B/C 三个可晒外号，让朋友先猜哪个才是真正结果
 - 下载分享卡和复制朋友圈文案同步加入盲猜选项，把单向晒结果升级成轻互动挑战
 - 增加 `vercel.json` 静态部署配置，方便发布到 Vercel 预览环境
@@ -100,9 +103,16 @@ http://localhost:8766
 ## 主要文件
 
 - `index.html`：可玩的单文件 MVP
+- `assets/music/two-simple-menu.ogg`：Two Simple Game Music Loops / menu loop，qubodup，CC0
+- `assets/music/flowerbed-fields.ogg`：Flowerbed Fields，Zane Little Music，CC0
 - `assets/life-mixer-hero.png`：首屏主视觉
 - `assets/bpm-dog-character-sheet.png`：BPM 小狗三视图
 - `assets/bpm-dog-avatar.png`：游戏内统一头像
 - `assets/comic-*.png`：心动采样漫画场景
 - `01-视觉设定与游戏流程稿.md`：视觉和流程设计说明
 - `02-MVP题库与结果生成逻辑.md`：题库和结果生成逻辑
+
+## 音乐素材
+
+- Two Simple Game Music Loops - OpenGameArt：https://opengameart.org/content/two-simple-game-music-loops
+- Flowerbed Fields - OpenGameArt：https://opengameart.org/content/flowerbed-fields-loop

@@ -202,6 +202,42 @@
       text-align: right;
     }
 
+    .music-switch {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 3px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .music-choice {
+      min-height: 28px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: 999px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 850;
+      cursor: pointer;
+      transition: color 160ms ease, background 160ms ease, transform 160ms ease;
+      white-space: nowrap;
+    }
+
+    .music-choice:hover {
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .music-choice.is-active {
+      color: #091111;
+      background: linear-gradient(135deg, var(--cyan), var(--lime));
+      box-shadow: 0 0 16px rgba(32, 230, 210, 0.14);
+    }
+
     .progress-wrap {
       height: 8px;
       border-radius: 999px;
@@ -1546,6 +1582,16 @@
         width: min(42vw, 180px);
       }
 
+      .music-switch {
+        grid-column: 1 / -1;
+        width: 100%;
+        justify-content: stretch;
+      }
+
+      .music-choice {
+        flex: 1;
+      }
+
       .stage {
         width: min(100% - 24px, 1180px);
       }
@@ -1644,6 +1690,10 @@
           <input id="volumeSlider" type="range" min="0" max="120" step="1" value="90" aria-label="音乐音量">
           <span class="volume-value" id="volumeValue">90%</span>
         </label>
+        <div class="music-switch" role="group" aria-label="选择背景音乐">
+          <button class="music-choice" type="button" data-track="simple">Simple Loop</button>
+          <button class="music-choice" type="button" data-track="flowerbed">Flowerbed</button>
+        </div>
       </div>
       <div class="progress-wrap" aria-label="游戏进度">
         <div class="progress" id="progress"></div>
@@ -1918,6 +1968,7 @@
       defaultVolume: 90,
       maxVolume: 120,
       masterVolume: 0.62,
+      bgmVolume: 0.78,
       leadVolume: 0.115,
       padVolume: 0.22,
       pulseVolume: 0.03,
@@ -1932,6 +1983,19 @@
         "screen-noise": 0.3,
         "screen-future": 0.44,
         "screen-result": 0.54
+      }
+    };
+
+    const MUSIC_TRACKS = {
+      simple: {
+        label: "Simple Loop",
+        src: "assets/music/two-simple-menu.ogg",
+        credit: "Two Simple Game Music Loops - qubodup, CC0"
+      },
+      flowerbed: {
+        label: "Flowerbed Fields",
+        src: "assets/music/flowerbed-fields.ogg",
+        credit: "Flowerbed Fields - Zane Little Music, CC0"
       }
     };
 
@@ -2167,10 +2231,12 @@
       sparkleBus: null,
       echo: null,
       echoFeedback: null,
+      bgm: null,
       loopTimer: null,
       step: 0,
       enabled: getAudioPreference() !== "off",
       volume: getAudioVolumePreference(),
+      trackId: getMusicTrackPreference(),
       started: false,
       currentScene: "screen-home",
 
@@ -2180,12 +2246,13 @@
         if (!this.ctx) this.setup();
         if (!this.ctx) return;
         if (this.ctx.state === "suspended") await this.ctx.resume();
+        this.ensureBgm();
         if (!this.started) {
           this.started = true;
           this.setScene(this.currentScene);
-          this.startLoop();
           this.playStartup();
         }
+        await this.playBgm();
         updateAudioUI();
       },
 
@@ -2226,6 +2293,37 @@
         return AUDIO_CONFIG.masterVolume * energy * (this.volume / 100);
       },
 
+      bgmTarget(sceneId = this.currentScene) {
+        const energy = AUDIO_CONFIG.sceneEnergy[sceneId] || 0.55;
+        return Math.min(1, AUDIO_CONFIG.bgmVolume * energy * (this.volume / 100));
+      },
+
+      ensureBgm() {
+        const track = MUSIC_TRACKS[this.trackId] || MUSIC_TRACKS.simple;
+        if (!this.bgm) {
+          this.bgm = new Audio(track.src);
+          this.bgm.loop = true;
+          this.bgm.preload = "auto";
+        } else if (!this.bgm.src.endsWith(track.src)) {
+          const wasPlaying = !this.bgm.paused;
+          this.bgm.pause();
+          this.bgm.src = track.src;
+          this.bgm.load();
+          if (wasPlaying && this.enabled) this.playBgm();
+        }
+        this.bgm.volume = this.bgmTarget();
+      },
+
+      async playBgm() {
+        if (!this.enabled) return;
+        this.ensureBgm();
+        try {
+          await this.bgm.play();
+        } catch (error) {
+          // Browsers may block playback until the next user gesture; the toggle/start button will retry.
+        }
+      },
+
       toggle() {
         if (!this.started) {
           this.start();
@@ -2246,6 +2344,7 @@
         const now = this.ctx.currentTime;
         this.master.gain.cancelScheduledValues(now);
         this.master.gain.setTargetAtTime(0.0001, now, 0.08);
+        if (this.bgm) this.bgm.pause();
         clearInterval(this.loopTimer);
         this.loopTimer = null;
         this.started = false;
@@ -2261,15 +2360,27 @@
         this.padBus.gain.setTargetAtTime(AUDIO_CONFIG.padVolume * (sceneId === "screen-result" ? 1.18 : 1), now, 0.9);
         this.pulseBus.gain.setTargetAtTime(AUDIO_CONFIG.pulseVolume * (sceneId === "screen-noise" ? 0.18 : 0.55), now, 0.8);
         this.sparkleBus.gain.setTargetAtTime(AUDIO_CONFIG.sparkleVolume * (sceneId === "screen-noise" ? 0.45 : 1), now, 0.7);
+        if (this.bgm) this.bgm.volume = this.bgmTarget(sceneId);
       },
 
       setVolume(value) {
         this.volume = clampAudioVolume(value);
         setAudioVolumePreference(this.volume);
         updateAudioUI();
+        if (this.bgm) this.bgm.volume = this.bgmTarget();
         if (this.ctx && this.master && this.enabled) {
           this.setScene(this.currentScene);
         }
+      },
+
+      setTrack(trackId) {
+        if (!MUSIC_TRACKS[trackId]) return;
+        this.trackId = trackId;
+        setMusicTrackPreference(trackId);
+        this.ensureBgm();
+        if (this.started && this.enabled) this.playBgm();
+        this.playUi();
+        updateAudioUI();
       },
 
       startLoop() {
@@ -2521,6 +2632,23 @@
       }
     }
 
+    function getMusicTrackPreference() {
+      try {
+        const trackId = localStorage.getItem("lifeMixerMusicTrack");
+        return MUSIC_TRACKS[trackId] ? trackId : "simple";
+      } catch (error) {
+        return "simple";
+      }
+    }
+
+    function setMusicTrackPreference(trackId) {
+      try {
+        localStorage.setItem("lifeMixerMusicTrack", MUSIC_TRACKS[trackId] ? trackId : "simple");
+      } catch (error) {
+        // Music track preference is optional; the game should still work when storage is blocked.
+      }
+    }
+
     function updateAudioUI() {
       const toggle = $("audioToggle");
       if (!toggle) return;
@@ -2532,6 +2660,11 @@
       const label = $("volumeValue");
       if (slider) slider.value = lifeMixerAudio.volume;
       if (label) label.textContent = `${lifeMixerAudio.volume}%`;
+      document.querySelectorAll(".music-choice").forEach(button => {
+        const active = button.dataset.track === lifeMixerAudio.trackId;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", active ? "true" : "false");
+      });
     }
 
     function resetState() {
@@ -2663,6 +2796,9 @@
       $("audioToggle").addEventListener("click", () => lifeMixerAudio.toggle());
       $("volumeSlider").addEventListener("input", event => {
         lifeMixerAudio.setVolume(event.target.value);
+      });
+      document.querySelectorAll(".music-choice").forEach(button => {
+        button.addEventListener("click", () => lifeMixerAudio.setTrack(button.dataset.track));
       });
 
       $("startBtn").addEventListener("click", () => {
