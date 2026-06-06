@@ -562,6 +562,60 @@
       box-shadow: 0 0 16px var(--orange);
     }
 
+    .sampler-panel {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sampler-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+      background-size: 28px 28px;
+      opacity: 0.42;
+      pointer-events: none;
+    }
+
+    .sampler-panel > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .sampler-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .sampler-status {
+      min-height: 76px;
+      padding: 13px 14px;
+      border: 1px solid rgba(32, 230, 210, 0.18);
+      border-radius: 8px;
+      background: rgba(8, 15, 18, 0.52);
+      box-shadow: inset 0 0 30px rgba(32, 230, 210, 0.06);
+    }
+
+    .sampler-status span {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+    }
+
+    .sampler-status strong {
+      display: block;
+      color: #fff8e9;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
     .mascot {
       display: grid;
       grid-template-columns: 68px 1fr;
@@ -576,6 +630,62 @@
       border-radius: 8px;
       object-fit: cover;
       border: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .mascot-performer {
+      position: relative;
+      transition: transform 260ms ease;
+    }
+
+    .mascot-performer img {
+      transition: transform 260ms ease, box-shadow 260ms ease, filter 260ms ease;
+    }
+
+    .mascot-performer::after {
+      content: "LISTEN";
+      position: absolute;
+      left: 10px;
+      top: -10px;
+      padding: 4px 7px;
+      border-radius: 999px;
+      color: #081011;
+      background: var(--lime);
+      font-size: 10px;
+      font-weight: 950;
+      box-shadow: 0 0 18px rgba(183, 243, 74, 0.32);
+    }
+
+    .mascot-performer[data-mood="spark"] img {
+      transform: translateY(-2px) rotate(-2deg) scale(1.04);
+      box-shadow: 0 0 30px rgba(183, 243, 74, 0.26);
+      filter: saturate(1.15);
+    }
+
+    .mascot-performer[data-mood="spark"]::after {
+      content: "EARS UP";
+      background: var(--lime);
+    }
+
+    .mascot-performer[data-mood="bypass"] img {
+      transform: rotate(1deg);
+      box-shadow: 0 0 24px rgba(122, 167, 255, 0.18);
+    }
+
+    .mascot-performer[data-mood="bypass"]::after {
+      content: "BYPASS";
+      background: #9ebcff;
+    }
+
+    .mascot-performer[data-mood="mute"] img {
+      transform: translateY(2px) rotate(2deg);
+      filter: saturate(0.8) brightness(0.9);
+      box-shadow: 0 0 24px rgba(255, 92, 92, 0.2);
+    }
+
+    .mascot-performer[data-mood="mute"]::after {
+      content: "MUTE";
+      color: #fff5f5;
+      background: var(--red);
     }
 
     .bubble {
@@ -705,6 +815,38 @@
       pointer-events: none;
     }
 
+    .live-wave {
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      top: 22px;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(24, 1fr);
+      align-items: center;
+      gap: 5px;
+      height: 42px;
+      opacity: 0.88;
+      pointer-events: none;
+    }
+
+    .live-wave span {
+      display: block;
+      height: calc(var(--h, 20) * 1%);
+      min-height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(247, 242, 232, 0.92), rgba(32, 230, 210, 0.65));
+      box-shadow: 0 0 14px rgba(32, 230, 210, 0.18);
+      transform-origin: center;
+      animation: waveBreath 1800ms ease-in-out infinite;
+      animation-delay: calc(var(--i, 0) * -90ms);
+    }
+
+    @keyframes waveBreath {
+      0%, 100% { transform: scaleY(0.75); opacity: 0.58; }
+      45% { transform: scaleY(1.12); opacity: 1; }
+    }
+
     .sample-card.pulse {
       animation: cardPulse 280ms ease both;
     }
@@ -787,6 +929,62 @@
       flex: none;
     }
 
+    .voiceprint-card {
+      margin: 14px 0 16px;
+      padding: 14px;
+      border: 1px solid rgba(32, 230, 210, 0.13);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(32, 230, 210, 0.12), transparent 12rem),
+        rgba(255, 255, 255, 0.045);
+    }
+
+    .voiceprint-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .voiceprint-head strong {
+      color: var(--lime);
+      text-align: right;
+    }
+
+    .voiceprint {
+      height: 126px;
+      display: grid;
+      grid-template-columns: repeat(32, 1fr);
+      align-items: end;
+      gap: 4px;
+      padding: 12px;
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.025)),
+        rgba(5, 9, 12, 0.42);
+      overflow: hidden;
+    }
+
+    .voiceprint-bar {
+      min-height: 6px;
+      height: calc(var(--h, 18) * 1%);
+      border-radius: 999px 999px 3px 3px;
+      background: linear-gradient(180deg, var(--bar, var(--cyan)), rgba(247, 242, 232, 0.72));
+      box-shadow: 0 0 16px color-mix(in srgb, var(--bar, var(--cyan)) 42%, transparent);
+      transition: height 420ms cubic-bezier(.2,.8,.2,1), background 260ms ease;
+    }
+
+    .voiceprint-caption {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
     .action-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -805,7 +1003,17 @@
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.13);
       font-weight: 850;
+      text-align: center;
       transition: transform 170ms ease, border-color 170ms ease, background 170ms ease, opacity 170ms ease;
+    }
+
+    .answer-btn span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
     }
 
     .answer-btn:hover {
@@ -911,6 +1119,23 @@
       padding: clamp(18px, 3vw, 32px);
     }
 
+    .album-result {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .album-result::before {
+      content: "SIDE A / SIDE B";
+      position: absolute;
+      right: 22px;
+      top: 18px;
+      color: rgba(247, 242, 232, 0.08);
+      font-size: clamp(46px, 7vw, 92px);
+      font-weight: 950;
+      line-height: 0.9;
+      pointer-events: none;
+    }
+
     .mix-header {
       display: grid;
       grid-template-columns: 92px 1fr;
@@ -927,10 +1152,19 @@
       border: 1px solid rgba(255, 255, 255, 0.16);
     }
 
+    .album-kicker {
+      margin-bottom: 8px;
+      color: var(--lime);
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: 0.14em;
+    }
+
     .result-title {
       margin: 0;
-      font-size: clamp(32px, 5vw, 58px);
-      line-height: 1.06;
+      font-size: clamp(28px, 3.8vw, 44px);
+      line-height: 1.1;
+      overflow-wrap: anywhere;
     }
 
     .result-subtitle {
@@ -989,6 +1223,7 @@
     .result-block h3 {
       margin: 0 0 10px;
       font-size: 20px;
+      color: #fff8e9;
     }
 
     .result-block p,
@@ -1079,8 +1314,9 @@
     }
 
     .share-card.album h3 {
-      font-size: 28px;
+      font-size: clamp(23px, 3vw, 30px);
       line-height: 1.2;
+      overflow-wrap: anywhere;
     }
 
     .share-card.album::after {
@@ -1132,6 +1368,10 @@
 
       .side-panel {
         position: static;
+      }
+
+      .sampler-head {
+        grid-template-columns: 1fr;
       }
 
       .track-strip {
@@ -1192,19 +1432,62 @@
       }
 
       .sample-text {
-        font-size: 25px;
+        font-size: 22px;
       }
 
       .sample-card {
-        height: 300px;
+        height: 220px;
       }
 
       .sample-copy {
         inset: auto 10px 10px;
+        gap: 8px;
+        padding: 14px;
+      }
+
+      .sampler-status {
+        min-height: 50px;
+        padding: 9px 10px;
+      }
+
+      .sampler-status span {
+        margin-bottom: 4px;
+      }
+
+      .sampler-status strong {
+        font-size: 13px;
+      }
+
+      .live-wave {
+        top: 12px;
+        left: 14px;
+        right: 14px;
+        height: 28px;
+        gap: 4px;
+      }
+
+      .beat-toast {
+        min-height: 38px;
+        padding: 8px 10px;
+      }
+
+      .answer-btn {
+        min-height: 52px;
       }
 
       .action-row {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .answer-btn {
+        padding: 0 6px;
+        font-size: 13px;
+        line-height: 1.25;
+      }
+
+      .answer-btn span {
+        font-size: 10px;
       }
 
       .mix-header {
@@ -1314,15 +1597,24 @@
 
       <section class="screen" id="screen-heart">
         <div class="game-grid">
-          <div class="main-panel">
-            <div class="stage-pill" id="heartStage">第一段：先找电量入口</div>
-            <h2 class="section-title">心动采样</h2>
-            <p class="section-note">看到场景后，选身体先有反应的那个。靠近、无感、远离，都可以。</p>
+          <div class="main-panel sampler-panel">
+            <div class="sampler-head">
+              <div>
+                <div class="stage-pill" id="heartStage">第一段：先找电量入口</div>
+                <h2 class="section-title">心动采样器</h2>
+              </div>
+              <div class="sampler-status" aria-live="polite">
+                <span>LIVE INPUT</span>
+                <strong id="samplerReadout">等待第一段身体反应</strong>
+              </div>
+            </div>
+            <p class="section-note">看到场景后，像推音轨一样选身体先有反应的那个。靠近、无感、远离，都可以。</p>
             <div class="sample-board">
               <div class="sample-card" id="heartCard" role="group" aria-label="当前心动采样卡">
                 <span class="comic-frame">
                   <img id="heartComic" src="assets/comic-expression.png" alt="心动采样漫画场景">
                 </span>
+                <span class="live-wave" id="liveWave" aria-hidden="true"></span>
                 <span class="sample-copy">
                   <span class="card-index" id="heartIndex">01 / 18</span>
                   <span class="sample-text" id="heartText"></span>
@@ -1330,16 +1622,24 @@
               </div>
               <div class="beat-toast" id="beatToast">别选正确答案，选身体先响的那个。</div>
               <div class="action-row">
-                <button class="answer-btn" data-choice="near">靠近，亮一下</button>
-                <button class="answer-btn" data-choice="neutral">无感，先路过</button>
-                <button class="answer-btn" data-choice="far">远离，静音</button>
+                <button class="answer-btn" data-choice="near"><span>推高</span>靠近，亮一下</button>
+                <button class="answer-btn" data-choice="neutral"><span>旁路</span>无感，先路过</button>
+                <button class="answer-btn" data-choice="far"><span>拉低</span>远离，静音</button>
               </div>
             </div>
           </div>
           <aside class="side-panel">
-            <div class="mascot">
+            <div class="mascot mascot-performer" id="heartMascot" data-mood="listen">
               <img src="assets/bpm-dog-avatar.png" alt="BPM 小狗">
               <div class="bubble" id="heartBubble">这不是兴趣测试，这是找你的电量入口。</div>
+            </div>
+            <div class="voiceprint-card">
+              <div class="voiceprint-head">
+                <span>你的声纹正在成形</span>
+                <strong id="voiceprintName">未命名音色</strong>
+              </div>
+              <div class="voiceprint" id="voiceprint" aria-label="实时声纹画像"></div>
+              <div class="voiceprint-caption" id="voiceprintCaption">每一次靠近和远离，都会改变这条声纹。</div>
             </div>
             <div class="meters" id="heartMeters"></div>
           </aside>
@@ -1387,41 +1687,42 @@
 
       <section class="screen" id="screen-result">
         <div class="result-layout">
-          <div class="result-panel">
+          <div class="result-panel album-result">
             <div class="mix-header">
               <img src="assets/bpm-dog-avatar.png" alt="BPM 小狗">
               <div>
-                <h2 class="result-title">我的个人使用说明 v0.1</h2>
+                <div class="album-kicker">LIFE MIXER GENERATED ALBUM</div>
+                <h2 class="result-title" id="resultTitle">我的个人使用说明 v0.1</h2>
                 <p class="result-subtitle" id="resultIntro"></p>
               </div>
             </div>
             <div class="result-hero-card">
-              <h3>BPM 小狗先给一句结论</h3>
+              <h3>主打歌一句话</h3>
               <p id="resultOneLine"></p>
             </div>
             <div class="result-block">
-              <h3>我的人生主旋律</h3>
+              <h3>A-side：我的人生主旋律</h3>
               <p id="melodyText"></p>
               <div class="tag-row" id="melodyTags"></div>
             </div>
             <div class="result-block">
-              <h3>我会被这些事情点亮</h3>
+              <h3>A-side 02：我会被这些事情点亮</h3>
               <ul id="sparkList"></ul>
             </div>
             <div class="result-block">
-              <h3>我的底噪来源</h3>
+              <h3>B-side：我的底噪来源</h3>
               <ul id="noiseList"></ul>
             </div>
             <div class="result-block">
-              <h3>我低电量时的样子</h3>
+              <h3>B-side 02：低电量版本</h3>
               <p id="lowBatteryText"></p>
             </div>
             <div class="result-block">
-              <h3>如何更好地使用我</h3>
+              <h3>说明书内页：如何更好地使用我</h3>
               <ul id="manualList"></ul>
             </div>
             <div class="result-block">
-              <h3>我正在成为的人</h3>
+              <h3>Hidden Track：我正在成为的人</h3>
               <p id="becomingText"></p>
             </div>
             <div class="result-block">
@@ -1438,22 +1739,22 @@
           <aside class="share-stack">
             <div class="share-card album" id="albumShare">
               <div>
-                <div class="kicker">我的人生主旋律</div>
+                <div class="kicker">猜猜我的人生主旋律</div>
                 <h3 id="shareAlbumTitle"></h3>
                 <div class="album-bars" id="shareBars"></div>
               </div>
               <p id="shareAlbumMeta"></p>
             </div>
             <div class="share-card">
-              <h3>如何更好地使用我</h3>
+              <h3>一句话使用说明</h3>
               <p id="shareManual"></p>
             </div>
             <div class="share-card">
-              <h3>BPM 小狗听完后说：</h3>
+              <h3>朋友如何打开我</h3>
               <p id="shareRoast"></p>
             </div>
             <div class="share-card">
-              <h3>朋友挑战</h3>
+              <h3>朋友挑战卡</h3>
               <p id="shareChallenge"></p>
             </div>
           </aside>
@@ -2040,6 +2341,49 @@
       }).join("");
     }
 
+    function renderLiveWave(dims = []) {
+      const target = $("liveWave");
+      if (!target) return;
+      const seed = dims.join("").length || state.heartIndex + 1;
+      target.innerHTML = Array.from({ length: 24 }, (_, index) => {
+        const lift = dims.reduce((sum, dim) => sum + Math.max(0, state.melody[dim] || 0), 0);
+        const h = 18 + ((index * 17 + seed * 11 + lift * 7) % 58);
+        return `<span style="--i:${index}; --h:${h}"></span>`;
+      }).join("");
+    }
+
+    function renderVoiceprint() {
+      const target = $("voiceprint");
+      if (!target) return;
+      const top = ranked(state.melody).slice(0, 3);
+      const topName = top.map(([key]) => key).join(" / ");
+      $("voiceprintName").textContent = top.some(([, value]) => value > 0) ? topName : "等待第一束光";
+      $("voiceprintCaption").textContent = top.some(([, value]) => value > 0)
+        ? `当前最亮：${topName}。这不是标签，是你此刻的声音轮廓。`
+        : "每一次靠近和远离，都会改变这条声纹。";
+      const max = Math.max(1, ...melodyKeys.map(key => Math.max(0, state.melody[key])));
+      target.innerHTML = Array.from({ length: 32 }, (_, index) => {
+        const key = melodyKeys[index % melodyKeys.length];
+        const value = Math.max(0, state.melody[key]);
+        const base = 12 + ((index * 13 + state.heartIndex * 7) % 28);
+        const h = Math.min(100, base + value / max * 68);
+        const color = melodyColors[key] || "#20e6d2";
+        return `<span class="voiceprint-bar" title="${key}" style="--h:${h}; --bar:${color}"></span>`;
+      }).join("");
+    }
+
+    function setMascotMood(mood = "listen") {
+      const mascot = $("heartMascot");
+      if (mascot) mascot.dataset.mood = mood;
+    }
+
+    function moodForChoice(choice) {
+      if (choice === "near") return "spark";
+      if (choice === "far") return "mute";
+      if (choice === "neutral") return "bypass";
+      return "listen";
+    }
+
     function init() {
       updateAudioUI();
       $("audioToggle").addEventListener("click", () => lifeMixerAudio.toggle());
@@ -2093,11 +2437,14 @@
       $("heartText").textContent = card[0];
       $("heartComic").src = comicForDims(card[1]);
       $("heartComic").alt = `${card[1].join("、")}漫画场景`;
+      $("samplerReadout").textContent = `正在监听：${card[1].join(" / ")}`;
       $("beatToast").textContent = state.lastHeartFeedback || stageHint(state.heartIndex);
       $("heartBubble").textContent = state.lastHeartFeedback || (state.heartIndex < 3
         ? "这不是兴趣测试，这是找你的电量入口。"
         : "有些事情没错，只是不通你的电。");
       renderMeters("heartMeters", state.melody);
+      renderLiveWave(card[1]);
+      renderVoiceprint();
       showScreen("screen-heart", GAME_CONFIG.progress.heartStart + state.heartIndex / state.heartSet.length * GAME_CONFIG.progress.heartSpan);
     }
 
@@ -2111,12 +2458,20 @@
       dims.forEach(dim => state.melody[dim] += delta);
       if (choice === "near") state.nearScenes.push({ text, dims });
       state.lastHeartFeedback = feedbackForHeart(choice, dims);
+      $("samplerReadout").textContent = choice === "near"
+        ? `${dims[0]} 音轨被推高了`
+        : choice === "far"
+          ? `${dims[0]} 音轨暂时静音`
+          : `${dims[0]} 音轨旁路通过`;
       $("beatToast").textContent = state.lastHeartFeedback;
       $("heartBubble").textContent = state.lastHeartFeedback;
+      setMascotMood(moodForChoice(choice));
       $("heartCard").classList.add("pulse");
       renderMeters("heartMeters", state.melody);
+      renderVoiceprint();
       setTimeout(() => {
         $("heartCard").classList.remove("pulse");
+        setMascotMood("listen");
         state.heartIndex += 1;
         if (state.heartIndex === 6 || state.heartIndex === 12) {
           state.lastHeartFeedback = stageHint(state.heartIndex);
@@ -2262,7 +2617,9 @@
       const mbti = mbtiHint(topMelodyKeys, topNoise.map(n => n.key));
       const roast = roastRules[`${topMelody[0].key}|${topNoise[0].key}`] || defaultRoast(topMelody[0].key, topNoise[0].key);
       const oneLine = resultOneLine(topMelody[0].key, topNoise[0].key, future.name);
-      state.result = { topMelody, topNoise, future, spark, advice, mbti, roast, oneLine };
+      const albumTitle = albumName(topMelody[0].key, topMelody[1].key, topNoise[0].key);
+      const hiddenTrack = hiddenTrackLine(topMelody[0].key, topNoise[0].key);
+      state.result = { topMelody, topNoise, future, spark, advice, mbti, roast, oneLine, albumTitle, hiddenTrack };
     }
 
     function selectSparkScenes(topMelodyKeys) {
@@ -2328,8 +2685,51 @@
       return `${map[melody] || defaultRoast(melody, noise)} 当前最像的未来版本：${future}。`;
     }
 
+    function albumName(primary, secondary, noise) {
+      const primaryMap = {
+        "创造": "把想法做成光的人",
+        "解释": "雾里开麦的人",
+        "探索": "地图边缘采样的人",
+        "组织": "混乱现场的节拍器",
+        "连接": "真实关系收音机",
+        "表达": "不想静音的发声者",
+        "秩序": "给世界调低损耗的人",
+        "精进": "慢慢变强的练习生",
+        "自由": "自带出口的漫游者",
+        "照护": "温柔但会耗电的人"
+      };
+      const noiseMap = {
+        "模糊": "怕雾版",
+        "打断": "完整时间版",
+        "空转": "拒绝空转版",
+        "失控": "需要兜底版",
+        "压迫": "保留选择权版",
+        "低质社交": "讨厌尬聊版",
+        "否定": "需要方法版",
+        "隐形": "请认真看见版"
+      };
+      return `《${primaryMap[primary] || primary}：${secondary}混音 ${noiseMap[noise] || ""}》`;
+    }
+
+    function hiddenTrackLine(melody, noise) {
+      const map = {
+        "创造": "别人以为你在发呆，其实你在等一个能落地的形状。",
+        "解释": "别人以为你想太多，其实你是在替混乱找出口。",
+        "探索": "别人以为你不稳定，其实你只是需要继续看见新东西。",
+        "组织": "别人以为你爱管事，其实你是在帮混乱降噪。",
+        "连接": "别人以为你爱热闹，其实你只在乎有没有真的接上。",
+        "表达": "别人以为你想被关注，其实你是在确认自己的声音没有失真。",
+        "秩序": "别人以为你扫兴，其实你是在保护大家的电量。",
+        "精进": "别人以为你较劲，其实你在给自己练一份扎实的底气。",
+        "自由": "别人以为你难安排，其实你需要知道自己为什么出发。",
+        "照护": "别人以为你很好说话，其实你也需要被温柔使用。"
+      };
+      return `${map[melody] || "别人看到的是表面，你真正的按钮藏在细节里"} 当 ${noise} 太重时，这首隐藏曲会变小声。`;
+    }
+
     function renderResult() {
       const r = state.result;
+      $("resultTitle").textContent = r.albumTitle;
       $("resultIntro").textContent = state.calibration[2];
       $("resultOneLine").textContent = r.oneLine;
       $("melodyText").textContent = `我的主旋律是 ${r.topMelody[0].key}，副旋律是 ${r.topMelody[1].key}，隐藏旋律是 ${r.topMelody[2].key}。${melodyTemplates[r.topMelody[0].key]}`;
@@ -2341,17 +2741,17 @@
       $("noiseList").innerHTML = r.topNoise.map(n => `<li><strong>${n.key}</strong>：${noiseTemplates[n.key]}</li>`).join("");
       $("lowBatteryText").textContent = lowBattery[r.topNoise[0].key];
       $("manualList").innerHTML = r.advice.map(item => `<li>${item}</li>`).join("");
-      $("becomingText").textContent = `${futureTemplates[r.future.name]} 30 天小实验：${experiments[r.future.name]}`;
+      $("becomingText").textContent = `${futureTemplates[r.future.name]} ${r.hiddenTrack} 30 天小实验：${experiments[r.future.name]}`;
       $("mbtiText").textContent = r.mbti;
 
-      $("shareAlbumTitle").textContent = `${r.topMelody[0].key} / ${r.topMelody[1].key} / ${r.topMelody[2].key}`;
-      $("shareAlbumMeta").textContent = `底噪：${r.topNoise.map(n => n.key).join(" / ")}｜当前版本：${r.future.name}`;
+      $("shareAlbumTitle").textContent = `${r.albumTitle}`;
+      $("shareAlbumMeta").textContent = `我先不公布答案。你猜我的主旋律是 ${r.topMelody[0].key}，还是最容易被 ${r.topNoise[0].key} 静音？`;
       $("shareBars").innerHTML = r.topMelody.map((m, i) => `
         <div class="album-bar"><span style="width:${Math.max(18, 92 - i * 18)}%; background:linear-gradient(90deg, ${melodyColors[m.key]}, #f7f2e8)"></span></div>
       `).join("");
-      $("shareManual").textContent = `请给我：${r.advice.slice(0, 2).join(" / ")} 请避免：${r.topNoise.map(n => n.key).join(" / ")}。`;
-      $("shareRoast").textContent = `“${r.roast}”`;
-      $("shareChallenge").textContent = `把这张发出去，让朋友猜：你最亮的到底是 ${r.topMelody[0].key}，还是最容易被 ${r.topNoise[0].key} 静音？`;
+      $("shareManual").textContent = `打开方式：${r.advice[0]} 避免事项：${r.topNoise[0].key} 太重时，我会开始失真。`;
+      $("shareRoast").textContent = `朋友请注意：${r.advice[1]} BPM 小狗补一句：“${r.roast}”`;
+      $("shareChallenge").textContent = `发给朋友玩：先让 TA 猜你的 A-side 主旋律，再一起对照谁更懂谁。`;
     }
 
     function trimScene(text) {
@@ -2386,9 +2786,9 @@
         ctx.globalAlpha = 1;
 
         if (dog) roundImage(ctx, dog, 660, 120, 260, 260, 28);
-        ctx.fillStyle = "#f7f2e8";
-        ctx.font = "900 80px PingFang SC, Microsoft YaHei, sans-serif";
-        wrapCanvasText(ctx, "我的人生主旋律", 90, 170, 540, 88);
+      ctx.fillStyle = "#f7f2e8";
+      ctx.font = "900 80px PingFang SC, Microsoft YaHei, sans-serif";
+      wrapCanvasText(ctx, r.albumTitle || "我的人生主旋律", 90, 160, 560, 82);
         ctx.font = "700 34px PingFang SC, Microsoft YaHei, sans-serif";
         ctx.fillStyle = "#b7f34a";
         ctx.fillText("人生调音台 · v0.1", 92, 350);
@@ -2436,7 +2836,7 @@
       if (!state.result) return;
       lifeMixerAudio.playUi();
       const r = state.result;
-      const text = `我刚玩了《人生调音台》，我的人生主旋律是：${r.topMelody.map(m => m.key).join(" / ")}。\\n底噪是：${r.topNoise.map(n => n.key).join(" / ")}。\\nBPM 小狗听完后说：“${r.roast}”\\n\\n这不是 MBTI 判决书，是一份当前版本的个人使用说明。\\n来玩：${location.href}`;
+      const text = `我刚玩了《人生调音台》，生成了我的人生专辑：${r.albumTitle}。\\nA-side：${r.topMelody.map(m => m.key).join(" / ")}。\\nB-side 底噪：${r.topNoise.map(n => n.key).join(" / ")}。\\nBPM 小狗听完后说：“${r.roast}”\\n\\n你来猜猜我最亮的是哪条音轨。\\n来玩：${location.href}`;
       try {
         await writeClipboardText(text);
         flashButtonLabel("copyBtn", "已复制");
