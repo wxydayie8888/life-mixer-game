@@ -7,17 +7,28 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23111217'/%3E%3Cpath d='M18 42V22M32 48V16M46 38V26' stroke='%2320e6d2' stroke-width='7' stroke-linecap='round'/%3E%3Ccircle cx='18' cy='31' r='7' fill='%23ffb84d'/%3E%3Ccircle cx='32' cy='26' r='7' fill='%23b7f34a'/%3E%3Ccircle cx='46' cy='34' r='7' fill='%23ff6fae'/%3E%3C/svg%3E">
   <style>
     :root {
-      --bg: #0f1016;
-      --panel: #171b25;
-      --panel-2: #222733;
-      --ink: #f7f2e8;
-      --muted: #aeb3c1;
+      --bg: #0b0d12;
+      --studio: #10141d;
+      --panel: #181d27;
+      --panel-2: #242a36;
+      --panel-3: #303746;
+      --ink: #fff8ea;
+      --muted: #b7bdca;
       --line: rgba(255, 255, 255, 0.13);
-      --cyan: #20e6d2;
-      --lime: #b7f34a;
-      --orange: #ffb84d;
-      --pink: #ff6fae;
-      --red: #ff5c5c;
+      --cyan: #44eadf;
+      --lime: #b6ff4a;
+      --orange: #ffbf57;
+      --pink: #ff6fb1;
+      --red: #ff5f6a;
+      --violet: #a989ff;
+      --blue: #73a7ff;
+      --amber: #ffd166;
+      --teal: #4fe6b8;
+      --paper: #f7f0df;
+      --warning: #ff4f5e;
+      --noise-hot: #ff5f6a;
+      --noise-mid: #ff9f68;
+      --noise-cold: #a989ff;
       --shadow: rgba(0, 0, 0, 0.32);
       --radius: 8px;
       color-scheme: dark;
@@ -31,9 +42,10 @@
       margin: 0;
       min-height: 100vh;
       background:
-        radial-gradient(circle at 15% 15%, rgba(32, 230, 210, 0.11), transparent 28rem),
-        radial-gradient(circle at 80% 20%, rgba(255, 111, 174, 0.08), transparent 24rem),
-        linear-gradient(145deg, #0e1016 0%, #151824 58%, #111217 100%);
+        radial-gradient(circle at 14% 16%, rgba(68, 234, 223, 0.11), transparent 27rem),
+        radial-gradient(circle at 78% 18%, rgba(255, 111, 177, 0.085), transparent 24rem),
+        radial-gradient(circle at 52% 92%, rgba(255, 191, 87, 0.06), transparent 30rem),
+        linear-gradient(145deg, #0b0d12 0%, #151924 58%, #101117 100%);
       color: var(--ink);
       font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
       letter-spacing: 0;
@@ -46,8 +58,9 @@
       z-index: -1;
       background:
         linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px);
-      background-size: 52px 52px;
+        linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px),
+        linear-gradient(90deg, transparent 0 49%, rgba(68, 234, 223, 0.045) 50%, transparent 51%);
+      background-size: 52px 52px, 52px 52px, 240px 100%;
       mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent 82%);
       pointer-events: none;
     }
@@ -581,8 +594,9 @@
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: var(--radius);
       background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035)),
-        rgba(23, 27, 37, 0.88);
+        linear-gradient(180deg, rgba(255, 255, 255, 0.088), rgba(255, 255, 255, 0.035)),
+        linear-gradient(135deg, rgba(68, 234, 223, 0.055), transparent 42%),
+        rgba(20, 24, 34, 0.9);
       box-shadow: 0 18px 56px var(--shadow);
     }
 
@@ -782,42 +796,79 @@
 
     .meters {
       display: grid;
-      gap: 10px;
+      gap: 12px;
       margin-top: 18px;
     }
 
     .meter {
       display: grid;
-      grid-template-columns: 64px 1fr 36px;
+      grid-template-columns: 70px 1fr 38px;
       align-items: center;
       gap: 10px;
+      min-height: 28px;
       font-size: 13px;
       color: var(--muted);
     }
 
+    .meter > span:first-child {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 850;
+    }
+
+    .meter > span:first-child::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 2px;
+      background: var(--meter-color, var(--cyan));
+      box-shadow: 0 0 14px var(--meter-glow, rgba(68, 234, 223, 0.28));
+    }
+
     .meter-track {
-      height: 8px;
+      position: relative;
+      height: 14px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.08) 0 1px, transparent 1px 11px),
+        rgba(255, 255, 255, 0.075);
       overflow: hidden;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.015);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+        inset 0 -8px 16px rgba(0, 0, 0, 0.22);
+    }
+
+    .meter-track::after {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border-radius: inherit;
+      border: 1px solid rgba(255, 255, 255, 0.035);
+      pointer-events: none;
     }
 
     .meter-fill {
       width: 0%;
       height: 100%;
       border-radius: inherit;
-      background: linear-gradient(90deg, var(--meter-color, var(--cyan)), rgba(247, 242, 232, 0.88));
-      box-shadow: 0 0 14px var(--meter-glow, rgba(32, 230, 210, 0.28));
-      transition: width 260ms ease, background 260ms ease;
+      background:
+        linear-gradient(90deg, var(--meter-color, var(--cyan)), rgba(255, 248, 234, 0.94)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.16) 0 2px, transparent 2px 9px);
+      box-shadow: 0 0 16px var(--meter-glow, rgba(68, 234, 223, 0.28));
+      transition: width 260ms ease, background 260ms ease, opacity 260ms ease;
     }
 
     .meter.is-negative .meter-fill {
-      background: linear-gradient(90deg, rgba(255, 92, 92, 0.95), rgba(255, 111, 174, 0.8));
-      box-shadow: 0 0 12px rgba(255, 92, 92, 0.22);
+      background:
+        linear-gradient(90deg, var(--noise-hot), var(--noise-mid)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.12) 0 2px, transparent 2px 9px);
+      box-shadow: 0 0 16px rgba(255, 95, 106, 0.24);
     }
 
     .meter.is-empty .meter-fill {
+      width: 4% !important;
+      opacity: 0.28;
       box-shadow: none;
     }
 
@@ -825,6 +876,7 @@
       color: var(--ink);
       font-variant-numeric: tabular-nums;
       text-align: right;
+      font-weight: 850;
     }
 
     .calibration-options,
@@ -879,7 +931,7 @@
 
     .sample-card {
       position: relative;
-      height: clamp(260px, 34vh, 360px);
+      height: clamp(300px, 42vh, 430px);
       min-height: 0;
       display: grid;
       grid-template-rows: 1fr;
@@ -887,9 +939,12 @@
       overflow: hidden;
       cursor: default;
       background:
-        linear-gradient(135deg, rgba(32, 230, 210, 0.08), transparent 36%),
-        linear-gradient(225deg, rgba(255, 111, 174, 0.08), transparent 34%),
+        linear-gradient(135deg, rgba(68, 234, 223, 0.14), transparent 36%),
+        linear-gradient(225deg, rgba(255, 111, 177, 0.12), transparent 34%),
         rgba(255, 255, 255, 0.055);
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.06),
+        0 24px 70px rgba(0, 0, 0, 0.36);
     }
 
     .sample-card::after {
@@ -897,8 +952,8 @@
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(180deg, rgba(15, 16, 22, 0.12), rgba(15, 16, 22, 0.76)),
-        radial-gradient(circle at 50% 42%, transparent 0 28%, rgba(15, 16, 22, 0.42) 72%);
+        linear-gradient(180deg, rgba(10, 12, 18, 0.04), rgba(10, 12, 18, 0.72)),
+        radial-gradient(circle at 50% 42%, transparent 0 34%, rgba(10, 12, 18, 0.46) 78%);
       pointer-events: none;
     }
 
@@ -969,7 +1024,7 @@
       position: absolute;
       z-index: 2;
       top: 14px;
-      left: 14px;
+      right: 14px;
       display: inline-flex;
       align-items: center;
       min-height: 28px;
@@ -985,15 +1040,29 @@
 
     .sample-copy {
       position: absolute;
-      inset: auto 18px 18px;
+      inset: auto 22px 22px;
       z-index: 2;
       display: grid;
       gap: 14px;
       padding: clamp(16px, 3vw, 24px);
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.16);
       border-radius: 8px;
-      background: rgba(17, 18, 24, 0.76);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.035)),
+        rgba(10, 12, 18, 0.78);
       backdrop-filter: blur(16px);
+      box-shadow: 0 16px 46px rgba(0, 0, 0, 0.28);
+    }
+
+    .sample-copy::before {
+      content: "SAMPLE";
+      position: absolute;
+      right: 14px;
+      top: 12px;
+      color: rgba(255, 248, 234, 0.18);
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: 0.18em;
     }
 
     .card-index {
@@ -1005,9 +1074,11 @@
     .sample-text {
       max-width: 740px;
       margin: 0;
-      font-size: clamp(22px, 3vw, 34px);
+      padding-right: 70px;
+      font-size: clamp(23px, 3.1vw, 38px);
       line-height: 1.25;
-      font-weight: 850;
+      font-weight: 920;
+      text-wrap: balance;
     }
 
     .beat-toast {
@@ -1037,10 +1108,11 @@
     .voiceprint-card {
       margin: 14px 0 16px;
       padding: 14px;
-      border: 1px solid rgba(32, 230, 210, 0.13);
+      border: 1px solid rgba(68, 234, 223, 0.2);
       border-radius: 8px;
       background:
-        radial-gradient(circle at 20% 20%, rgba(32, 230, 210, 0.12), transparent 12rem),
+        radial-gradient(circle at 20% 20%, rgba(68, 234, 223, 0.16), transparent 12rem),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02)),
         rgba(255, 255, 255, 0.045);
     }
 
@@ -1069,6 +1141,8 @@
       padding: 12px;
       border-radius: 8px;
       background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 18px),
+        linear-gradient(180deg, transparent 0 49%, rgba(255,255,255,0.06) 50%, transparent 51%),
         linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.025)),
         rgba(5, 9, 12, 0.42);
       overflow: hidden;
@@ -1160,40 +1234,60 @@
       display: grid;
       grid-template-columns: 1fr 74px 1fr;
       align-items: stretch;
-      gap: 14px;
+      gap: 18px;
       margin-top: 32px;
     }
 
     .noise-card {
-      min-height: 230px;
+      position: relative;
+      min-height: 330px;
       display: grid;
-      grid-template-rows: minmax(120px, 0.9fr) auto;
-      gap: 14px;
+      grid-template-rows: minmax(150px, 0.92fr) auto;
+      gap: 16px;
       align-items: stretch;
       text-align: center;
-      font-size: clamp(20px, 2.6vw, 31px);
+      font-size: clamp(22px, 2.7vw, 36px);
       line-height: 1.25;
-      font-weight: 850;
+      font-weight: 920;
       overflow: hidden;
+      background:
+        radial-gradient(circle at 18% 16%, rgba(255, 95, 106, 0.13), transparent 13rem),
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04)),
+        rgba(31, 36, 48, 0.94);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.035);
+    }
+
+    .noise-card::before {
+      content: "NOISE CUT";
+      position: absolute;
+      right: 16px;
+      top: 14px;
+      z-index: 2;
+      color: rgba(255, 248, 234, 0.16);
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: 0.14em;
     }
 
     .noise-comic {
       position: relative;
       display: block;
-      min-height: 124px;
+      min-height: 154px;
       border-radius: 8px;
       overflow: hidden;
       background: rgba(255, 255, 255, 0.05);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+        0 14px 34px rgba(0, 0, 0, 0.24);
     }
 
     .noise-comic img {
       width: 100%;
       height: 100%;
-      min-height: 124px;
+      min-height: 154px;
       display: block;
       object-fit: cover;
-      filter: saturate(0.96) contrast(1.03) brightness(0.82);
+      filter: saturate(1.08) contrast(1.05) brightness(0.88);
       transition: transform 220ms ease, filter 220ms ease;
     }
 
@@ -1214,18 +1308,25 @@
 
     .noise-comic .comic-cue {
       top: 10px;
-      left: 10px;
+      right: 10px;
       min-height: 24px;
       padding: 0 9px;
       font-size: 11px;
     }
 
     .noise-label {
-      display: block;
+      display: inline-flex;
+      justify-self: center;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 12px;
       margin-bottom: 10px;
-      color: var(--red);
+      border-radius: 999px;
+      color: #fff9f1;
+      background: linear-gradient(135deg, var(--warning), var(--noise-mid));
+      box-shadow: 0 0 22px rgba(255, 95, 106, 0.18);
       font-size: 13px;
-      font-weight: 900;
+      font-weight: 950;
       letter-spacing: 0;
     }
 
@@ -1237,15 +1338,29 @@
     .noise-copy {
       display: grid;
       align-content: center;
-      min-height: 104px;
+      min-height: 132px;
+      padding: 4px 8px 10px;
     }
 
     .versus {
       display: grid;
       place-items: center;
+      position: relative;
       color: var(--orange);
       font-weight: 900;
-      font-size: 20px;
+      font-size: 22px;
+    }
+
+    .versus::before {
+      content: "";
+      position: absolute;
+      width: 52px;
+      height: 52px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 191, 87, 0.28);
+      background: rgba(255, 191, 87, 0.06);
+      box-shadow: 0 0 26px rgba(255, 191, 87, 0.12);
+      z-index: -1;
     }
 
     .future-card {
@@ -1300,6 +1415,158 @@
       font-weight: 950;
       line-height: 0.9;
       pointer-events: none;
+    }
+
+    .result-cover {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(220px, 310px);
+      gap: clamp(18px, 3vw, 28px);
+      align-items: stretch;
+      min-height: 400px;
+      margin: 0 0 22px;
+      padding: clamp(20px, 3vw, 34px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(68, 234, 223, 0.2), transparent 18rem),
+        radial-gradient(circle at 88% 18%, rgba(255, 111, 177, 0.18), transparent 16rem),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.032)),
+        #121722;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.035),
+        0 24px 72px rgba(0, 0, 0, 0.36);
+      overflow: hidden;
+    }
+
+    .result-cover::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,0.8), transparent 92%);
+      pointer-events: none;
+    }
+
+    .result-cover-main,
+    .result-cover-side {
+      position: relative;
+      z-index: 1;
+    }
+
+    .result-cover-main {
+      display: grid;
+      align-content: space-between;
+      gap: 18px;
+    }
+
+    .cover-label {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      min-height: 30px;
+      padding: 0 12px;
+      border-radius: 999px;
+      color: #081011;
+      background: linear-gradient(135deg, var(--lime), var(--cyan));
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: 0.1em;
+      box-shadow: 0 0 24px rgba(68, 234, 223, 0.18);
+    }
+
+    .cover-title {
+      margin: 12px 0 12px;
+      max-width: 760px;
+      font-size: clamp(34px, 4.6vw, 60px);
+      line-height: 1.07;
+      font-weight: 950;
+      overflow-wrap: anywhere;
+    }
+
+    .cover-line {
+      max-width: 760px;
+      margin: 0;
+      color: #efe8db;
+      font-size: clamp(18px, 2.2vw, 25px);
+      line-height: 1.55;
+      font-weight: 760;
+    }
+
+    .cover-tracks {
+      display: grid;
+      gap: 10px;
+      max-width: 640px;
+    }
+
+    .cover-track {
+      display: grid;
+      grid-template-columns: 70px 1fr 34px;
+      align-items: center;
+      gap: 10px;
+      color: #f7f0df;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .cover-track-bar {
+      height: 16px;
+      border-radius: 999px;
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.08) 0 1px, transparent 1px 12px),
+        rgba(255, 255, 255, 0.09);
+      overflow: hidden;
+    }
+
+    .cover-track-bar span {
+      display: block;
+      height: 100%;
+      width: var(--w, 70%);
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--track-color, var(--cyan)), rgba(255, 248, 234, 0.95));
+      box-shadow: 0 0 18px color-mix(in srgb, var(--track-color, var(--cyan)) 38%, transparent);
+    }
+
+    .result-cover-side {
+      display: grid;
+      align-content: space-between;
+      gap: 14px;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)),
+        rgba(8, 10, 15, 0.42);
+      backdrop-filter: blur(12px);
+    }
+
+    .cover-dog {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 18px 46px rgba(0, 0, 0, 0.32);
+    }
+
+    .cover-sticker {
+      display: grid;
+      gap: 7px;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .cover-sticker strong {
+      color: var(--lime);
+      font-size: 18px;
     }
 
     .mix-header {
@@ -1574,7 +1841,8 @@
     @media (max-width: 920px) {
       .hero,
       .game-grid,
-      .result-layout {
+      .result-layout,
+      .result-cover {
         grid-template-columns: 1fr;
       }
 
@@ -1603,8 +1871,25 @@
         grid-template-columns: 1fr;
       }
 
+      .noise-card {
+        min-height: 300px;
+      }
+
       .versus {
         min-height: 42px;
+      }
+
+      .result-cover {
+        min-height: auto;
+      }
+
+      .result-cover-side {
+        grid-template-columns: 96px 1fr 1fr;
+        align-items: center;
+      }
+
+      .cover-dog {
+        width: 96px;
       }
 
       .future-grid,
@@ -1689,7 +1974,7 @@
       }
 
       .sample-card {
-        height: 220px;
+        height: 270px;
       }
 
       .sample-copy {
@@ -1698,8 +1983,16 @@
         padding: 14px;
       }
 
+      .sample-copy::before {
+        display: none;
+      }
+
+      .sample-text {
+        padding-right: 0;
+      }
+
       .noise-card {
-        min-height: 250px;
+        min-height: 290px;
         gap: 10px;
         padding: 12px;
         font-size: 21px;
@@ -1707,11 +2000,39 @@
 
       .noise-comic,
       .noise-comic img {
-        min-height: 112px;
+        min-height: 130px;
       }
 
       .noise-copy {
-        min-height: 92px;
+        min-height: 110px;
+      }
+
+      .result-cover {
+        padding: 16px;
+      }
+
+      .cover-title {
+        font-size: 34px;
+      }
+
+      .cover-line {
+        font-size: 17px;
+      }
+
+      .cover-track {
+        grid-template-columns: 56px 1fr 30px;
+      }
+
+      .result-cover-side {
+        grid-template-columns: 72px 1fr;
+      }
+
+      .cover-dog {
+        width: 72px;
+      }
+
+      .cover-sticker {
+        min-height: 72px;
       }
 
       .sampler-status {
@@ -1969,6 +2290,27 @@
       <section class="screen" id="screen-result">
         <div class="result-layout">
           <div class="result-panel album-result">
+            <div class="result-cover">
+              <div class="result-cover-main">
+                <div>
+                  <span class="cover-label">PERSONAL ALBUM / READY TO SHARE</span>
+                  <h2 class="cover-title" id="coverTitle">我的人格专辑</h2>
+                  <p class="cover-line" id="coverLine"></p>
+                </div>
+                <div class="cover-tracks" id="coverTracks"></div>
+              </div>
+              <div class="result-cover-side">
+                <img class="cover-dog" src="assets/bpm-dog-avatar.png" alt="拍宝 BPMO">
+                <div class="cover-sticker">
+                  <span>当前可晒外号</span>
+                  <strong id="coverAlias">BPMO 正在监听</strong>
+                </div>
+                <div class="cover-sticker">
+                  <span>最容易静音</span>
+                  <strong id="coverNoise">底噪未知</strong>
+                </div>
+              </div>
+            </div>
             <div class="mix-header">
               <img src="assets/bpm-dog-avatar.png" alt="拍宝 BPMO">
               <div>
@@ -2107,16 +2449,26 @@
 
     const melodyKeys = ["创造", "解释", "探索", "组织", "连接", "表达", "秩序", "精进", "自由", "照护"];
     const melodyColors = {
-      "创造": "#20e6d2",
-      "解释": "#b7f34a",
-      "探索": "#ffb84d",
-      "组织": "#7aa7ff",
-      "连接": "#ff6fae",
-      "表达": "#ff8f5c",
-      "秩序": "#b9c3d9",
-      "精进": "#c6ff7a",
+      "创造": "#44eadf",
+      "解释": "#b6ff4a",
+      "探索": "#ffbf57",
+      "组织": "#73a7ff",
+      "连接": "#ff6fb1",
+      "表达": "#ff8f68",
+      "秩序": "#c3cbe0",
+      "精进": "#d6ff70",
       "自由": "#6df0ff",
       "照护": "#ffd166"
+    };
+    const noiseColors = {
+      "模糊": "#a989ff",
+      "打断": "#ff5f6a",
+      "空转": "#8f9aac",
+      "失控": "#ff9f68",
+      "压迫": "#ff6fb1",
+      "低质社交": "#c48cff",
+      "否定": "#ff4f5e",
+      "隐形": "#7e8aa0"
     };
 
     const calibration = [
@@ -2876,12 +3228,12 @@
       const top = ranked(sourceObj).slice(0, type === "melody" ? 8 : 6);
       const max = Math.max(1, ...top.map(([, v]) => Math.abs(v)));
       target.innerHTML = top.map(([key, value]) => {
-        const color = type === "melody" ? (melodyColors[key] || "#20e6d2") : "#ff5c5c";
-        const width = value === 0 ? 0 : Math.max(6, Math.abs(value) / max * 100);
+        const color = type === "melody" ? (melodyColors[key] || "#44eadf") : (noiseColors[key] || "#ff5f6a");
+        const width = value === 0 ? 4 : Math.max(10, Math.abs(value) / max * 100);
         const stateClass = value < 0 ? "is-negative" : value === 0 ? "is-empty" : "is-positive";
         const fillStyle = value < 0
-          ? `width:${width}%; background:linear-gradient(90deg, rgba(255,92,92,0.95), rgba(255,111,174,0.82));`
-          : `width:${width}%; background:linear-gradient(90deg, ${color}, rgba(247,242,232,0.88));`;
+          ? `width:${width}%; background:linear-gradient(90deg, ${color}, rgba(255,159,104,0.88));`
+          : `width:${width}%; background:linear-gradient(90deg, ${color}, rgba(255,248,234,0.92));`;
         return `
           <div class="meter ${stateClass}" style="--meter-color:${color}; --meter-glow:${hexToGlow(color)}">
             <span>${key}</span>
@@ -3130,6 +3482,7 @@
       const palette = panelPalette(scene.label, tone);
       const shortText = panelCaption(text);
       const motif = panelMotif(text, scene.label, noise);
+      const drama = panelDrama(text, noise, tone);
       const offsetA = seed % 80;
       const offsetB = (seed * 7) % 90;
       const wave = Array.from({ length: 10 }, (_, index) => {
@@ -3143,7 +3496,7 @@
         const color = [palette.a, palette.b, palette.c, palette.d][index % 4];
         return `<g opacity="0.86"><rect x="${x}" y="${y}" width="${64 + index * 8}" height="42" rx="18" fill="${color}"/><path d="M${x + 20} ${y + 42}l-12 14l22-9" fill="${color}"/></g>`;
       }).join("");
-      const sceneArt = sceneShape(scene.label, palette, seed, motif);
+      const sceneArt = sceneShape(scene.label, palette, seed, motif, drama);
       const svg = `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" role="img" aria-label="${escapeXml(scene.label)}">
           <defs>
@@ -3164,6 +3517,7 @@
           <rect width="900" height="520" rx="34" fill="url(#glow${seed})"/>
           <g opacity="0.16">${gridLines(seed)}</g>
           ${sceneArt}
+          ${dramaProps(drama, palette, seed)}
           <path d="M70 ${302 + offsetA / 8} C210 ${220 + offsetB / 6}, 315 ${384 - offsetA / 5}, 448 286 S710 ${210 + offsetA / 4}, 835 270" fill="none" stroke="${palette.b}" stroke-width="6" stroke-linecap="round" opacity="0.7"/>
           <path d="M78 ${328 - offsetB / 9} C240 ${398 - offsetA / 8}, 380 ${214 + offsetB / 6}, 520 316 S720 ${390 - offsetA / 4}, 840 300" fill="none" stroke="${palette.c}" stroke-width="4" stroke-linecap="round" opacity="0.62"/>
           <g>${wave}</g>
@@ -3181,6 +3535,54 @@
         </svg>
       `;
       return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+    }
+
+    function panelDrama(text, noise, tone) {
+      const rules = [
+        [/朋友局|资源局|人脉局|表现局|隐形比赛/, ["饭局突然变局", "名片", "资源", "假笑"]],
+        [/收到|已读|只回了一个/, ["认真建议被已读", "收到", "省略号", "无语"]],
+        [/需求|小改|从头想|新想法|做取舍/, ["需求又加一轨", "需求+1", "重来", "警报"]],
+        [/救火|打断|窗口|在吗|好了没|一直在线|临时/, ["思路被切碎", "在吗", "急", "碎片"]],
+        [/边界|控制|绑架|替你决定|不服从|压迫/, ["边界在报警", "边界", "选择权", "后退"]],
+        [/功劳|默认你|没人问|理所当然|隐形|自动续费/, ["付出变隐身", "已完成", "无人看见", "低电量"]],
+        [/标准|模糊|规则|领导脑子|精准负责|雾/, ["标准藏进雾里", "标准?", "猜", "迷雾"]],
+        [/批评|否定|你不行|自己悟|没用的建议/, ["只有否定没有路", "你不行", "方法呢", "卡住"]],
+        [/空转|打卡|跑步机|历练|没有成长/, ["原地跑到没电", "打卡", "0反馈", "空转"]],
+        [/寒暄|点赞|客套|被迫营业|合群|热闹/, ["热闹但没接上", "哈哈", "客套", "断线"]],
+        [/陌生城市|小路|新领域|地图|冷门观点|试了一条路/, ["支线任务开启", "新地图", "拐弯", "发光"]],
+        [/作品|想法|小作品|工具|创作|改到第八版/, ["灵感落成作品", "草稿", "发布", "发光"]],
+        [/解释|讲明白|翻译|框架|一句人话/, ["复杂被讲清楚", "人话", "结构", "亮灯"]],
+        [/照护|松下来|安心|接住|复盘失败/, ["把人调回舒服", "慢慢来", "接住", "回温"]]
+      ];
+      const hit = rules.find(([pattern]) => pattern.test(text));
+      const fallback = noise ? [`${noise} 噪音`, "静音", "警报", "皱眉"] : ["心动采样", "亮一下", "记住", "点亮"];
+      const [title, propA, propB, mood] = hit ? hit[1] : fallback;
+      return {
+        title,
+        propA,
+        propB,
+        mood,
+        stamp: tone === "noise" ? "NOISE" : "SPARK"
+      };
+    }
+
+    function dramaProps(drama, p, seed) {
+      const tilt = seed % 2 ? -5 : 5;
+      return `
+        <g transform="translate(642 72) rotate(${tilt})">
+          <rect width="152" height="54" rx="12" fill="${p.lime}" opacity="0.94"/>
+          <text x="20" y="35" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="24" font-weight="950" fill="#071011">${escapeXml(drama.propA)}</text>
+        </g>
+        <g transform="translate(672 150) rotate(${-tilt})">
+          <rect width="144" height="50" rx="12" fill="${p.d}" opacity="0.86"/>
+          <text x="18" y="32" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="950" fill="#fff8ea">${escapeXml(drama.propB)}</text>
+        </g>
+        <g transform="translate(72 318)">
+          <rect width="180" height="42" rx="21" fill="rgba(8,11,17,0.72)" stroke="${p.a}" stroke-width="2"/>
+          <text x="20" y="28" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="20" font-weight="900" fill="${p.lime}">${escapeXml(drama.title)}</text>
+        </g>
+        <text x="760" y="104" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="30" font-weight="950" fill="${p.a}" opacity="0.68">${escapeXml(drama.stamp)}</text>
+      `;
     }
 
     function panelPalette(label, tone) {
@@ -3220,34 +3622,37 @@
       return [first, second ? `${second}${clean.length > limit * 2 - 2 ? "…" : ""}` : ""];
     }
 
-    function sceneShape(label, palette, seed, motif) {
-      if (label === "真心对话") return twoPeopleScene(palette, seed);
-      if (label === "混乱降噪") return chaosScene(palette, seed);
-      if (label === "规则校准") return orderScene(palette, seed);
-      if (label === "城市支线") return cityScene(palette, seed);
-      if (label === "表达现场") return stageScene(palette, seed);
-      return creationScene(palette, seed, motif);
+    function sceneShape(label, palette, seed, motif, drama) {
+      if (label === "真心对话") return twoPeopleScene(palette, seed, drama);
+      if (label === "混乱降噪") return chaosScene(palette, seed, drama);
+      if (label === "规则校准") return orderScene(palette, seed, drama);
+      if (label === "城市支线") return cityScene(palette, seed, drama);
+      if (label === "表达现场") return stageScene(palette, seed, drama);
+      return creationScene(palette, seed, motif, drama);
     }
 
-    function twoPeopleScene(p, seed) {
+    function twoPeopleScene(p, seed, drama) {
       return `
         <g transform="translate(${138 + seed % 18} 178)">
           <circle cx="80" cy="54" r="42" fill="#f0b58a"/><path d="M34 58c18-62 96-64 104-4c-32-20-66-18-104 4z" fill="#171017"/>
           <rect x="36" y="98" width="96" height="116" rx="32" fill="#283142"/>
+          <path d="M58 60q22 20 46 0" stroke="#171017" stroke-width="5" fill="none" opacity="${drama.mood === "假笑" ? 1 : 0.35}"/>
         </g>
         <g transform="translate(${580 - seed % 22} 160)">
           <circle cx="80" cy="54" r="42" fill="#f2bd93"/><path d="M34 56c18-58 102-62 110 12c-30-24-70-24-110-12z" fill="#3a1f1d"/>
           <rect x="34" y="98" width="108" height="122" rx="34" fill="#5b4a50"/>
+          <path d="M58 70q22 ${drama.mood === "无语" ? -8 : 12} 46 0" stroke="#2a1715" stroke-width="5" fill="none"/>
         </g>
         <path d="M310 228 C392 176, 486 176, 560 228" fill="none" stroke="${p.c}" stroke-width="7" stroke-linecap="round" opacity="0.62"/>
       `;
     }
 
-    function chaosScene(p, seed) {
+    function chaosScene(p, seed, drama) {
       return `
         <g transform="translate(94 92)" opacity="0.82">
           ${Array.from({ length: 12 }, (_, i) => `<rect x="${(i * 57 + seed) % 330}" y="${(i * 41 + seed) % 210}" width="62" height="36" rx="8" fill="${i % 2 ? p.a : p.d}" opacity="0.52" transform="rotate(${(i * 19 + seed) % 36 - 18} ${(i * 57 + seed) % 330} ${(i * 41 + seed) % 210})"/>`).join("")}
           <path d="M46 236c120-88 220 82 334-12" fill="none" stroke="${p.b}" stroke-width="10" stroke-linecap="round" opacity="0.7"/>
+          <text x="34" y="54" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="34" font-weight="950" fill="${p.lime}" opacity="0.8">${escapeXml(drama.propA)}</text>
         </g>
         <g transform="translate(566 126)">
           <rect width="210" height="172" rx="28" fill="rgba(255,255,255,0.08)" stroke="${p.b}" stroke-width="5"/>
@@ -3257,7 +3662,7 @@
       `;
     }
 
-    function orderScene(p, seed) {
+    function orderScene(p, seed, drama) {
       return `
         <g transform="translate(112 126)">
           <rect width="258" height="190" rx="26" fill="rgba(255,255,255,0.08)" stroke="${p.a}" stroke-width="5"/>
@@ -3267,20 +3672,22 @@
         </g>
         <path d="M438 220 C520 156, 610 160, 708 112" fill="none" stroke="${p.c}" stroke-width="12" stroke-linecap="round"/>
         <path d="M684 88l52 18l-40 38" fill="none" stroke="${p.c}" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="478" y="292" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="34" font-weight="950" fill="${p.a}" opacity="0.74">${escapeXml(drama.propA)}</text>
       `;
     }
 
-    function cityScene(p, seed) {
+    function cityScene(p, seed, drama) {
       return `
         <g transform="translate(92 210)">
           ${Array.from({ length: 11 }, (_, i) => `<rect x="${i * 64}" y="${80 - ((seed + i * 23) % 74)}" width="42" height="${110 + ((seed + i * 17) % 70)}" rx="8" fill="${i % 3 === 0 ? p.a : i % 3 === 1 ? p.b : p.c}" opacity="0.34"/>`).join("")}
         </g>
         <path d="M112 342 C250 250, 410 404, 548 270 S728 184, 822 258" fill="none" stroke="${p.lime}" stroke-width="9" stroke-linecap="round" stroke-dasharray="18 18"/>
         <g transform="translate(170 146)"><path d="M0 86l74-64l74 64v84H0z" fill="rgba(255,255,255,0.08)" stroke="${p.c}" stroke-width="5"/></g>
+        <text x="558" y="218" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="38" font-weight="950" fill="${p.lime}" opacity="0.82">${escapeXml(drama.propA)}</text>
       `;
     }
 
-    function stageScene(p, seed) {
+    function stageScene(p, seed, drama) {
       return `
         <g transform="translate(92 150)">
           <rect x="0" y="0" width="218" height="164" rx="28" fill="rgba(255,255,255,0.08)" stroke="${p.a}" stroke-width="5"/>
@@ -3291,14 +3698,16 @@
           ${Array.from({ length: 5 }, (_, i) => `<rect x="${i * 62}" y="${(seed + i * 29) % 90}" width="112" height="58" rx="24" fill="${[p.a, p.b, p.c, p.d, p.lime][i]}" opacity="0.74"/>`).join("")}
         </g>
         <path d="M318 250 C452 174, 604 328, 816 204" fill="none" stroke="${p.c}" stroke-width="8" stroke-linecap="round"/>
+        <text x="482" y="96" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="34" font-weight="950" fill="${p.lime}" opacity="0.84">${escapeXml(drama.propA)}</text>
       `;
     }
 
-    function creationScene(p, seed, motif) {
+    function creationScene(p, seed, motif, drama) {
       return `
         <g transform="translate(116 104)">
           <rect width="300" height="238" rx="28" fill="rgba(255,255,255,0.07)" stroke="${p.a}" stroke-width="5"/>
           ${Array.from({ length: 7 }, (_, i) => `<rect x="${34 + (i % 3) * 76}" y="${32 + Math.floor(i / 3) * 70}" width="58" height="42" rx="8" fill="${[p.a, p.b, p.c, p.d][i % 4]}" opacity="0.62" transform="rotate(${(seed + i * 13) % 18 - 9} ${34 + (i % 3) * 76} ${32 + Math.floor(i / 3) * 70})"/>`).join("")}
+          <text x="34" y="214" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="30" font-weight="950" fill="${p.lime}">${escapeXml(drama.propA)}</text>
         </g>
         <g transform="translate(538 138)">
           <rect width="190" height="142" rx="24" fill="rgba(255,255,255,0.08)" stroke="${p.b}" stroke-width="5"/>
@@ -3568,6 +3977,21 @@
 
     function renderResult() {
       const r = state.result;
+      $("coverTitle").textContent = r.albumTitle;
+      $("coverLine").textContent = r.oneLine;
+      $("coverAlias").textContent = r.personaAlias;
+      $("coverNoise").textContent = `${r.topNoise[0].key} 静音版`;
+      $("coverTracks").innerHTML = r.topMelody.map((m, i) => {
+        const width = Math.max(24, 96 - i * 18);
+        const color = melodyColors[m.key] || "#44eadf";
+        return `
+          <div class="cover-track" style="--track-color:${color}">
+            <span>${m.key}</span>
+            <span class="cover-track-bar"><span style="--w:${width}%"></span></span>
+            <span>${Math.max(0, m.value)}</span>
+          </div>
+        `;
+      }).join("");
       $("resultTitle").textContent = r.albumTitle;
       $("resultIntro").textContent = state.calibration[2];
       $("resultOneLine").textContent = r.oneLine;
