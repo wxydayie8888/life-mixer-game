@@ -77,7 +77,7 @@
       top: 0;
       z-index: 20;
       display: grid;
-      grid-template-columns: auto minmax(120px, 1fr) minmax(160px, 360px);
+      grid-template-columns: auto minmax(120px, 1fr) auto minmax(160px, 360px);
       align-items: center;
       gap: 16px;
       padding: 14px clamp(16px, 4vw, 48px);
@@ -132,6 +132,40 @@
       border-radius: 50%;
       background: var(--cyan);
       box-shadow: 0 0 14px var(--cyan);
+    }
+
+    .audio-toggle {
+      justify-self: end;
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 999px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.06);
+      font-size: 13px;
+      font-weight: 850;
+      transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+    }
+
+    .audio-toggle:hover {
+      transform: translateY(-1px);
+      border-color: rgba(183, 243, 74, 0.42);
+      background: rgba(183, 243, 74, 0.09);
+    }
+
+    .audio-toggle[aria-pressed="true"] {
+      color: #091111;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--cyan), var(--lime));
+      box-shadow: 0 0 22px rgba(32, 230, 210, 0.18);
+    }
+
+    .audio-note {
+      font-size: 15px;
+      line-height: 1;
     }
 
     .progress-wrap {
@@ -1111,7 +1145,7 @@
       }
 
       .topbar {
-        grid-template-columns: auto 1fr;
+        grid-template-columns: auto 1fr auto;
       }
 
       .progress-wrap {
@@ -1183,6 +1217,10 @@
         <div class="brand-title">人生调音台</div>
       </div>
       <div class="phase-label" id="phaseLabel">待机</div>
+      <button class="audio-toggle" id="audioToggle" type="button" aria-pressed="false" title="音乐开关">
+        <span class="audio-note" aria-hidden="true">♪</span>
+        <span id="audioLabel">音乐</span>
+      </button>
       <div class="progress-wrap" aria-label="游戏进度">
         <div class="progress" id="progress"></div>
       </div>
@@ -1431,6 +1469,25 @@
       }
     };
 
+    const AUDIO_CONFIG = {
+      bpm: 104,
+      masterVolume: 0.34,
+      leadVolume: 0.18,
+      padVolume: 0.08,
+      pulseVolume: 0.1,
+      scale: [0, 2, 4, 7, 9, 12, 14, 16],
+      root: 261.63,
+      sceneEnergy: {
+        "screen-home": 0.42,
+        "screen-intro": 0.72,
+        "screen-calibrate": 0.55,
+        "screen-heart": 0.86,
+        "screen-noise": 0.5,
+        "screen-future": 0.72,
+        "screen-result": 0.9
+      }
+    };
+
     const melodyKeys = ["创造", "解释", "探索", "组织", "连接", "表达", "秩序", "精进", "自由", "照护"];
     const melodyColors = {
       "创造": "#20e6d2",
@@ -1644,6 +1701,237 @@
 
     const $ = (id) => document.getElementById(id);
 
+    const lifeMixerAudio = {
+      ctx: null,
+      master: null,
+      leadBus: null,
+      padBus: null,
+      pulseBus: null,
+      loopTimer: null,
+      step: 0,
+      enabled: getAudioPreference() !== "off",
+      started: false,
+      currentScene: "screen-home",
+
+      async start() {
+        if (!this.enabled) return;
+        if (!this.ctx) this.setup();
+        if (!this.ctx) return;
+        if (this.ctx.state === "suspended") await this.ctx.resume();
+        if (!this.started) {
+          this.started = true;
+          this.setScene(this.currentScene);
+          this.startLoop();
+          this.playStartup();
+        }
+      },
+
+      setup() {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) {
+          this.enabled = false;
+          return;
+        }
+        this.ctx = new AudioContextClass();
+        this.master = this.ctx.createGain();
+        this.leadBus = this.ctx.createGain();
+        this.padBus = this.ctx.createGain();
+        this.pulseBus = this.ctx.createGain();
+        this.master.gain.value = AUDIO_CONFIG.masterVolume;
+        this.leadBus.gain.value = AUDIO_CONFIG.leadVolume;
+        this.padBus.gain.value = AUDIO_CONFIG.padVolume;
+        this.pulseBus.gain.value = AUDIO_CONFIG.pulseVolume;
+        this.leadBus.connect(this.master);
+        this.padBus.connect(this.master);
+        this.pulseBus.connect(this.master);
+        this.master.connect(this.ctx.destination);
+      },
+
+      toggle() {
+        this.enabled = !this.enabled;
+        setAudioPreference(this.enabled ? "on" : "off");
+        if (this.enabled) {
+          this.start();
+        } else {
+          this.stop();
+        }
+        updateAudioUI();
+      },
+
+      stop() {
+        if (!this.ctx || !this.master) return;
+        const now = this.ctx.currentTime;
+        this.master.gain.cancelScheduledValues(now);
+        this.master.gain.setTargetAtTime(0.0001, now, 0.08);
+        clearInterval(this.loopTimer);
+        this.loopTimer = null;
+        this.started = false;
+      },
+
+      setScene(sceneId) {
+        this.currentScene = sceneId;
+        if (!this.ctx || !this.master || !this.enabled) return;
+        const now = this.ctx.currentTime;
+        const energy = AUDIO_CONFIG.sceneEnergy[sceneId] || 0.55;
+        this.master.gain.cancelScheduledValues(now);
+        this.master.gain.setTargetAtTime(AUDIO_CONFIG.masterVolume * energy, now, 0.35);
+        this.leadBus.gain.setTargetAtTime(AUDIO_CONFIG.leadVolume * (sceneId === "screen-noise" ? 0.55 : 1), now, 0.3);
+        this.padBus.gain.setTargetAtTime(AUDIO_CONFIG.padVolume * (sceneId === "screen-result" ? 1.5 : 1), now, 0.4);
+        this.pulseBus.gain.setTargetAtTime(AUDIO_CONFIG.pulseVolume * (sceneId === "screen-heart" ? 1.35 : 0.85), now, 0.3);
+      },
+
+      startLoop() {
+        clearInterval(this.loopTimer);
+        const beatMs = 60000 / AUDIO_CONFIG.bpm / 2;
+        this.loopTimer = setInterval(() => this.tick(), beatMs);
+        this.tick();
+      },
+
+      tick() {
+        if (!this.ctx || !this.enabled) return;
+        const pattern = [0, 4, 7, 9, 7, 4, 2, 7, 12, 9, 7, 4, 2, 0, 4, 7];
+        const bassPattern = [0, 0, 5, 5, 3, 3, 4, 4];
+        const now = this.ctx.currentTime;
+        const isBrightScene = this.currentScene === "screen-heart" || this.currentScene === "screen-result";
+        const degree = pattern[this.step % pattern.length];
+        if (this.step % 2 === 0 || isBrightScene) {
+          this.pluck(noteToFrequency(degree), now, 0.11, this.leadBus, "triangle");
+        }
+        if (this.step % 4 === 0) {
+          this.pulse(noteToFrequency(bassPattern[(this.step / 4) % bassPattern.length] - 12), now, 0.22);
+        }
+        if (this.step % 8 === 0) {
+          this.pad([0, 4, 7].map(offset => noteToFrequency(offset)), now, 1.7);
+        }
+        this.step += 1;
+      },
+
+      pluck(freq, time, duration, destination, type = "sine") {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, time);
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(2300, time);
+        filter.frequency.exponentialRampToValueAtTime(720, time + duration);
+        gain.gain.setValueAtTime(0.0001, time);
+        gain.gain.exponentialRampToValueAtTime(0.9, time + 0.012);
+        gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(destination || this.leadBus);
+        osc.start(time);
+        osc.stop(time + duration + 0.02);
+      },
+
+      pulse(freq, time, duration) {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, time);
+        gain.gain.setValueAtTime(0.0001, time);
+        gain.gain.exponentialRampToValueAtTime(0.75, time + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+        osc.connect(gain);
+        gain.connect(this.pulseBus);
+        osc.start(time);
+        osc.stop(time + duration + 0.03);
+      },
+
+      pad(freqs, time, duration) {
+        freqs.forEach((freq, index) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(freq / 2, time);
+          gain.gain.setValueAtTime(0.0001, time);
+          gain.gain.linearRampToValueAtTime(0.18 / (index + 1), time + 0.18);
+          gain.gain.linearRampToValueAtTime(0.0001, time + duration);
+          osc.connect(gain);
+          gain.connect(this.padBus);
+          osc.start(time);
+          osc.stop(time + duration + 0.06);
+        });
+      },
+
+      chord(degrees, offset = 0) {
+        if (!this.ctx || !this.enabled) return;
+        const now = this.ctx.currentTime + offset;
+        degrees.forEach((degree, index) => {
+          this.pluck(noteToFrequency(degree), now + index * 0.035, 0.28, this.leadBus, "triangle");
+        });
+      },
+
+      playStartup() {
+        this.chord([0, 4, 7, 12]);
+      },
+
+      playHeart(choice) {
+        if (choice === "near") this.chord([4, 7, 12, 16]);
+        if (choice === "neutral") this.chord([0, 2, 7]);
+        if (choice === "far") this.descend([7, 4, 2, 0]);
+      },
+
+      playNoise() {
+        if (!this.ctx || !this.enabled) return;
+        const now = this.ctx.currentTime;
+        this.pluck(noteToFrequency(-5), now, 0.09, this.pulseBus, "sawtooth");
+        this.pluck(noteToFrequency(7), now + 0.08, 0.16, this.leadBus, "triangle");
+      },
+
+      playFuture(count) {
+        this.chord([0, 7, 12 + count], 0.01);
+      },
+
+      playResult() {
+        this.chord([0, 4, 7, 12, 16]);
+        this.chord([7, 12, 16, 19], 0.25);
+      },
+
+      playUi() {
+        this.chord([12, 16], 0.01);
+      },
+
+      descend(degrees) {
+        if (!this.ctx || !this.enabled) return;
+        const now = this.ctx.currentTime;
+        degrees.forEach((degree, index) => {
+          this.pluck(noteToFrequency(degree), now + index * 0.045, 0.12, this.leadBus, "sine");
+        });
+      }
+    };
+
+    function noteToFrequency(semitone) {
+      return AUDIO_CONFIG.root * Math.pow(2, semitone / 12);
+    }
+
+    function getAudioPreference() {
+      try {
+        return localStorage.getItem("lifeMixerAudio");
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function setAudioPreference(value) {
+      try {
+        localStorage.setItem("lifeMixerAudio", value);
+      } catch (error) {
+        // Audio preference is optional; the game should still work when storage is blocked.
+      }
+    }
+
+    function updateAudioUI() {
+      const toggle = $("audioToggle");
+      if (!toggle) return;
+      toggle.setAttribute("aria-pressed", lifeMixerAudio.enabled ? "true" : "false");
+      $("audioLabel").textContent = lifeMixerAudio.enabled ? "音乐开" : "静音";
+      toggle.title = lifeMixerAudio.enabled ? "关闭音乐" : "打开音乐";
+    }
+
     function resetState() {
       state = {
         calibration: calibration[1],
@@ -1683,6 +1971,7 @@
       $(id).classList.add("active");
       $("progress").style.width = `${progress}%`;
       $("phaseLabel").textContent = phaseName(id);
+      lifeMixerAudio.setScene(id);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
@@ -1722,7 +2011,11 @@
     }
 
     function init() {
+      updateAudioUI();
+      $("audioToggle").addEventListener("click", () => lifeMixerAudio.toggle());
+
       $("startBtn").addEventListener("click", () => {
+        lifeMixerAudio.start();
         showScreen("screen-intro", GAME_CONFIG.progress.intro);
         setTimeout(() => {
           renderCalibration();
@@ -1753,6 +2046,7 @@
       `).join("");
       document.querySelectorAll("#calibrationOptions .choice-card").forEach(btn => {
         btn.addEventListener("click", () => {
+          lifeMixerAudio.playUi();
           state.calibration = calibration.find(item => item[0] === btn.dataset.id);
           renderHeart();
           showScreen("screen-heart", GAME_CONFIG.progress.heartStart);
@@ -1779,6 +2073,7 @@
 
     function answerHeart(choice) {
       if (state.locked) return;
+      lifeMixerAudio.playHeart(choice);
       state.locked = true;
       setAnswerDisabled(true);
       const [text, dims] = state.heartSet[state.heartIndex];
@@ -1849,6 +2144,7 @@
 
     function answerNoise(which) {
       if (state.locked) return;
+      lifeMixerAudio.playNoise();
       state.locked = true;
       setNoiseDisabled(true);
       const selected = state.noiseSet[state.noiseIndex][which];
@@ -1889,8 +2185,10 @@
       if (state.locked) return;
       if (state.futureChoices.includes(id)) {
         state.futureChoices = state.futureChoices.filter(x => x !== id);
+        lifeMixerAudio.playUi();
       } else if (state.futureChoices.length < GAME_CONFIG.futureChoiceLimit) {
         state.futureChoices.push(id);
+        lifeMixerAudio.playFuture(state.futureChoices.length);
       }
       if (state.futureChoices.length === GAME_CONFIG.futureChoiceLimit) {
         state.locked = true;
@@ -1899,6 +2197,7 @@
         setTimeout(() => {
           buildResult();
           renderResult();
+          lifeMixerAudio.playResult();
           showScreen("screen-result", GAME_CONFIG.progress.result);
           state.locked = false;
         }, GAME_CONFIG.resultBuildDelay);
@@ -2031,6 +2330,7 @@
 
     async function downloadShareCard() {
       if (!state.result) return;
+      lifeMixerAudio.playUi();
       const button = $("downloadBtn");
       const originalLabel = button.textContent;
       button.disabled = true;
@@ -2104,6 +2404,7 @@
 
     async function copyShareText() {
       if (!state.result) return;
+      lifeMixerAudio.playUi();
       const r = state.result;
       const text = `我刚玩了《人生调音台》，我的人生主旋律是：${r.topMelody.map(m => m.key).join(" / ")}。\\n底噪是：${r.topNoise.map(n => n.key).join(" / ")}。\\nBPM 小狗听完后说：“${r.roast}”\\n\\n这不是 MBTI 判决书，是一份当前版本的个人使用说明。\\n来玩：${location.href}`;
       try {
