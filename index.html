@@ -965,6 +965,24 @@
       transition: transform 320ms ease;
     }
 
+    .comic-cue {
+      position: absolute;
+      z-index: 2;
+      top: 14px;
+      left: 14px;
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      color: #091111;
+      background: linear-gradient(135deg, rgba(183, 243, 74, 0.96), rgba(109, 240, 255, 0.92));
+      box-shadow: 0 8px 24px rgba(32, 230, 210, 0.18);
+      font-size: 12px;
+      font-weight: 950;
+      pointer-events: none;
+    }
+
     .sample-copy {
       position: absolute;
       inset: auto 18px 18px;
@@ -1192,6 +1210,14 @@
     .noise-card:hover .noise-comic img {
       transform: scale(1.035);
       filter: saturate(1.05) contrast(1.04) brightness(0.92);
+    }
+
+    .noise-comic .comic-cue {
+      top: 10px;
+      left: 10px;
+      min-height: 24px;
+      padding: 0 9px;
+      font-size: 11px;
     }
 
     .noise-label {
@@ -1867,6 +1893,7 @@
               <div class="sample-card" id="heartCard" role="group" aria-label="当前心动采样卡">
                 <span class="comic-frame">
                   <img id="heartComic" src="assets/comic-expression.png" alt="心动采样漫画场景">
+                  <span class="comic-cue" id="heartComicCue">表达现场</span>
                 </span>
                 <span class="live-wave" id="liveWave" aria-hidden="true"></span>
                 <span class="sample-copy">
@@ -2142,29 +2169,52 @@
       ["你把一个长期拖延的技能拆成每天能完成的小格子，终于开始升级", ["精进", "组织"]]
     ];
 
-    const comicByDimension = {
-      "表达": "assets/comic-expression.png",
-      "创造": "assets/comic-creation.png",
-      "精进": "assets/comic-creation.png",
-      "组织": "assets/comic-organize.png",
-      "探索": "assets/comic-explore.png",
-      "自由": "assets/comic-explore.png",
-      "连接": "assets/comic-connect.png",
-      "照护": "assets/comic-connect.png",
-      "秩序": "assets/comic-order.png",
-      "解释": "assets/comic-order.png"
+    const comicScenes = {
+      expression: {
+        label: "表达现场",
+        src: "assets/comic-expression.png",
+        dims: ["表达"],
+        noises: ["否定"],
+        keywords: ["群聊", "文案", "朋友圈", "公开", "弹幕", "真话", "发声", "被听见", "讲出来", "被问到尖锐", "替你总结", "反馈像弹幕", "不服从"]
+      },
+      creation: {
+        label: "创作夜",
+        src: "assets/comic-creation.png",
+        dims: ["创造", "精进"],
+        noises: [],
+        keywords: ["想法", "作品", "做成", "小作品", "工具", "改到第八版", "第十七遍", "火花", "旧规则换", "差点意思", "练到"]
+      },
+      explore: {
+        label: "城市支线",
+        src: "assets/comic-explore.png",
+        dims: ["探索", "自由"],
+        noises: ["空转"],
+        keywords: ["陌生城市", "小路", "新领域", "冷门观点", "新地图", "试了一条路", "随大流", "选择权", "换一种玩法", "没有成长感", "跑步机", "历练"]
+      },
+      organize: {
+        label: "混乱降噪",
+        src: "assets/comic-organize.png",
+        dims: ["组织"],
+        noises: ["失控", "打断"],
+        keywords: ["混乱", "流程", "清单", "安排", "节奏", "分工", "三步路线", "拆变量", "目标、限制", "回轨道", "排队", "救火", "需求改", "从头想", "小改一下", "窗口", "临时", "做取舍", "复盘从不来"]
+      },
+      connect: {
+        label: "真心对话",
+        src: "assets/comic-connect.png",
+        dims: ["连接", "照护"],
+        noises: ["低质社交", "隐形"],
+        keywords: ["朋友", "聚会", "关系", "真实", "接上", "紧绷", "松下来", "安心", "人味", "复盘失败", "照顾", "情绪", "默认你会接住", "没人问你", "功劳", "寒暄", "点赞", "客套", "朋友局", "被安排进"]
+      },
+      order: {
+        label: "规则校准",
+        src: "assets/comic-order.png",
+        dims: ["解释", "秩序"],
+        noises: ["模糊", "压迫"],
+        keywords: ["讲明白", "解释", "标准", "规则", "关键按钮", "结构", "整理完", "框架", "翻译成目标", "审批", "替你决定", "边界", "别这么敏感", "精准负责", "领导脑子", "控制", "绑架"]
+      }
     };
 
-    const comicByNoise = {
-      "模糊": "assets/comic-order.png",
-      "打断": "assets/comic-expression.png",
-      "空转": "assets/comic-explore.png",
-      "失控": "assets/comic-organize.png",
-      "压迫": "assets/comic-order.png",
-      "低质社交": "assets/comic-connect.png",
-      "否定": "assets/comic-expression.png",
-      "隐形": "assets/comic-connect.png"
-    };
+    const comicSceneOrder = ["expression", "creation", "explore", "organize", "connect", "order"];
 
     const heartQuips = {
       near: [
@@ -2945,12 +2995,14 @@
 
     function renderHeart() {
       const card = state.heartSet[state.heartIndex];
+      const comic = comicForHeart(card[0], card[1]);
       const stageIndex = Math.min(2, Math.floor(state.heartIndex / 6));
       $("heartStage").textContent = heartStageCopy[stageIndex];
       $("heartIndex").textContent = formatIndex(state.heartIndex, state.heartSet.length);
       $("heartText").textContent = card[0];
-      $("heartComic").src = comicForDims(card[1]);
-      $("heartComic").alt = `${card[1].join("、")}漫画场景`;
+      $("heartComic").src = comic.src;
+      $("heartComic").alt = `${comic.label}：${card[0]}`;
+      $("heartComicCue").textContent = comic.label;
       $("samplerReadout").textContent = `正在监听：${card[1].join(" / ")}`;
       $("beatToast").textContent = state.lastHeartFeedback || stageHint(state.heartIndex);
       $("heartBubble").textContent = state.lastHeartFeedback || (state.heartIndex < 3
@@ -3014,10 +3066,25 @@
       return "继续采样。你靠近什么，调音台已经在记。";
     }
 
-    function comicForDims(dims) {
-      const priority = ["表达", "创造", "组织", "探索", "连接", "照护", "秩序", "解释", "精进", "自由"];
-      const key = priority.find(dim => dims.includes(dim)) || dims[0];
-      return comicByDimension[key] || "assets/comic-creation.png";
+    function comicForHeart(text, dims) {
+      return matchComicScene(text, { dims });
+    }
+
+    function matchComicScene(text, { dims = [], noise = "" } = {}) {
+      const exact = comicSceneOrder
+        .map(key => comicScenes[key])
+        .find(scene => scene.keywords.some(keyword => text.includes(keyword)));
+      if (exact) return exact;
+
+      const byNoise = comicSceneOrder
+        .map(key => comicScenes[key])
+        .find(scene => scene.noises.includes(noise));
+      if (byNoise) return byNoise;
+
+      const byDim = comicSceneOrder
+        .map(key => comicScenes[key])
+        .find(scene => scene.dims.some(dim => dims.includes(dim)));
+      return byDim || comicScenes.creation;
     }
 
     function feedbackForHeart(choice, dims) {
@@ -3042,10 +3109,11 @@
     }
 
     function renderNoiseCard([text, noise]) {
-      const comic = comicByNoise[noise] || "assets/comic-expression.png";
+      const comic = matchComicScene(text, { noise });
       return `
         <span class="noise-comic" aria-hidden="true">
-          <img src="${comic}" alt="">
+          <img src="${comic.src}" alt="">
+          <span class="comic-cue">${comic.label}</span>
         </span>
         <span class="noise-copy">
           <span class="noise-label">更不能忍</span>
