@@ -2879,10 +2879,13 @@
         const color = type === "melody" ? (melodyColors[key] || "#20e6d2") : "#ff5c5c";
         const width = value === 0 ? 0 : Math.max(6, Math.abs(value) / max * 100);
         const stateClass = value < 0 ? "is-negative" : value === 0 ? "is-empty" : "is-positive";
+        const fillStyle = value < 0
+          ? `width:${width}%; background:linear-gradient(90deg, rgba(255,92,92,0.95), rgba(255,111,174,0.82));`
+          : `width:${width}%; background:linear-gradient(90deg, ${color}, rgba(247,242,232,0.88));`;
         return `
           <div class="meter ${stateClass}" style="--meter-color:${color}; --meter-glow:${hexToGlow(color)}">
             <span>${key}</span>
-            <span class="meter-track"><span class="meter-fill" style="width:${width}%"></span></span>
+            <span class="meter-track" aria-label="${key} ${value}"><span class="meter-fill" style="${fillStyle}"></span></span>
             <span class="meter-value">${value}</span>
           </div>
         `;
@@ -3000,7 +3003,7 @@
       $("heartStage").textContent = heartStageCopy[stageIndex];
       $("heartIndex").textContent = formatIndex(state.heartIndex, state.heartSet.length);
       $("heartText").textContent = card[0];
-      $("heartComic").src = comic.src;
+      $("heartComic").src = comicPanelForText(card[0], { scene: comic, dims: card[1], tone: "heart" });
       $("heartComic").alt = `${comic.label}：${card[0]}`;
       $("heartComicCue").textContent = comic.label;
       $("samplerReadout").textContent = `正在监听：${card[1].join(" / ")}`;
@@ -3112,7 +3115,7 @@
       const comic = matchComicScene(text, { noise });
       return `
         <span class="noise-comic" aria-hidden="true">
-          <img src="${comic.src}" alt="">
+          <img src="${comicPanelForText(text, { scene: comic, noise, tone: "noise" })}" alt="">
           <span class="comic-cue">${comic.label}</span>
         </span>
         <span class="noise-copy">
@@ -3120,6 +3123,201 @@
           <span class="noise-text">${text}</span>
         </span>
       `;
+    }
+
+    function comicPanelForText(text, { scene, dims = [], noise = "", tone = "heart" } = {}) {
+      const seed = hashString(`${text}-${scene.label}-${noise}-${dims.join("/")}`);
+      const palette = panelPalette(scene.label, tone);
+      const shortText = panelCaption(text);
+      const motif = panelMotif(text, scene.label, noise);
+      const offsetA = seed % 80;
+      const offsetB = (seed * 7) % 90;
+      const wave = Array.from({ length: 10 }, (_, index) => {
+        const x = 96 + index * 72;
+        const h = 28 + ((seed + index * 19) % 84);
+        return `<rect x="${x}" y="${310 - h / 2}" width="12" height="${h}" rx="6" fill="${index % 2 ? palette.b : palette.c}" opacity="${0.45 + (index % 3) * 0.14}"/>`;
+      }).join("");
+      const bubbles = Array.from({ length: 4 }, (_, index) => {
+        const x = 520 + ((seed + index * 61) % 220);
+        const y = 72 + ((seed + index * 37) % 128);
+        const color = [palette.a, palette.b, palette.c, palette.d][index % 4];
+        return `<g opacity="0.86"><rect x="${x}" y="${y}" width="${64 + index * 8}" height="42" rx="18" fill="${color}"/><path d="M${x + 20} ${y + 42}l-12 14l22-9" fill="${color}"/></g>`;
+      }).join("");
+      const sceneArt = sceneShape(scene.label, palette, seed, motif);
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" role="img" aria-label="${escapeXml(scene.label)}">
+          <defs>
+            <linearGradient id="bg${seed}" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#111722"/>
+              <stop offset="0.52" stop-color="${palette.dark}"/>
+              <stop offset="1" stop-color="#080b11"/>
+            </linearGradient>
+            <radialGradient id="glow${seed}" cx="62%" cy="38%" r="52%">
+              <stop offset="0" stop-color="${palette.a}" stop-opacity="0.36"/>
+              <stop offset="1" stop-color="${palette.a}" stop-opacity="0"/>
+            </radialGradient>
+            <filter id="soft${seed}" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="10"/>
+            </filter>
+          </defs>
+          <rect width="900" height="520" rx="34" fill="url(#bg${seed})"/>
+          <rect width="900" height="520" rx="34" fill="url(#glow${seed})"/>
+          <g opacity="0.16">${gridLines(seed)}</g>
+          ${sceneArt}
+          <path d="M70 ${302 + offsetA / 8} C210 ${220 + offsetB / 6}, 315 ${384 - offsetA / 5}, 448 286 S710 ${210 + offsetA / 4}, 835 270" fill="none" stroke="${palette.b}" stroke-width="6" stroke-linecap="round" opacity="0.7"/>
+          <path d="M78 ${328 - offsetB / 9} C240 ${398 - offsetA / 8}, 380 ${214 + offsetB / 6}, 520 316 S720 ${390 - offsetA / 4}, 840 300" fill="none" stroke="${palette.c}" stroke-width="4" stroke-linecap="round" opacity="0.62"/>
+          <g>${wave}</g>
+          <g>${bubbles}</g>
+          <g transform="translate(62 62)">
+            <rect width="190" height="42" rx="21" fill="${palette.lime}" opacity="0.96"/>
+            <text x="24" y="28" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="900" fill="#071011">${escapeXml(scene.label)}</text>
+          </g>
+          <g transform="translate(64 392)">
+            <rect width="770" height="82" rx="22" fill="rgba(8, 11, 17, 0.72)" stroke="rgba(255,255,255,0.12)"/>
+            <text x="30" y="35" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="25" font-weight="900" fill="#f7f2e8">${escapeXml(shortText[0])}</text>
+            <text x="30" y="66" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="25" font-weight="900" fill="#f7f2e8">${escapeXml(shortText[1] || "")}</text>
+          </g>
+          <text x="786" y="74" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="56" font-weight="950" fill="${palette.a}" opacity="0.46">${escapeXml(motif)}</text>
+        </svg>
+      `;
+      return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+    }
+
+    function panelPalette(label, tone) {
+      const palettes = {
+        "表达现场": { a: "#ff6fae", b: "#ffd166", c: "#6df0ff", d: "#b7f34a", dark: "#241727", lime: "#9cff7a" },
+        "创作夜": { a: "#20e6d2", b: "#ffb84d", c: "#b7f34a", d: "#ff6fae", dark: "#101f26", lime: "#b7f34a" },
+        "城市支线": { a: "#6df0ff", b: "#b7f34a", c: "#ffb84d", d: "#ff6fae", dark: "#10202d", lime: "#9cff7a" },
+        "混乱降噪": { a: "#7aa7ff", b: "#20e6d2", c: "#ffb84d", d: "#ff6fae", dark: "#151c2b", lime: "#b7f34a" },
+        "真心对话": { a: "#ffd166", b: "#ff6fae", c: "#20e6d2", d: "#b7f34a", dark: "#221b1d", lime: "#8df5c8" },
+        "规则校准": { a: "#b9c3d9", b: "#b7f34a", c: "#20e6d2", d: "#ffb84d", dark: "#171d26", lime: "#b7f34a" }
+      };
+      const picked = palettes[label] || palettes["创作夜"];
+      return tone === "noise" ? { ...picked, a: picked.d, lime: "#ff8f8f" } : picked;
+    }
+
+    function panelMotif(text, label, noise) {
+      const rules = [
+        ["群聊|朋友圈|弹幕|公开|表达|文案", "#"],
+        ["朋友|聚会|关系|寒暄|客套|崩溃", "心"],
+        ["需求|流程|任务|混乱|临时|救火|复盘", "!"],
+        ["标准|规则|审批|边界|控制|模糊", "✓"],
+        ["城市|小路|新领域|地图|探索|自由", "↗"],
+        ["作品|想法|工具|创作|技能|练", "✦"]
+      ];
+      const hit = rules.find(([pattern]) => new RegExp(pattern).test(text));
+      if (hit) return hit[1];
+      if (noise) return "NO";
+      return label.slice(0, 1);
+    }
+
+    function panelCaption(text) {
+      const clean = text.replace(/[“”]/g, "").replace(/，/g, "，");
+      const limit = 18;
+      if (clean.length <= limit) return [clean];
+      const first = clean.slice(0, limit);
+      const second = clean.slice(limit, limit * 2 - 2);
+      return [first, second ? `${second}${clean.length > limit * 2 - 2 ? "…" : ""}` : ""];
+    }
+
+    function sceneShape(label, palette, seed, motif) {
+      if (label === "真心对话") return twoPeopleScene(palette, seed);
+      if (label === "混乱降噪") return chaosScene(palette, seed);
+      if (label === "规则校准") return orderScene(palette, seed);
+      if (label === "城市支线") return cityScene(palette, seed);
+      if (label === "表达现场") return stageScene(palette, seed);
+      return creationScene(palette, seed, motif);
+    }
+
+    function twoPeopleScene(p, seed) {
+      return `
+        <g transform="translate(${138 + seed % 18} 178)">
+          <circle cx="80" cy="54" r="42" fill="#f0b58a"/><path d="M34 58c18-62 96-64 104-4c-32-20-66-18-104 4z" fill="#171017"/>
+          <rect x="36" y="98" width="96" height="116" rx="32" fill="#283142"/>
+        </g>
+        <g transform="translate(${580 - seed % 22} 160)">
+          <circle cx="80" cy="54" r="42" fill="#f2bd93"/><path d="M34 56c18-58 102-62 110 12c-30-24-70-24-110-12z" fill="#3a1f1d"/>
+          <rect x="34" y="98" width="108" height="122" rx="34" fill="#5b4a50"/>
+        </g>
+        <path d="M310 228 C392 176, 486 176, 560 228" fill="none" stroke="${p.c}" stroke-width="7" stroke-linecap="round" opacity="0.62"/>
+      `;
+    }
+
+    function chaosScene(p, seed) {
+      return `
+        <g transform="translate(94 92)" opacity="0.82">
+          ${Array.from({ length: 12 }, (_, i) => `<rect x="${(i * 57 + seed) % 330}" y="${(i * 41 + seed) % 210}" width="62" height="36" rx="8" fill="${i % 2 ? p.a : p.d}" opacity="0.52" transform="rotate(${(i * 19 + seed) % 36 - 18} ${(i * 57 + seed) % 330} ${(i * 41 + seed) % 210})"/>`).join("")}
+          <path d="M46 236c120-88 220 82 334-12" fill="none" stroke="${p.b}" stroke-width="10" stroke-linecap="round" opacity="0.7"/>
+        </g>
+        <g transform="translate(566 126)">
+          <rect width="210" height="172" rx="28" fill="rgba(255,255,255,0.08)" stroke="${p.b}" stroke-width="5"/>
+          <path d="M42 82h126M42 122h96" stroke="${p.lime}" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="156" cy="44" r="18" fill="${p.c}"/>
+        </g>
+      `;
+    }
+
+    function orderScene(p, seed) {
+      return `
+        <g transform="translate(112 126)">
+          <rect width="258" height="190" rx="26" fill="rgba(255,255,255,0.08)" stroke="${p.a}" stroke-width="5"/>
+          <path d="M54 58h154M54 100h118M54 142h174" stroke="${p.b}" stroke-width="12" stroke-linecap="round"/>
+          <circle cx="210" cy="58" r="18" fill="${p.lime}"/>
+          <path d="M200 58l8 8l18-22" fill="none" stroke="#071011" stroke-width="7" stroke-linecap="round"/>
+        </g>
+        <path d="M438 220 C520 156, 610 160, 708 112" fill="none" stroke="${p.c}" stroke-width="12" stroke-linecap="round"/>
+        <path d="M684 88l52 18l-40 38" fill="none" stroke="${p.c}" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+      `;
+    }
+
+    function cityScene(p, seed) {
+      return `
+        <g transform="translate(92 210)">
+          ${Array.from({ length: 11 }, (_, i) => `<rect x="${i * 64}" y="${80 - ((seed + i * 23) % 74)}" width="42" height="${110 + ((seed + i * 17) % 70)}" rx="8" fill="${i % 3 === 0 ? p.a : i % 3 === 1 ? p.b : p.c}" opacity="0.34"/>`).join("")}
+        </g>
+        <path d="M112 342 C250 250, 410 404, 548 270 S728 184, 822 258" fill="none" stroke="${p.lime}" stroke-width="9" stroke-linecap="round" stroke-dasharray="18 18"/>
+        <g transform="translate(170 146)"><path d="M0 86l74-64l74 64v84H0z" fill="rgba(255,255,255,0.08)" stroke="${p.c}" stroke-width="5"/></g>
+      `;
+    }
+
+    function stageScene(p, seed) {
+      return `
+        <g transform="translate(92 150)">
+          <rect x="0" y="0" width="218" height="164" rx="28" fill="rgba(255,255,255,0.08)" stroke="${p.a}" stroke-width="5"/>
+          <circle cx="86" cy="70" r="42" fill="#efb083"/><path d="M42 70c18-58 84-58 104 0c-38-18-72-20-104 0z" fill="#171017"/>
+          <path d="M112 116c42 22 68 48 88 78" stroke="${p.b}" stroke-width="14" stroke-linecap="round"/>
+        </g>
+        <g transform="translate(448 110)">
+          ${Array.from({ length: 5 }, (_, i) => `<rect x="${i * 62}" y="${(seed + i * 29) % 90}" width="112" height="58" rx="24" fill="${[p.a, p.b, p.c, p.d, p.lime][i]}" opacity="0.74"/>`).join("")}
+        </g>
+        <path d="M318 250 C452 174, 604 328, 816 204" fill="none" stroke="${p.c}" stroke-width="8" stroke-linecap="round"/>
+      `;
+    }
+
+    function creationScene(p, seed, motif) {
+      return `
+        <g transform="translate(116 104)">
+          <rect width="300" height="238" rx="28" fill="rgba(255,255,255,0.07)" stroke="${p.a}" stroke-width="5"/>
+          ${Array.from({ length: 7 }, (_, i) => `<rect x="${34 + (i % 3) * 76}" y="${32 + Math.floor(i / 3) * 70}" width="58" height="42" rx="8" fill="${[p.a, p.b, p.c, p.d][i % 4]}" opacity="0.62" transform="rotate(${(seed + i * 13) % 18 - 9} ${34 + (i % 3) * 76} ${32 + Math.floor(i / 3) * 70})"/>`).join("")}
+        </g>
+        <g transform="translate(538 138)">
+          <rect width="190" height="142" rx="24" fill="rgba(255,255,255,0.08)" stroke="${p.b}" stroke-width="5"/>
+          <text x="78" y="90" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="76" font-weight="950" fill="${p.lime}">${escapeXml(motif)}</text>
+        </g>
+      `;
+    }
+
+    function gridLines(seed) {
+      return Array.from({ length: 12 }, (_, i) => `<path d="M${i * 84 + seed % 20} 0v520" stroke="#fff"/>`).join("") +
+        Array.from({ length: 7 }, (_, i) => `<path d="M0 ${i * 82 + seed % 18}h900" stroke="#fff"/>`).join("");
+    }
+
+    function escapeXml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
 
     function answerNoise(which) {
