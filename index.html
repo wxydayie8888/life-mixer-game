@@ -2015,7 +2015,7 @@
               <button class="primary-btn" id="restartBtn">重新调一次</button>
               <button class="secondary-btn" id="downloadBtn">下载专辑封面</button>
               <button class="secondary-btn" id="copyBtn">复制朋友圈</button>
-              <button class="secondary-btn" id="copyAiBtn">复制给 AI</button>
+              <button class="secondary-btn" id="copyAiBtn">复制 AI 档案</button>
             </div>
           </div>
 
@@ -3684,8 +3684,8 @@
       if (!state.result) return;
       lifeMixerAudio.playUi();
       const r = state.result;
-      const guessOptions = r.friendGuess.options.map((item, index) => `${String.fromCharCode(65 + index)}. ${item.alias}`).join("\\n");
-      const text = `我刚玩了《人生调音台》，调出了一张人格专辑：${r.albumTitle}。\\n\\n先别偷看答案，10 秒盲猜哪张最像我：\\n${guessOptions}\\n\\nA-side：${r.topMelody.map(m => m.key).join(" / ")}\\nB-side 底噪：${r.topNoise.map(n => n.key).join(" / ")}\\n${r.bgmLine}\\n拍宝听完后说：“${r.roast}”\\n\\n答案我先藏着：${r.friendGuess.answer}\\n来玩：${location.href}`;
+      const guessOptions = r.friendGuess.options.map((item, index) => `${String.fromCharCode(65 + index)}. ${item.alias}`).join("\n");
+      const text = `我刚玩了《人生调音台》，调出了一张人格专辑：${r.albumTitle}。\n\n先别偷看答案，10 秒盲猜哪张最像我：\n${guessOptions}\n\nA-side：${r.topMelody.map(m => m.key).join(" / ")}\nB-side 底噪：${r.topNoise.map(n => n.key).join(" / ")}\n${r.bgmLine}\n拍宝听完后说：“${r.roast}”\n\n答案我先藏着：${r.friendGuess.answer}\n来玩：${location.href}`;
       try {
         await writeClipboardText(text);
         flashButtonLabel("copyBtn", "已复制");
@@ -3695,11 +3695,121 @@
       }
     }
 
+    function uniqueLines(lines) {
+      return [...new Set(lines.filter(Boolean))];
+    }
+
+    function aiList(lines) {
+      return uniqueLines(lines).map(line => `- ${line}`).join("\n");
+    }
+
+    function aiNumberedList(lines) {
+      return uniqueLines(lines).map((line, index) => `${index + 1}. ${line}`).join("\n");
+    }
+
+    function aiMelodyMode(melody) {
+      const map = {
+        "创造": "请尽快给我一个能做出来、能发布、能看见的版本。纯讨论太久，我会开始没电。",
+        "解释": "请帮我把复杂信息拆成结构、因果、例子和一句普通人能懂的话。",
+        "探索": "请保留几个新鲜方向，不要一上来就把路定死。给我一点试路空间。",
+        "组织": "请先把目标、资源、限制、负责人和下一步排清楚，我会更容易进入状态。",
+        "连接": "请把人的感受、关系位置和真实对话考虑进去。只讲效率会漏掉重点。",
+        "表达": "请帮我把观点说得更准确、更有力量，也提醒我哪里可能被误解。",
+        "秩序": "请把标准、流程和判断依据说清楚。规则清楚后，我会更稳定地推进。",
+        "精进": "请给我练习、反馈和复盘闭环。我不怕慢，但需要知道怎么变强。",
+        "自由": "请给我选择空间和取舍理由。只给唯一正确答案，会让我想关机。",
+        "照护": "请帮我照顾人和关系，也提醒我不要把自己的电量全部交出去。"
+      };
+      return map[melody];
+    }
+
+    function aiNoiseGuard(noise) {
+      const map = {
+        "模糊": "如果目标或标准不清，请先停下来帮我澄清，不要让我在一团雾里硬做。",
+        "打断": "不要连续抛很多问题。先问最关键的 1-3 个，再让我完整回答。",
+        "空转": "请告诉我这件事的意义、反馈方式或下一步用途，否则我会觉得自己在原地跑。",
+        "失控": "当变化很多时，请帮我建立边界、优先级和兜底方案，不要只说随机应变。",
+        "压迫": "不要替我决定我应该怎样。请给我选项、代价和建议，让选择权还在我手里。",
+        "低质社交": "不要用过度客套和空泛热闹包住问题。真诚、具体、接得上，比漂亮话重要。",
+        "否定": "可以指出问题，但必须给理由、标准和改法。只否定会让我卡住。",
+        "隐形": "请看见我已经做过的努力，再给下一步建议。直接跳到要求，会让我很快耗电。"
+      };
+      return map[noise];
+    }
+
+    function aiOutputPreference(melody) {
+      const map = {
+        "创造": "输出请尽量变成草稿、方案、脚本、原型、标题、流程图等可继续加工的东西。",
+        "解释": "输出请先给核心判断，再给结构化拆解，最后给一个普通人也能听懂的例子。",
+        "探索": "输出请包含主线方案和 2-3 个有意思的支线，不要只有稳妥标准答案。",
+        "组织": "输出请给清单、优先级、时间线、负责人假设和下一步行动。",
+        "连接": "输出请包含对话措辞、对方可能的感受、关系风险和更温柔但不讨好的表达。",
+        "表达": "输出请帮我找到一句有记忆点的话，并指出哪里需要更锋利或更克制。",
+        "秩序": "输出请写清楚判断标准、步骤、边界条件和可复用模板。",
+        "精进": "输出请给我分阶段训练法、反馈指标和下一次怎么改。",
+        "自由": "输出请给多个可选路径，并说明每条路会换来什么、牺牲什么。",
+        "照护": "输出请兼顾人、关系、节奏和长期消耗，不要只追求短期完成。"
+      };
+      return map[melody];
+    }
+
+    function aiStuckSupport(noise) {
+      const map = {
+        "模糊": "先帮我把“到底要什么、不要什么、怎么判断好坏”写出来。",
+        "打断": "先帮我关掉旁路任务，只保留一个最小下一步。",
+        "空转": "先帮我找回这件事和真实目标之间的关系，或者建议我停止它。",
+        "失控": "先帮我列出可控、不可控、需要求助、可以延后的部分。",
+        "压迫": "先帮我恢复选择权：哪些是必须做的，哪些是可以谈的，哪些可以拒绝。",
+        "低质社交": "先帮我把表面热闹翻译成真实需求，判断我到底要不要参与。",
+        "否定": "先把批评拆成事实、标准、情绪和可执行改法，不要让我只背情绪。",
+        "隐形": "先帮我盘点已经投入的工作，再决定下一步是继续、谈条件还是退出。"
+      };
+      return map[noise];
+    }
+
+    function buildAiBriefText(r) {
+      const melodyNames = r.topMelody.map(m => m.key);
+      const noiseNames = r.topNoise.map(n => n.key);
+      const melodyScores = r.topMelody.map(m => `${m.key} ${Math.max(0, m.value)}`).join(" / ");
+      const noiseScores = r.topNoise.map(n => `${n.key} ${n.value}`).join(" / ");
+      const sparkLines = r.spark.map(s => {
+        const prefix = s.fallback ? "相对不排斥：" : "会明显被点亮：";
+        return `${prefix}${trimScene(s.text)}`;
+      });
+      const melodyModes = melodyNames.map(aiMelodyMode);
+      const outputPrefs = melodyNames.map(aiOutputPreference);
+      const noiseGuards = noiseNames.map(aiNoiseGuard);
+      const stuckSupport = noiseNames.map(aiStuckSupport);
+      const workModes = [
+        ...melodyModes,
+        `我这次最想成为的版本是“${futureDisplayName(r.future)}”：${r.future.gain}代价是：${r.future.cost}`,
+        `我的 30 天小实验：${experiments[r.future.name]}`
+      ];
+      const openingQuestions = [
+        "这次你想让我帮你做判断、整理思路，还是直接生成一个可用版本？",
+        "你更在意速度、准确、风格、好玩，还是可执行？",
+        "这件事有没有边界、雷区、不能碰的语气，或者你已经试过但失败的方法？"
+      ];
+      const feedbackRules = [
+        "先肯定具体做对的地方，再指出真正影响结果的问题。",
+        "给批评时请带上判断标准、原因和可执行改法。",
+        "如果有多个方向，请直接说你更推荐哪一个，以及为什么。",
+        "我不需要被过度哄着，但需要被认真对待。温暖可以有，空泛鸡汤不用。"
+      ];
+      const memoryRules = [
+        "这不是固定人格标签，只代表我这次调出来的偏好和当前版本。",
+        "请优先用具体生活场景理解我，不要把我直接塞进 MBTI 或星座式结论。",
+        "当我的要求不清楚时，请先帮我澄清，不要假装完全懂了。",
+        "如果你发现我的目标和行动互相打架，请直接提醒我，但语气要具体、友好、有建设性。"
+      ];
+
+      return `这是我的《人生调音台》人格专辑。请把它当作一份“和我协作的用户偏好档案”，以后陪我想问题、写东西、做计划、复盘选择时都可以参考。\n\n## 1. 我的当前版本\n- 人格专辑：${r.albumTitle}\n- 可晒外号：${r.personaAlias}\n- 主旋律：${melodyNames.join(" / ")}\n- 主旋律强度：${melodyScores}\n- 底噪来源：${noiseNames.join(" / ")}\n- 底噪音量：${noiseScores}\n- 未来试音：${futureDisplayName(r.future)}\n- 人生 BGM：${r.bgmLine.replace(/^我的人生 BGM：/, "")}\n\n一句话理解我：${r.oneLine}\n\n## 2. 我会被什么点亮\n${aiList(sparkLines)}\n\n## 3. 我容易被什么静音\n${aiList(noiseNames.map(noise => `${noise}：${noiseTemplates[noise]}`))}\n\n低电量版本：${lowBattery[r.topNoise[0].key]}\n\n## 4. 和我协作时，请优先这样做\n${aiNumberedList(workModes)}\n\n## 5. 适合我的输出方式\n${aiList(outputPrefs)}\n- 默认格式请用：先给一句核心判断，再给 3-5 条结构化要点，最后给一个“现在就能做”的下一步。\n- 如果任务复杂，请拆成“我现在知道什么 / 还缺什么 / 下一步怎么验证”。\n\n## 6. 请尽量避开这些雷区\n${aiList(noiseGuards)}\n\n## 7. 当我卡住、拖延或没电时\n${aiList(stuckSupport)}\n\n## 8. 给我反馈的方式\n${aiList(feedbackRules)}\n\n## 9. 你可以这样开场问我\n${aiList(openingQuestions)}\n\n## 10. 请长期记住的使用规则\n${aiList(memoryRules)}\n\n## 11. 和朋友/AI相处小抄\n${aiList(r.advice)}\n\n## 12. MBTI 只能当旁路参考\n${r.mbti}\n\n最后，请像一个清醒、靠谱、有一点幽默感的长期搭档一样和我协作：别把我神化，也别把我标签化。帮我把真实想法调清楚，把下一步做出来。`;
+    }
+
     async function copyAiBrief() {
       if (!state.result) return;
       lifeMixerAudio.playUi();
-      const r = state.result;
-      const text = `这是我的《人生调音台》人格专辑，之后和我协作时请参考：\\n\\n我的主旋律：${r.topMelody.map(m => m.key).join(" / ")}\\n我的底噪：${r.topNoise.map(n => n.key).join(" / ")}\\n我的外号：${r.personaAlias}\\n\\n我会被这些事点亮：\\n${r.spark.map(s => `- ${trimScene(s.text)}`).join("\\n")}\\n\\n和我相处/协作时：\\n${r.advice.map(item => `- ${item}`).join("\\n")}\\n\\n请尽量用清楚、具体、少废话但不冷冰冰的方式和我沟通。不要直接给我空泛结论，先帮我把问题拆清楚，再给下一步。`;
+      const text = buildAiBriefText(state.result);
       try {
         await writeClipboardText(text);
         flashButtonLabel("copyAiBtn", "已复制");
