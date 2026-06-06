@@ -134,8 +134,15 @@
       box-shadow: 0 0 14px var(--cyan);
     }
 
-    .audio-toggle {
+    .audio-controls {
       justify-self: start;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .audio-toggle {
       min-height: 34px;
       display: inline-flex;
       align-items: center;
@@ -166,6 +173,33 @@
     .audio-note {
       font-size: 15px;
       line-height: 1;
+    }
+
+    .volume-control {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 10px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.045);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .volume-control input[type="range"] {
+      width: 96px;
+      accent-color: var(--lime);
+      cursor: pointer;
+    }
+
+    .volume-value {
+      min-width: 34px;
+      color: var(--ink);
+      text-align: right;
     }
 
     .progress-wrap {
@@ -1415,7 +1449,7 @@
         justify-self: end;
       }
 
-      .audio-toggle {
+      .audio-controls {
         justify-self: end;
       }
     }
@@ -1423,6 +1457,7 @@
     @media (max-width: 560px) {
       .topbar {
         padding: 12px 14px;
+        grid-template-columns: 1fr auto;
       }
 
       .brand-title {
@@ -1432,7 +1467,28 @@
       }
 
       .progress-wrap {
+        grid-column: 1 / -1;
         width: auto;
+      }
+
+      .phase-label {
+        justify-self: end;
+      }
+
+      .audio-controls {
+        grid-column: 1 / -1;
+        justify-self: stretch;
+        display: grid;
+        grid-template-columns: auto 1fr;
+      }
+
+      .volume-control {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .volume-control input[type="range"] {
+        width: min(42vw, 180px);
       }
 
       .stage {
@@ -1523,10 +1579,17 @@
         <div class="brand-title">人生调音台</div>
       </div>
       <div class="phase-label" id="phaseLabel">待机</div>
-      <button class="audio-toggle" id="audioToggle" type="button" aria-pressed="false" title="音乐开关">
-        <span class="audio-note" aria-hidden="true">♪</span>
-        <span id="audioLabel">音乐</span>
-      </button>
+      <div class="audio-controls" aria-label="音乐控制">
+        <button class="audio-toggle" id="audioToggle" type="button" aria-pressed="false" title="音乐开关">
+          <span class="audio-note" aria-hidden="true">♪</span>
+          <span id="audioLabel">音乐</span>
+        </button>
+        <label class="volume-control" for="volumeSlider">
+          <span>音量</span>
+          <input id="volumeSlider" type="range" min="0" max="120" step="1" value="90" aria-label="音乐音量">
+          <span class="volume-value" id="volumeValue">90%</span>
+        </label>
+      </div>
       <div class="progress-wrap" aria-label="游戏进度">
         <div class="progress" id="progress"></div>
       </div>
@@ -1795,11 +1858,13 @@
 
     const AUDIO_CONFIG = {
       bpm: 78,
-      masterVolume: 0.48,
-      leadVolume: 0.1,
-      padVolume: 0.2,
-      pulseVolume: 0.025,
-      sparkleVolume: 0.072,
+      defaultVolume: 90,
+      maxVolume: 120,
+      masterVolume: 0.62,
+      leadVolume: 0.115,
+      padVolume: 0.22,
+      pulseVolume: 0.03,
+      sparkleVolume: 0.085,
       scale: [0, 2, 4, 7, 9, 12, 14, 16],
       root: 261.63,
       sceneEnergy: {
@@ -2048,6 +2113,7 @@
       loopTimer: null,
       step: 0,
       enabled: getAudioPreference() !== "off",
+      volume: getAudioVolumePreference(),
       started: false,
       currentScene: "screen-home",
 
@@ -2080,7 +2146,7 @@
         this.sparkleBus = this.ctx.createGain();
         this.echo = this.ctx.createDelay(1.6);
         this.echoFeedback = this.ctx.createGain();
-        this.master.gain.value = AUDIO_CONFIG.masterVolume;
+        this.master.gain.value = this.masterTarget();
         this.leadBus.gain.value = AUDIO_CONFIG.leadVolume;
         this.padBus.gain.value = AUDIO_CONFIG.padVolume;
         this.pulseBus.gain.value = AUDIO_CONFIG.pulseVolume;
@@ -2096,6 +2162,11 @@
         this.echoFeedback.connect(this.echo);
         this.echo.connect(this.master);
         this.master.connect(this.ctx.destination);
+      },
+
+      masterTarget(sceneId = this.currentScene) {
+        const energy = AUDIO_CONFIG.sceneEnergy[sceneId] || 0.55;
+        return AUDIO_CONFIG.masterVolume * energy * (this.volume / 100);
       },
 
       toggle() {
@@ -2127,13 +2198,21 @@
         this.currentScene = sceneId;
         if (!this.ctx || !this.master || !this.enabled) return;
         const now = this.ctx.currentTime;
-        const energy = AUDIO_CONFIG.sceneEnergy[sceneId] || 0.55;
         this.master.gain.cancelScheduledValues(now);
-        this.master.gain.setTargetAtTime(AUDIO_CONFIG.masterVolume * energy, now, 0.8);
+        this.master.gain.setTargetAtTime(this.masterTarget(sceneId), now, 0.55);
         this.leadBus.gain.setTargetAtTime(AUDIO_CONFIG.leadVolume * (sceneId === "screen-noise" ? 0.42 : 1), now, 0.7);
         this.padBus.gain.setTargetAtTime(AUDIO_CONFIG.padVolume * (sceneId === "screen-result" ? 1.18 : 1), now, 0.9);
         this.pulseBus.gain.setTargetAtTime(AUDIO_CONFIG.pulseVolume * (sceneId === "screen-noise" ? 0.18 : 0.55), now, 0.8);
         this.sparkleBus.gain.setTargetAtTime(AUDIO_CONFIG.sparkleVolume * (sceneId === "screen-noise" ? 0.45 : 1), now, 0.7);
+      },
+
+      setVolume(value) {
+        this.volume = clampAudioVolume(value);
+        setAudioVolumePreference(this.volume);
+        updateAudioUI();
+        if (this.ctx && this.master && this.enabled) {
+          this.setScene(this.currentScene);
+        }
       },
 
       startLoop() {
@@ -2363,6 +2442,28 @@
       }
     }
 
+    function clampAudioVolume(value) {
+      const parsed = Number(value);
+      if (!Number.isFinite(parsed)) return AUDIO_CONFIG.defaultVolume;
+      return Math.max(0, Math.min(AUDIO_CONFIG.maxVolume, Math.round(parsed)));
+    }
+
+    function getAudioVolumePreference() {
+      try {
+        return clampAudioVolume(localStorage.getItem("lifeMixerAudioVolume") || AUDIO_CONFIG.defaultVolume);
+      } catch (error) {
+        return AUDIO_CONFIG.defaultVolume;
+      }
+    }
+
+    function setAudioVolumePreference(value) {
+      try {
+        localStorage.setItem("lifeMixerAudioVolume", String(clampAudioVolume(value)));
+      } catch (error) {
+        // Audio volume preference is optional; the game should still work when storage is blocked.
+      }
+    }
+
     function updateAudioUI() {
       const toggle = $("audioToggle");
       if (!toggle) return;
@@ -2370,6 +2471,10 @@
       toggle.setAttribute("aria-pressed", audible ? "true" : "false");
       $("audioLabel").textContent = audible ? "音乐开" : lifeMixerAudio.enabled ? "开声音" : "静音";
       toggle.title = audible ? "关闭音乐" : "打开音乐";
+      const slider = $("volumeSlider");
+      const label = $("volumeValue");
+      if (slider) slider.value = lifeMixerAudio.volume;
+      if (label) label.textContent = `${lifeMixerAudio.volume}%`;
     }
 
     function resetState() {
@@ -2499,6 +2604,9 @@
     function init() {
       updateAudioUI();
       $("audioToggle").addEventListener("click", () => lifeMixerAudio.toggle());
+      $("volumeSlider").addEventListener("input", event => {
+        lifeMixerAudio.setVolume(event.target.value);
+      });
 
       $("startBtn").addEventListener("click", () => {
         lifeMixerAudio.start();
