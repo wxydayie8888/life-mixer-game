@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>人生调音台｜5分钟调出你的个人使用说明</title>
+  <title>人生调音台｜5分钟调出你的人格专辑</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23111217'/%3E%3Cpath d='M18 42V22M32 48V16M46 38V26' stroke='%2320e6d2' stroke-width='7' stroke-linecap='round'/%3E%3Ccircle cx='18' cy='31' r='7' fill='%23ffb84d'/%3E%3Ccircle cx='32' cy='26' r='7' fill='%23b7f34a'/%3E%3Ccircle cx='46' cy='34' r='7' fill='%23ff6fae'/%3E%3C/svg%3E">
   <style>
     :root {
@@ -1704,25 +1704,25 @@
       <section class="screen active" id="screen-home">
         <div class="hero">
           <div class="hero-copy">
-            <div class="kicker">5 分钟自我显影小游戏</div>
+            <div class="kicker">5 分钟人格专辑小游戏</div>
             <h1>人生<br>调音台</h1>
-            <p class="subtitle">不用选正确答案。靠近让你发亮的，静音让你耗电的，最后生成一份可以转发的《个人使用说明》。</p>
+            <p class="subtitle">选几段让你有反应的生活片段，调出你的主旋律、底噪和打开方式。发给朋友猜，也可以丢给常用 AI，当一张相处小抄。</p>
             <div class="cta-row">
               <button class="primary-btn" id="startBtn">开始调音</button>
-              <span class="microcopy">BPM 小狗会全程陪你听完，不会乱给你贴标签。</span>
+              <span class="microcopy">拍宝 BPMO 在录音间等你。别端着，凭第一反应选。</span>
             </div>
             <div class="hero-promises">
               <div class="promise">
-                <strong>像小游戏</strong>
-                <span>快速选择、即时亮轨、BPM 小狗吐槽。</span>
+                <strong>像发专辑</strong>
+                <span>最后拿到一张可以晒的人格专辑封面。</span>
               </div>
               <div class="promise">
-                <strong>像社交测试</strong>
-                <span>结果可以截图、复制、发给朋友猜。</span>
+                <strong>像互相爆料</strong>
+                <span>先让朋友盲猜你是哪种外号。</span>
               </div>
               <div class="promise">
-                <strong>像说明书</strong>
-                <span>不贴死标签，只生成当前版本的使用指南。</span>
+                <strong>像相处小抄</strong>
+                <span>给朋友，也给常用 AI：下次别再乱用你。</span>
               </div>
             </div>
           </div>
@@ -1733,7 +1733,7 @@
               <div class="track-chip">底噪<span></span></div>
               <div class="track-chip">边界<span></span></div>
               <div class="track-chip">未来<span></span></div>
-              <div class="track-chip">说明书<span></span></div>
+              <div class="track-chip">专辑<span></span></div>
             </div>
           </div>
         </div>
@@ -1742,9 +1742,9 @@
       <section class="screen" id="screen-intro">
         <div class="mix-intro">
           <div class="intro-console">
-            <img class="intro-dog" src="assets/bpm-dog-avatar.png" alt="BPM 小狗">
-            <h2>BPM 小狗正在校准耳机</h2>
-            <p>接下来别装成熟，也别选标准答案。我们只听三种声音：心动、底噪、你愿意承担的未来。</p>
+            <img class="intro-dog" src="assets/bpm-dog-avatar.png" alt="拍宝 BPMO">
+            <h2>拍宝正在校准耳机</h2>
+            <p>接下来别演成熟，也别选标准答案。我们只听三种声音：心动、底噪、你愿意付费订阅的未来。</p>
             <div class="intro-bars" aria-hidden="true">
               <div class="intro-bar"><span></span></div>
               <div class="intro-bar"><span></span></div>
@@ -1758,13 +1758,13 @@
         <div class="game-grid">
           <div class="main-panel">
             <h2 class="section-title">开机校准</h2>
-            <p class="section-note">你今天为什么想调一调自己？这不会决定你是谁，只会影响最后说明书的语气。</p>
+            <p class="section-note">这张人格专辑，你最想录给谁听？只影响最后文案的口气，不会把你钉死在某个类型里。</p>
             <div class="calibration-options" id="calibrationOptions"></div>
           </div>
           <aside class="side-panel">
             <div class="mascot">
-              <img src="assets/bpm-dog-avatar.png" alt="BPM 小狗">
-              <div class="bubble" id="mascotBubble">好，别端着。我们先听听你今天为什么想来。</div>
+              <img src="assets/bpm-dog-avatar.png" alt="拍宝 BPMO">
+              <div class="bubble" id="mascotBubble">好，别端着。先说说这张专辑准备发给谁。</div>
             </div>
             <div class="meters" id="meters"></div>
           </aside>
@@ -1806,8 +1806,8 @@
           </div>
           <aside class="side-panel">
             <div class="mascot mascot-performer" id="heartMascot" data-mood="listen">
-              <img src="assets/bpm-dog-avatar.png" alt="BPM 小狗">
-              <div class="bubble" id="heartBubble">这不是兴趣测试，这是找你的电量入口。</div>
+              <img src="assets/bpm-dog-avatar.png" alt="拍宝 BPMO">
+              <div class="bubble" id="heartBubble">这不是判卷，是看看你在哪些瞬间会亮一下。</div>
             </div>
             <div class="voiceprint-card">
               <div class="voiceprint-head">
@@ -1836,7 +1836,7 @@
           </div>
           <aside class="side-panel">
             <div class="mascot">
-              <img src="assets/bpm-dog-avatar.png" alt="BPM 小狗">
+              <img src="assets/bpm-dog-avatar.png" alt="拍宝 BPMO">
               <div class="bubble" id="noiseBubble">你不用喜欢所有环境，真的。</div>
             </div>
             <div class="meters" id="noiseMeters"></div>
@@ -1853,7 +1853,7 @@
           </div>
           <aside class="side-panel">
             <div class="mascot">
-              <img src="assets/bpm-dog-avatar.png" alt="BPM 小狗">
+              <img src="assets/bpm-dog-avatar.png" alt="拍宝 BPMO">
               <div class="bubble" id="futureBubble">请选择 3 个。光环不重要，代价才是真心话。</div>
             </div>
             <div class="tag-row" id="futureSelected"></div>
@@ -1865,10 +1865,10 @@
         <div class="result-layout">
           <div class="result-panel album-result">
             <div class="mix-header">
-              <img src="assets/bpm-dog-avatar.png" alt="BPM 小狗">
+              <img src="assets/bpm-dog-avatar.png" alt="拍宝 BPMO">
               <div>
-                <div class="album-kicker">LIFE MIXER GENERATED ALBUM</div>
-                <h2 class="result-title" id="resultTitle">我的个人使用说明 v0.1</h2>
+                <div class="album-kicker">NOW PLAYING / PERSONAL ALBUM</div>
+                <h2 class="result-title" id="resultTitle">我的人格专辑</h2>
                 <p class="result-subtitle" id="resultIntro"></p>
                 <div class="persona-strip" id="personaStrip"></div>
               </div>
@@ -1895,7 +1895,7 @@
               <p id="lowBatteryText"></p>
             </div>
             <div class="result-block">
-              <h3>说明书内页：如何更好地使用我</h3>
+              <h3>给朋友和 AI 的相处小抄</h3>
               <ul id="manualList"></ul>
             </div>
             <div class="result-block">
@@ -1903,13 +1903,14 @@
               <p id="becomingText"></p>
             </div>
             <div class="result-block">
-              <h3>和 MBTI 的一点点对照</h3>
+              <h3>如果你也爱看 MBTI</h3>
               <p id="mbtiText"></p>
             </div>
             <div class="cta-row">
               <button class="primary-btn" id="restartBtn">重新调一次</button>
-              <button class="secondary-btn" id="downloadBtn">下载专辑分享卡</button>
-              <button class="secondary-btn" id="copyBtn">复制朋友圈文案</button>
+              <button class="secondary-btn" id="downloadBtn">下载专辑封面</button>
+              <button class="secondary-btn" id="copyBtn">复制朋友圈</button>
+              <button class="secondary-btn" id="copyAiBtn">复制给 AI</button>
             </div>
           </div>
 
@@ -1923,7 +1924,7 @@
               <p id="shareAlbumMeta"></p>
             </div>
             <div class="share-card">
-              <h3>一句话使用说明</h3>
+              <h3>一句话打开方式</h3>
               <p id="shareManual"></p>
             </div>
             <div class="share-card">
@@ -2014,10 +2015,10 @@
     };
 
     const calibration = [
-      ["lost", "我有点迷茫", "你不是没有方向，只是几条音轨混在一起，暂时听不清主旋律。"],
-      ["know", "我想更了解自己", "你这次调音更像一次校准，不是从零认识自己，而是把模糊感变清楚。"],
-      ["tired", "我最近有点耗电", "你现在最需要的可能不是更努力，而是找到哪些事情正在偷你的电。"],
-      ["share", "我想生成一份能给别人看的说明书", "这份说明书适合拿去沟通，但请记得，它是当前版本，不是最终判决。"]
+      ["lost", "录给我自己", "最近脑子有点串台，先把自己的声音找回来。"],
+      ["know", "录给朋友猜", "看看他们到底懂不懂你，顺便给友情做个小抽查。"],
+      ["tired", "录给常用 AI", "以后别每次都从零解释自己，直接把这张小抄丢过去。"],
+      ["share", "录给那个总误解我的世界", "有些话不用吵，发张专辑封面就够了。"]
     ];
 
     const heartCards = [
@@ -2080,7 +2081,7 @@
       near: [
         "啪！这条音轨亮了。你刚才不是在选择，是在漏电光。",
         "收到，这个场景对你像充电口，不像任务。",
-        "BPM 小狗记下了：这里有你的心跳声。"
+        "拍宝记下了：这里有你的心跳声。"
       ],
       neutral: [
         "路过也算答案。有些场景不讨厌，但也不值得你开最大音量。",
@@ -2090,7 +2091,7 @@
       far: [
         "静音成功。你不是挑剔，只是这个场景有点不通电。",
         "这条先拉低。不是所有热闹都值得你入场。",
-        "BPM 小狗听见了：这里可能不是你的主场。"
+        "拍宝听见了：这里可能不是你的主场。"
       ]
     };
 
@@ -2715,13 +2716,13 @@
 
     function phaseName(id) {
       const map = {
-        "screen-home": "待机",
+        "screen-home": "开场",
         "screen-intro": "校准耳机",
         "screen-calibrate": "开机校准",
         "screen-heart": "心动采样",
         "screen-noise": "底噪消除",
         "screen-future": "未来试音",
-        "screen-result": "生成说明书"
+        "screen-result": "发布专辑"
       };
       return map[id] || "调音中";
     }
@@ -2822,6 +2823,7 @@
       });
       $("downloadBtn").addEventListener("click", downloadShareCard);
       $("copyBtn").addEventListener("click", copyShareText);
+      $("copyAiBtn").addEventListener("click", copyAiBrief);
     }
 
     function renderCalibration() {
@@ -2853,7 +2855,7 @@
       $("samplerReadout").textContent = `正在监听：${card[1].join(" / ")}`;
       $("beatToast").textContent = state.lastHeartFeedback || stageHint(state.heartIndex);
       $("heartBubble").textContent = state.lastHeartFeedback || (state.heartIndex < 3
-        ? "这不是兴趣测试，这是找你的电量入口。"
+        ? "这不是判卷，是看看你在哪些瞬间会亮一下。"
         : "有些事情没错，只是不通你的电。");
       renderMeters("heartMeters", state.melody);
       renderLiveWave(card[1]);
@@ -2992,7 +2994,7 @@
       if (state.futureChoices.length === GAME_CONFIG.futureChoiceLimit) {
         state.locked = true;
         renderFuture();
-        $("futureBubble").textContent = "收到。BPM 小狗正在把光环和代价一起混进去。";
+        $("futureBubble").textContent = "收到。拍宝正在把光环和代价一起混进去。";
         setTimeout(() => {
           buildResult();
           renderResult();
@@ -3026,7 +3028,7 @@
       const advice = [
         manualAdvice[topMelody[0].key],
         noiseAdvice(topNoise[0].key),
-        "如果要反馈我，请给我理由、标准和下一步，而不是只丢一句评价。"
+        "要吐槽我可以，但请带上原因和下一步，别只扔一句“你不行”。"
       ];
       const mbti = mbtiHint(topMelodyKeys, topNoise.map(n => n.key));
       const roast = roastRules[`${topMelody[0].key}|${topNoise[0].key}`] || defaultRoast(topMelody[0].key, topNoise[0].key);
@@ -3055,7 +3057,7 @@
         .sort((a, b) => hashString(`${a.alias}-${noise}`) - hashString(`${b.alias}-${noise}`));
       const correctIndex = options.findIndex(item => item.correct);
       return {
-        prompt: `先别公布答案。让朋友 10 秒内猜：哪个外号最像你？`,
+        prompt: `先别公布答案。让朋友 10 秒内猜：哪张才是你的专辑名？`,
         answer: `${String.fromCharCode(65 + correctIndex)}.${future.alias || future.name}`,
         options
       };
@@ -3105,11 +3107,11 @@
       const hintText = hints.length
         ? hints.slice(0, 2).join("；")
         : "你这次的音轨比较均衡，暂时不适合硬贴到某一个字母组合上";
-      return `这不是 MBTI 类型判断，只是一个参考坐标：${hintText}。人生调音台更关心的是，你在什么场景里会发亮，以及什么环境会让你失真。`;
+      return `别急着把自己塞进四个字母里。硬要对照的话：${hintText}。但这张专辑更想说的是，你什么时候会亮，什么时候会被吵到失真。`;
     }
 
     function defaultRoast(melody, noise) {
-      return `你的主旋律是${melody}，但${noise}一来就容易破音。BPM 小狗建议：先别硬撑，先把底噪静音。`;
+      return `你的主旋律是${melody}，但${noise}一来就容易破音。拍宝建议：先别硬撑，先把底噪静音。`;
     }
 
     function resultOneLine(melody, noise, future) {
@@ -3214,7 +3216,7 @@
         <div class="album-bar"><span style="width:${Math.max(18, 92 - i * 18)}%; background:linear-gradient(90deg, ${melodyColors[m.key]}, #f7f2e8)"></span></div>
       `).join("");
       $("shareManual").textContent = `打开方式：${r.advice[0]} 避免事项：${r.topNoise[0].key} 太重时，我会开始失真。`;
-      $("shareRoast").textContent = `朋友请注意：${r.advice[1]} BPM 小狗补一句：“${r.roast}”`;
+      $("shareRoast").textContent = `朋友请注意：${r.advice[1]} 拍宝补一句：“${r.roast}”`;
       $("shareChallenge").textContent = `${r.friendGuess.prompt} ${r.bgmLine}`;
       $("shareGuessOptions").innerHTML = r.friendGuess.options.map((item, index) => `
         <div class="guess-option"><span>${String.fromCharCode(65 + index)}</span>${item.alias}</div>
@@ -3231,7 +3233,7 @@
       const button = $("downloadBtn");
       const originalLabel = button.textContent;
       button.disabled = true;
-      button.textContent = "正在生成";
+      button.textContent = "正在出图";
       const canvas = $("shareCanvas");
       const ctx = canvas.getContext("2d");
       const r = state.result;
@@ -3278,7 +3280,7 @@
 
         ctx.fillStyle = "#f7f2e8";
         ctx.font = "900 48px PingFang SC, Microsoft YaHei, sans-serif";
-        ctx.fillText("BPM 小狗听完后说：", 92, 945);
+        ctx.fillText("拍宝听完后说：", 92, 945);
         ctx.font = "700 42px PingFang SC, Microsoft YaHei, sans-serif";
         wrapCanvasText(ctx, `“${r.roast}”`, 92, 1018, 850, 58);
 
@@ -3305,13 +3307,27 @@
       lifeMixerAudio.playUi();
       const r = state.result;
       const guessOptions = r.friendGuess.options.map((item, index) => `${String.fromCharCode(65 + index)}. ${item.alias}`).join("\\n");
-      const text = `我刚玩了《人生调音台》，生成了我的人生专辑：${r.albumTitle}。\\n\\n先别看答案，10 秒盲猜哪个外号最像我：\\n${guessOptions}\\n\\nA-side：${r.topMelody.map(m => m.key).join(" / ")}。\\nB-side 底噪：${r.topNoise.map(n => n.key).join(" / ")}。\\n${r.bgmLine}\\nBPM 小狗听完后说：“${r.roast}”\\n\\n答案我先藏着：${r.friendGuess.answer}。\\n来玩：${location.href}`;
+      const text = `我刚玩了《人生调音台》，调出了一张人格专辑：${r.albumTitle}。\\n\\n先别偷看答案，10 秒盲猜哪张最像我：\\n${guessOptions}\\n\\nA-side：${r.topMelody.map(m => m.key).join(" / ")}\\nB-side 底噪：${r.topNoise.map(n => n.key).join(" / ")}\\n${r.bgmLine}\\n拍宝听完后说：“${r.roast}”\\n\\n答案我先藏着：${r.friendGuess.answer}\\n来玩：${location.href}`;
       try {
         await writeClipboardText(text);
         flashButtonLabel("copyBtn", "已复制");
       } catch (error) {
         console.warn("Clipboard copy failed:", error);
         flashButtonLabel("copyBtn", "复制失败");
+      }
+    }
+
+    async function copyAiBrief() {
+      if (!state.result) return;
+      lifeMixerAudio.playUi();
+      const r = state.result;
+      const text = `这是我的《人生调音台》人格专辑，之后和我协作时请参考：\\n\\n我的主旋律：${r.topMelody.map(m => m.key).join(" / ")}\\n我的底噪：${r.topNoise.map(n => n.key).join(" / ")}\\n我的外号：${r.personaAlias}\\n\\n我会被这些事点亮：\\n${r.spark.map(s => `- ${trimScene(s.text)}`).join("\\n")}\\n\\n和我相处/协作时：\\n${r.advice.map(item => `- ${item}`).join("\\n")}\\n\\n请尽量用清楚、具体、少废话但不冷冰冰的方式和我沟通。不要直接给我空泛结论，先帮我把问题拆清楚，再给下一步。`;
+      try {
+        await writeClipboardText(text);
+        flashButtonLabel("copyAiBtn", "已复制");
+      } catch (error) {
+        console.warn("AI brief copy failed:", error);
+        flashButtonLabel("copyAiBtn", "复制失败");
       }
     }
 
