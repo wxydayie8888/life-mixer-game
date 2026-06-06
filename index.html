@@ -1485,21 +1485,21 @@
     };
 
     const AUDIO_CONFIG = {
-      bpm: 104,
-      masterVolume: 0.78,
-      leadVolume: 0.34,
-      padVolume: 0.16,
-      pulseVolume: 0.24,
+      bpm: 72,
+      masterVolume: 0.46,
+      leadVolume: 0.13,
+      padVolume: 0.18,
+      pulseVolume: 0.05,
       scale: [0, 2, 4, 7, 9, 12, 14, 16],
       root: 261.63,
       sceneEnergy: {
-        "screen-home": 0.42,
-        "screen-intro": 0.72,
-        "screen-calibrate": 0.55,
-        "screen-heart": 0.86,
-        "screen-noise": 0.5,
-        "screen-future": 0.72,
-        "screen-result": 0.9
+        "screen-home": 0.32,
+        "screen-intro": 0.5,
+        "screen-calibrate": 0.42,
+        "screen-heart": 0.52,
+        "screen-noise": 0.34,
+        "screen-future": 0.48,
+        "screen-result": 0.58
       }
     };
 
@@ -1795,39 +1795,40 @@
         const now = this.ctx.currentTime;
         const energy = AUDIO_CONFIG.sceneEnergy[sceneId] || 0.55;
         this.master.gain.cancelScheduledValues(now);
-        this.master.gain.setTargetAtTime(AUDIO_CONFIG.masterVolume * energy, now, 0.35);
-        this.leadBus.gain.setTargetAtTime(AUDIO_CONFIG.leadVolume * (sceneId === "screen-noise" ? 0.55 : 1), now, 0.3);
-        this.padBus.gain.setTargetAtTime(AUDIO_CONFIG.padVolume * (sceneId === "screen-result" ? 1.5 : 1), now, 0.4);
-        this.pulseBus.gain.setTargetAtTime(AUDIO_CONFIG.pulseVolume * (sceneId === "screen-heart" ? 1.35 : 0.85), now, 0.3);
+        this.master.gain.setTargetAtTime(AUDIO_CONFIG.masterVolume * energy, now, 0.8);
+        this.leadBus.gain.setTargetAtTime(AUDIO_CONFIG.leadVolume * (sceneId === "screen-noise" ? 0.35 : 1), now, 0.7);
+        this.padBus.gain.setTargetAtTime(AUDIO_CONFIG.padVolume * (sceneId === "screen-result" ? 1.25 : 1), now, 0.9);
+        this.pulseBus.gain.setTargetAtTime(AUDIO_CONFIG.pulseVolume * (sceneId === "screen-noise" ? 0.35 : 0.7), now, 0.8);
       },
 
       startLoop() {
         clearInterval(this.loopTimer);
-        const beatMs = 60000 / AUDIO_CONFIG.bpm / 2;
+        const beatMs = 60000 / AUDIO_CONFIG.bpm;
         this.loopTimer = setInterval(() => this.tick(), beatMs);
         this.tick();
       },
 
       tick() {
         if (!this.ctx || !this.enabled) return;
-        const pattern = [0, 4, 7, 9, 7, 4, 2, 7, 12, 9, 7, 4, 2, 0, 4, 7];
-        const bassPattern = [0, 0, 5, 5, 3, 3, 4, 4];
+        const pattern = [0, null, 4, null, null, 7, null, 9, null, null, 7, null, 4, null, null, null];
+        const bassPattern = [-12, null, null, null, -7, null, null, null];
         const now = this.ctx.currentTime;
-        const isBrightScene = this.currentScene === "screen-heart" || this.currentScene === "screen-result";
         const degree = pattern[this.step % pattern.length];
-        if (this.step % 2 === 0 || isBrightScene) {
-          this.pluck(noteToFrequency(degree), now, 0.11, this.leadBus, "triangle");
+        if (degree !== null) {
+          this.pluck(noteToFrequency(degree + 12), now, 0.46, this.leadBus, "sine", 0.42);
         }
-        if (this.step % 4 === 0) {
-          this.pulse(noteToFrequency(bassPattern[(this.step / 4) % bassPattern.length] - 12), now, 0.22);
+        const bassDegree = bassPattern[this.step % bassPattern.length];
+        const allowPulse = this.currentScene === "screen-intro" || this.currentScene === "screen-future" || this.currentScene === "screen-result";
+        if (allowPulse && bassDegree !== null) {
+          this.pulse(noteToFrequency(bassDegree), now, 0.6);
         }
         if (this.step % 8 === 0) {
-          this.pad([0, 4, 7].map(offset => noteToFrequency(offset)), now, 1.7);
+          this.pad([0, 4, 7, 12].map(offset => noteToFrequency(offset)), now, 5.8);
         }
         this.step += 1;
       },
 
-      pluck(freq, time, duration, destination, type = "sine") {
+      pluck(freq, time, duration, destination, type = "sine", peak = 0.5) {
         if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
@@ -1835,10 +1836,10 @@
         osc.type = type;
         osc.frequency.setValueAtTime(freq, time);
         filter.type = "lowpass";
-        filter.frequency.setValueAtTime(2300, time);
-        filter.frequency.exponentialRampToValueAtTime(720, time + duration);
+        filter.frequency.setValueAtTime(1650, time);
+        filter.frequency.exponentialRampToValueAtTime(620, time + duration);
         gain.gain.setValueAtTime(0.0001, time);
-        gain.gain.exponentialRampToValueAtTime(0.9, time + 0.012);
+        gain.gain.exponentialRampToValueAtTime(peak, time + 0.025);
         gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
         osc.connect(filter);
         filter.connect(gain);
@@ -1854,7 +1855,7 @@
         osc.type = "sine";
         osc.frequency.setValueAtTime(freq, time);
         gain.gain.setValueAtTime(0.0001, time);
-        gain.gain.exponentialRampToValueAtTime(0.75, time + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.34, time + 0.04);
         gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
         osc.connect(gain);
         gain.connect(this.pulseBus);
@@ -1869,7 +1870,7 @@
           osc.type = "sine";
           osc.frequency.setValueAtTime(freq / 2, time);
           gain.gain.setValueAtTime(0.0001, time);
-          gain.gain.linearRampToValueAtTime(0.18 / (index + 1), time + 0.18);
+          gain.gain.linearRampToValueAtTime(0.09 / (index + 1), time + 1.2);
           gain.gain.linearRampToValueAtTime(0.0001, time + duration);
           osc.connect(gain);
           gain.connect(this.padBus);
@@ -1882,49 +1883,49 @@
         if (!this.ctx || !this.enabled) return;
         const now = this.ctx.currentTime + offset;
         degrees.forEach((degree, index) => {
-          this.pluck(noteToFrequency(degree), now + index * 0.035, 0.28, this.leadBus, "triangle");
+          this.pluck(noteToFrequency(degree), now + index * 0.055, 0.42, this.leadBus, "sine", 0.34);
         });
       },
 
       playStartup() {
         if (!this.ctx || !this.enabled) return;
         const now = this.ctx.currentTime;
-        this.chord([0, 4, 7, 12]);
-        this.chord([7, 12, 16, 19], 0.18);
-        this.pulse(noteToFrequency(-12), now, 0.42);
+        this.chord([0, 7, 12]);
+        this.chord([4, 9, 14], 0.28);
+        this.pad([0, 4, 7, 12].map(offset => noteToFrequency(offset)), now, 4.6);
       },
 
       playHeart(choice) {
-        if (choice === "near") this.chord([4, 7, 12, 16]);
-        if (choice === "neutral") this.chord([0, 2, 7]);
-        if (choice === "far") this.descend([7, 4, 2, 0]);
+        if (choice === "near") this.chord([7, 12]);
+        if (choice === "neutral") this.chord([2]);
+        if (choice === "far") this.descend([4, 0]);
       },
 
       playNoise() {
         if (!this.ctx || !this.enabled) return;
         const now = this.ctx.currentTime;
-        this.pluck(noteToFrequency(-5), now, 0.09, this.pulseBus, "sawtooth");
-        this.pluck(noteToFrequency(7), now + 0.08, 0.16, this.leadBus, "triangle");
+        this.pluck(noteToFrequency(-5), now, 0.18, this.pulseBus, "sine", 0.18);
+        this.pluck(noteToFrequency(7), now + 0.14, 0.32, this.leadBus, "sine", 0.22);
       },
 
       playFuture(count) {
-        this.chord([0, 7, 12 + count], 0.01);
+        this.chord([7, 12 + count], 0.01);
       },
 
       playResult() {
-        this.chord([0, 4, 7, 12, 16]);
-        this.chord([7, 12, 16, 19], 0.25);
+        this.chord([0, 7, 12]);
+        this.chord([4, 9, 14], 0.42);
       },
 
       playUi() {
-        this.chord([12, 16], 0.01);
+        this.chord([12], 0.01);
       },
 
       descend(degrees) {
         if (!this.ctx || !this.enabled) return;
         const now = this.ctx.currentTime;
         degrees.forEach((degree, index) => {
-          this.pluck(noteToFrequency(degree), now + index * 0.045, 0.12, this.leadBus, "sine");
+          this.pluck(noteToFrequency(degree), now + index * 0.075, 0.28, this.leadBus, "sine", 0.24);
         });
       }
     };
