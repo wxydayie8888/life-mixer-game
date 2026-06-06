@@ -1214,6 +1214,30 @@
       color: var(--muted);
     }
 
+    .persona-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 0;
+    }
+
+    .persona-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.07);
+      color: #f7f2e8;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .persona-chip strong {
+      color: var(--lime);
+    }
+
     .result-hero-card {
       position: relative;
       margin: 0 0 18px;
@@ -1343,6 +1367,37 @@
       margin: 8px 0;
       color: #ebe5da;
       line-height: 1.6;
+    }
+
+    .guess-options {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .guess-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.07);
+      color: #fff8e9;
+      font-weight: 850;
+    }
+
+    .guess-option span {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: rgba(183, 243, 74, 0.18);
+      color: var(--lime);
+      font-size: 12px;
     }
 
     .share-card.album {
@@ -1765,6 +1820,7 @@
                 <div class="album-kicker">LIFE MIXER GENERATED ALBUM</div>
                 <h2 class="result-title" id="resultTitle">我的个人使用说明 v0.1</h2>
                 <p class="result-subtitle" id="resultIntro"></p>
+                <div class="persona-strip" id="personaStrip"></div>
               </div>
             </div>
             <div class="result-hero-card">
@@ -1827,6 +1883,7 @@
             <div class="share-card">
               <h3>朋友挑战卡</h3>
               <p id="shareChallenge"></p>
+              <div class="guess-options" id="shareGuessOptions"></div>
             </div>
           </aside>
         </div>
@@ -2842,12 +2899,34 @@
       const albumTitle = albumName(topMelody[0].key, topMelody[1].key, topNoise[0].key);
       const hiddenTrack = hiddenTrackLine(topMelody[0].key, topNoise[0].key);
       const bgmLine = resultBgmLine(topMelody[0].key, topNoise[0].key, future);
-      state.result = { topMelody, topNoise, future, personaAlias, spark, advice, mbti, roast, oneLine, albumTitle, hiddenTrack, bgmLine };
+      const friendGuess = buildFriendGuess(future, topMelody[0].key, topNoise[0].key);
+      state.result = { topMelody, topNoise, future, personaAlias, spark, advice, mbti, roast, oneLine, albumTitle, hiddenTrack, bgmLine, friendGuess };
     }
 
     function futureDisplayName(future) {
       if (!future) return "";
       return future.alias ? `${future.alias} / ${future.name}` : future.name;
+    }
+
+    function buildFriendGuess(future, melody, noise) {
+      const decoys = futures
+        .filter(item => item.id !== future.id)
+        .map(item => ({ ...item, seed: hashString(`${item.id}-${melody}-${noise}`) }))
+        .sort((a, b) => a.seed - b.seed)
+        .slice(0, 2);
+      const options = [future, ...decoys]
+        .map(item => ({ alias: item.alias || item.name, name: item.name, correct: item.id === future.id }))
+        .sort((a, b) => hashString(`${a.alias}-${noise}`) - hashString(`${b.alias}-${noise}`));
+      const correctIndex = options.findIndex(item => item.correct);
+      return {
+        prompt: `先别公布答案。让朋友 10 秒内猜：哪个外号最像你？`,
+        answer: `${String.fromCharCode(65 + correctIndex)}.${future.alias || future.name}`,
+        options
+      };
+    }
+
+    function hashString(text) {
+      return Array.from(text).reduce((sum, char) => sum + char.charCodeAt(0), 0);
     }
 
     function selectSparkScenes(topMelodyKeys) {
@@ -2976,6 +3055,11 @@
       $("resultTitle").textContent = r.albumTitle;
       $("resultIntro").textContent = state.calibration[2];
       $("resultOneLine").textContent = r.oneLine;
+      $("personaStrip").innerHTML = [
+        ["可晒外号", r.personaAlias],
+        ["人生 BGM", `${r.topNoise[0].key} 静音版`],
+        ["盲猜答案", r.friendGuess.answer]
+      ].map(([label, value]) => `<span class="persona-chip">${label}<strong>${value}</strong></span>`).join("");
       $("melodyText").textContent = `我的主旋律是 ${r.topMelody[0].key}，副旋律是 ${r.topMelody[1].key}，隐藏旋律是 ${r.topMelody[2].key}。当前可晒外号：${futureDisplayName(r.future)}。${melodyTemplates[r.topMelody[0].key]}`;
       $("melodyTags").innerHTML = r.topMelody.map((m, i) => `<span class="tag" style="--cyan:${melodyColors[m.key]}">${i + 1}. ${m.key} ${Math.max(0, m.value)}</span>`).join("");
       $("sparkList").innerHTML = r.spark.map(s => {
@@ -2995,7 +3079,10 @@
       `).join("");
       $("shareManual").textContent = `打开方式：${r.advice[0]} 避免事项：${r.topNoise[0].key} 太重时，我会开始失真。`;
       $("shareRoast").textContent = `朋友请注意：${r.advice[1]} BPM 小狗补一句：“${r.roast}”`;
-      $("shareChallenge").textContent = `发给朋友玩：先让 TA 猜你是 ${r.personaAlias}，还是另一个隐藏版本。${r.bgmLine}`;
+      $("shareChallenge").textContent = `${r.friendGuess.prompt} ${r.bgmLine}`;
+      $("shareGuessOptions").innerHTML = r.friendGuess.options.map((item, index) => `
+        <div class="guess-option"><span>${String.fromCharCode(65 + index)}</span>${item.alias}</div>
+      `).join("");
     }
 
     function trimScene(text) {
@@ -3061,7 +3148,8 @@
 
         ctx.fillStyle = "rgba(255,255,255,0.72)";
         ctx.font = "600 30px PingFang SC, Microsoft YaHei, sans-serif";
-        wrapCanvasText(ctx, `底噪：${r.topNoise.map(n => n.key).join(" / ")}｜${r.bgmLine}`, 92, 1248, 880, 42);
+        wrapCanvasText(ctx, `朋友圈盲猜：${r.friendGuess.options.map((item, index) => `${String.fromCharCode(65 + index)}.${item.alias}`).join("  ")}`, 92, 1215, 880, 38);
+        wrapCanvasText(ctx, `底噪：${r.topNoise.map(n => n.key).join(" / ")}｜答案先藏起来：${r.friendGuess.answer}`, 92, 1320, 880, 38);
 
         const link = document.createElement("a");
         link.download = "人生调音台-我的人生主旋律.png";
@@ -3080,7 +3168,8 @@
       if (!state.result) return;
       lifeMixerAudio.playUi();
       const r = state.result;
-      const text = `我刚玩了《人生调音台》，生成了我的人生专辑：${r.albumTitle}。\\n我的可晒外号：${r.personaAlias}。\\nA-side：${r.topMelody.map(m => m.key).join(" / ")}。\\nB-side 底噪：${r.topNoise.map(n => n.key).join(" / ")}。\\n${r.bgmLine}\\nBPM 小狗听完后说：“${r.roast}”\\n\\n你来猜猜我最亮的是哪条音轨。\\n来玩：${location.href}`;
+      const guessOptions = r.friendGuess.options.map((item, index) => `${String.fromCharCode(65 + index)}. ${item.alias}`).join("\\n");
+      const text = `我刚玩了《人生调音台》，生成了我的人生专辑：${r.albumTitle}。\\n\\n先别看答案，10 秒盲猜哪个外号最像我：\\n${guessOptions}\\n\\nA-side：${r.topMelody.map(m => m.key).join(" / ")}。\\nB-side 底噪：${r.topNoise.map(n => n.key).join(" / ")}。\\n${r.bgmLine}\\nBPM 小狗听完后说：“${r.roast}”\\n\\n答案我先藏着：${r.friendGuess.answer}。\\n来玩：${location.href}`;
       try {
         await writeClipboardText(text);
         flashButtonLabel("copyBtn", "已复制");
