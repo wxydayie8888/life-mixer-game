@@ -1132,16 +1132,54 @@
     .noise-card {
       min-height: 230px;
       display: grid;
-      place-items: center;
+      grid-template-rows: minmax(120px, 0.9fr) auto;
+      gap: 14px;
+      align-items: stretch;
       text-align: center;
-      font-size: clamp(24px, 4vw, 38px);
+      font-size: clamp(20px, 2.6vw, 31px);
       line-height: 1.25;
       font-weight: 850;
+      overflow: hidden;
+    }
+
+    .noise-comic {
+      position: relative;
+      display: block;
+      min-height: 124px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.05);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .noise-comic img {
+      width: 100%;
+      height: 100%;
+      min-height: 124px;
+      display: block;
+      object-fit: cover;
+      filter: saturate(0.96) contrast(1.03) brightness(0.82);
+      transition: transform 220ms ease, filter 220ms ease;
+    }
+
+    .noise-comic::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(11, 13, 18, 0.08), rgba(11, 13, 18, 0.48)),
+        radial-gradient(circle at 18% 22%, rgba(255, 92, 92, 0.18), transparent 42%);
+      pointer-events: none;
+    }
+
+    .noise-card:hover .noise-comic img {
+      transform: scale(1.035);
+      filter: saturate(1.05) contrast(1.04) brightness(0.92);
     }
 
     .noise-label {
       display: block;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
       color: var(--red);
       font-size: 13px;
       font-weight: 900;
@@ -1150,6 +1188,13 @@
 
     .noise-text {
       display: block;
+      text-wrap: balance;
+    }
+
+    .noise-copy {
+      display: grid;
+      align-content: center;
+      min-height: 104px;
     }
 
     .versus {
@@ -1608,6 +1653,22 @@
         inset: auto 10px 10px;
         gap: 8px;
         padding: 14px;
+      }
+
+      .noise-card {
+        min-height: 250px;
+        gap: 10px;
+        padding: 12px;
+        font-size: 21px;
+      }
+
+      .noise-comic,
+      .noise-comic img {
+        min-height: 112px;
+      }
+
+      .noise-copy {
+        min-height: 92px;
       }
 
       .sampler-status {
@@ -2075,6 +2136,17 @@
       "照护": "assets/comic-connect.png",
       "秩序": "assets/comic-order.png",
       "解释": "assets/comic-order.png"
+    };
+
+    const comicByNoise = {
+      "模糊": "assets/comic-order.png",
+      "打断": "assets/comic-expression.png",
+      "空转": "assets/comic-explore.png",
+      "失控": "assets/comic-organize.png",
+      "压迫": "assets/comic-order.png",
+      "低质社交": "assets/comic-connect.png",
+      "否定": "assets/comic-expression.png",
+      "隐形": "assets/comic-connect.png"
     };
 
     const heartQuips = {
@@ -2932,14 +3004,27 @@
     function renderNoise() {
       const pair = state.noiseSet[state.noiseIndex];
       $("noiseIndex").textContent = formatIndex(state.noiseIndex, state.noiseSet.length);
-      $("noiseA").innerHTML = `<span class="noise-label">更不能忍</span><span class="noise-text">${pair[0][0]}</span>`;
-      $("noiseB").innerHTML = `<span class="noise-label">更不能忍</span><span class="noise-text">${pair[1][0]}</span>`;
+      $("noiseA").innerHTML = renderNoiseCard(pair[0]);
+      $("noiseB").innerHTML = renderNoiseCard(pair[1]);
       setNoiseDisabled(false);
       $("noiseBubble").textContent = state.noiseIndex < 4
         ? "讨厌不是坏脾气，有时候是边界在报警。"
         : "你不用喜欢所有环境，真的。";
       renderMeters("noiseMeters", state.noise, "noise");
       showScreen("screen-noise", GAME_CONFIG.progress.noiseStart + state.noiseIndex / state.noiseSet.length * GAME_CONFIG.progress.noiseSpan);
+    }
+
+    function renderNoiseCard([text, noise]) {
+      const comic = comicByNoise[noise] || "assets/comic-expression.png";
+      return `
+        <span class="noise-comic" aria-hidden="true">
+          <img src="${comic}" alt="">
+        </span>
+        <span class="noise-copy">
+          <span class="noise-label">更不能忍</span>
+          <span class="noise-text">${text}</span>
+        </span>
+      `;
     }
 
     function answerNoise(which) {
