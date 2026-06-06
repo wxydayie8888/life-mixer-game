@@ -1786,21 +1786,22 @@
     };
 
     const AUDIO_CONFIG = {
-      bpm: 72,
-      masterVolume: 0.46,
-      leadVolume: 0.13,
-      padVolume: 0.18,
-      pulseVolume: 0.05,
+      bpm: 78,
+      masterVolume: 0.48,
+      leadVolume: 0.1,
+      padVolume: 0.2,
+      pulseVolume: 0.025,
+      sparkleVolume: 0.072,
       scale: [0, 2, 4, 7, 9, 12, 14, 16],
       root: 261.63,
       sceneEnergy: {
-        "screen-home": 0.32,
-        "screen-intro": 0.5,
-        "screen-calibrate": 0.42,
-        "screen-heart": 0.52,
-        "screen-noise": 0.34,
-        "screen-future": 0.48,
-        "screen-result": 0.58
+        "screen-home": 0.28,
+        "screen-intro": 0.46,
+        "screen-calibrate": 0.38,
+        "screen-heart": 0.46,
+        "screen-noise": 0.3,
+        "screen-future": 0.44,
+        "screen-result": 0.54
       }
     };
 
@@ -2023,6 +2024,9 @@
       leadBus: null,
       padBus: null,
       pulseBus: null,
+      sparkleBus: null,
+      echo: null,
+      echoFeedback: null,
       loopTimer: null,
       step: 0,
       enabled: getAudioPreference() !== "off",
@@ -2055,13 +2059,24 @@
         this.leadBus = this.ctx.createGain();
         this.padBus = this.ctx.createGain();
         this.pulseBus = this.ctx.createGain();
+        this.sparkleBus = this.ctx.createGain();
+        this.echo = this.ctx.createDelay(1.6);
+        this.echoFeedback = this.ctx.createGain();
         this.master.gain.value = AUDIO_CONFIG.masterVolume;
         this.leadBus.gain.value = AUDIO_CONFIG.leadVolume;
         this.padBus.gain.value = AUDIO_CONFIG.padVolume;
         this.pulseBus.gain.value = AUDIO_CONFIG.pulseVolume;
+        this.sparkleBus.gain.value = AUDIO_CONFIG.sparkleVolume;
+        this.echo.delayTime.value = 0.28;
+        this.echoFeedback.gain.value = 0.18;
         this.leadBus.connect(this.master);
         this.padBus.connect(this.master);
         this.pulseBus.connect(this.master);
+        this.sparkleBus.connect(this.master);
+        this.sparkleBus.connect(this.echo);
+        this.echo.connect(this.echoFeedback);
+        this.echoFeedback.connect(this.echo);
+        this.echo.connect(this.master);
         this.master.connect(this.ctx.destination);
       },
 
@@ -2097,9 +2112,10 @@
         const energy = AUDIO_CONFIG.sceneEnergy[sceneId] || 0.55;
         this.master.gain.cancelScheduledValues(now);
         this.master.gain.setTargetAtTime(AUDIO_CONFIG.masterVolume * energy, now, 0.8);
-        this.leadBus.gain.setTargetAtTime(AUDIO_CONFIG.leadVolume * (sceneId === "screen-noise" ? 0.35 : 1), now, 0.7);
-        this.padBus.gain.setTargetAtTime(AUDIO_CONFIG.padVolume * (sceneId === "screen-result" ? 1.25 : 1), now, 0.9);
-        this.pulseBus.gain.setTargetAtTime(AUDIO_CONFIG.pulseVolume * (sceneId === "screen-noise" ? 0.35 : 0.7), now, 0.8);
+        this.leadBus.gain.setTargetAtTime(AUDIO_CONFIG.leadVolume * (sceneId === "screen-noise" ? 0.42 : 1), now, 0.7);
+        this.padBus.gain.setTargetAtTime(AUDIO_CONFIG.padVolume * (sceneId === "screen-result" ? 1.18 : 1), now, 0.9);
+        this.pulseBus.gain.setTargetAtTime(AUDIO_CONFIG.pulseVolume * (sceneId === "screen-noise" ? 0.18 : 0.55), now, 0.8);
+        this.sparkleBus.gain.setTargetAtTime(AUDIO_CONFIG.sparkleVolume * (sceneId === "screen-noise" ? 0.45 : 1), now, 0.7);
       },
 
       startLoop() {
@@ -2111,20 +2127,26 @@
 
       tick() {
         if (!this.ctx || !this.enabled) return;
-        const pattern = [0, null, 4, null, null, 7, null, 9, null, null, 7, null, 4, null, null, null];
-        const bassPattern = [-12, null, null, null, -7, null, null, null];
+        const pattern = [0, null, 4, 7, null, 9, null, null, 12, null, 9, null, 7, 4, null, null];
+        const smilePattern = [null, null, null, null, 16, null, null, null, null, null, 14, null, null, null, null, null];
+        const bassPattern = [-12, null, null, null, null, null, null, null, -5, null, null, null, null, null, null, null];
         const now = this.ctx.currentTime;
         const degree = pattern[this.step % pattern.length];
         if (degree !== null) {
-          this.pluck(noteToFrequency(degree + 12), now, 0.46, this.leadBus, "sine", 0.42);
+          this.kalimba(noteToFrequency(degree + 12), now, 0.52, 0.24);
+        }
+        const smileDegree = smilePattern[this.step % smilePattern.length];
+        const cheerfulScene = this.currentScene === "screen-intro" || this.currentScene === "screen-heart" || this.currentScene === "screen-result";
+        if (cheerfulScene && smileDegree !== null) {
+          this.bell(noteToFrequency(smileDegree + 12), now + 0.07, 0.72, 0.14);
         }
         const bassDegree = bassPattern[this.step % bassPattern.length];
         const allowPulse = this.currentScene === "screen-intro" || this.currentScene === "screen-future" || this.currentScene === "screen-result";
         if (allowPulse && bassDegree !== null) {
-          this.pulse(noteToFrequency(bassDegree), now, 0.6);
+          this.pulse(noteToFrequency(bassDegree), now, 0.72);
         }
-        if (this.step % 8 === 0) {
-          this.pad([0, 4, 7, 12].map(offset => noteToFrequency(offset)), now, 5.8);
+        if (this.step % 16 === 0) {
+          this.pad([0, 4, 7, 9, 12].map(offset => noteToFrequency(offset)), now, 10.4);
         }
         this.step += 1;
       },
@@ -2149,6 +2171,56 @@
         osc.stop(time + duration + 0.02);
       },
 
+      kalimba(freq, time, duration, peak = 0.22) {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const overtone = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const overtoneGain = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
+        osc.type = "triangle";
+        overtone.type = "sine";
+        osc.frequency.setValueAtTime(freq, time);
+        overtone.frequency.setValueAtTime(freq * 2.01, time);
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(2400, time);
+        filter.frequency.exponentialRampToValueAtTime(820, time + duration);
+        gain.gain.setValueAtTime(0.0001, time);
+        gain.gain.exponentialRampToValueAtTime(peak, time + 0.018);
+        gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+        overtoneGain.gain.setValueAtTime(0.0001, time);
+        overtoneGain.gain.exponentialRampToValueAtTime(peak * 0.22, time + 0.014);
+        overtoneGain.gain.exponentialRampToValueAtTime(0.0001, time + Math.max(0.16, duration * 0.62));
+        osc.connect(filter);
+        filter.connect(gain);
+        overtone.connect(overtoneGain);
+        gain.connect(this.leadBus);
+        overtoneGain.connect(this.sparkleBus);
+        osc.start(time);
+        overtone.start(time);
+        osc.stop(time + duration + 0.03);
+        overtone.stop(time + duration + 0.03);
+      },
+
+      bell(freq, time, duration, peak = 0.12) {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const filter = this.ctx.createBiquadFilter();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, time);
+        filter.type = "highpass";
+        filter.frequency.setValueAtTime(520, time);
+        gain.gain.setValueAtTime(0.0001, time);
+        gain.gain.exponentialRampToValueAtTime(peak, time + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.sparkleBus);
+        osc.start(time);
+        osc.stop(time + duration + 0.04);
+      },
+
       pulse(freq, time, duration) {
         if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
@@ -2156,7 +2228,7 @@
         osc.type = "sine";
         osc.frequency.setValueAtTime(freq, time);
         gain.gain.setValueAtTime(0.0001, time);
-        gain.gain.exponentialRampToValueAtTime(0.34, time + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.16, time + 0.06);
         gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
         osc.connect(gain);
         gain.connect(this.pulseBus);
@@ -2168,65 +2240,87 @@
         freqs.forEach((freq, index) => {
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
-          osc.type = "sine";
+          const filter = this.ctx.createBiquadFilter();
+          osc.type = index % 2 === 0 ? "sine" : "triangle";
           osc.frequency.setValueAtTime(freq / 2, time);
+          filter.type = "lowpass";
+          filter.frequency.setValueAtTime(900 + index * 120, time);
           gain.gain.setValueAtTime(0.0001, time);
-          gain.gain.linearRampToValueAtTime(0.09 / (index + 1), time + 1.2);
+          gain.gain.linearRampToValueAtTime(0.055 / (index + 1), time + 1.7);
           gain.gain.linearRampToValueAtTime(0.0001, time + duration);
-          osc.connect(gain);
+          osc.connect(filter);
+          filter.connect(gain);
           gain.connect(this.padBus);
           osc.start(time);
           osc.stop(time + duration + 0.06);
         });
       },
 
-      chord(degrees, offset = 0) {
+      chord(degrees, offset = 0, peak = 0.2) {
         if (!this.ctx || !this.enabled) return;
         const now = this.ctx.currentTime + offset;
         degrees.forEach((degree, index) => {
-          this.pluck(noteToFrequency(degree), now + index * 0.055, 0.42, this.leadBus, "sine", 0.34);
+          this.kalimba(noteToFrequency(degree), now + index * 0.07, 0.44, peak);
         });
       },
 
       playStartup() {
         if (!this.ctx || !this.enabled) return;
         const now = this.ctx.currentTime;
-        this.chord([0, 7, 12]);
-        this.chord([4, 9, 14], 0.28);
-        this.pad([0, 4, 7, 12].map(offset => noteToFrequency(offset)), now, 4.6);
+        this.pad([0, 4, 7, 9, 12].map(offset => noteToFrequency(offset)), now, 6.8);
+        this.smile([7, 9, 12], 0.08, 0.16, 0.13);
+        this.bell(noteToFrequency(19), now + 0.72, 0.9, 0.1);
       },
 
       playHeart(choice) {
-        if (choice === "near") this.chord([7, 12]);
-        if (choice === "neutral") this.chord([2]);
-        if (choice === "far") this.descend([4, 0]);
+        if (choice === "near") this.smile([7, 9, 12], 0.01, 0.11, 0.17);
+        if (choice === "neutral") this.smile([4, 7], 0.01, 0.12, 0.11);
+        if (choice === "far") this.descend([7, 4], 0.13);
       },
 
       playNoise() {
         if (!this.ctx || !this.enabled) return;
         const now = this.ctx.currentTime;
-        this.pluck(noteToFrequency(-5), now, 0.18, this.pulseBus, "sine", 0.18);
-        this.pluck(noteToFrequency(7), now + 0.14, 0.32, this.leadBus, "sine", 0.22);
+        this.pluck(noteToFrequency(-5), now, 0.14, this.pulseBus, "sine", 0.07);
+        this.bell(noteToFrequency(7), now + 0.12, 0.34, 0.08);
       },
 
       playFuture(count) {
-        this.chord([7, 12 + count], 0.01);
+        const topNote = count % 2 === 0 ? 14 : 16;
+        this.smile([7, 12, topNote], 0.01, 0.12, 0.13);
       },
 
       playResult() {
-        this.chord([0, 7, 12]);
-        this.chord([4, 9, 14], 0.42);
+        if (!this.ctx || !this.enabled) return;
+        const now = this.ctx.currentTime;
+        this.pad([0, 4, 7, 9, 12].map(offset => noteToFrequency(offset)), now, 7.2);
+        this.smile([0, 4, 7, 12], 0.04, 0.12, 0.15);
+        this.smile([7, 9, 12, 16], 0.62, 0.13, 0.13);
+        this.bell(noteToFrequency(19), now + 1.42, 1.2, 0.11);
       },
 
       playUi() {
-        this.chord([12], 0.01);
+        if (!this.ctx || !this.enabled) return;
+        this.bell(noteToFrequency(16), this.ctx.currentTime + 0.01, 0.28, 0.075);
       },
 
-      descend(degrees) {
+      smile(degrees, offset = 0.01, gap = 0.11, peak = 0.13) {
+        if (!this.ctx || !this.enabled) return;
+        const now = this.ctx.currentTime + offset;
+        degrees.forEach((degree, index) => {
+          const time = now + index * gap;
+          this.kalimba(noteToFrequency(degree), time, 0.42, peak * (1 - index * 0.08));
+          if (index === degrees.length - 1) {
+            this.bell(noteToFrequency(degree + 12), time + 0.02, 0.52, peak * 0.45);
+          }
+        });
+      },
+
+      descend(degrees, peak = 0.12) {
         if (!this.ctx || !this.enabled) return;
         const now = this.ctx.currentTime;
         degrees.forEach((degree, index) => {
-          this.pluck(noteToFrequency(degree), now + index * 0.075, 0.28, this.leadBus, "sine", 0.24);
+          this.kalimba(noteToFrequency(degree), now + index * 0.09, 0.34, peak);
         });
       }
     };
