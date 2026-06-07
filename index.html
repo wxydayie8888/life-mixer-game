@@ -1231,6 +1231,186 @@
       border-color: rgba(255, 92, 92, 0.22);
     }
 
+    .music-duel {
+      display: grid;
+      grid-template-columns: 1fr 64px 1fr;
+      align-items: stretch;
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .music-card {
+      position: relative;
+      min-height: 430px;
+      display: grid;
+      grid-template-rows: 156px auto;
+      gap: 16px;
+      padding: 18px;
+      text-align: left;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 24% 20%, color-mix(in srgb, var(--genre-color, var(--cyan)) 34%, transparent), transparent 13rem),
+        linear-gradient(180deg, rgba(255,255,255,0.085), rgba(255,255,255,0.035)),
+        rgba(31, 36, 48, 0.94);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.035);
+      overflow: hidden;
+      transition: transform 170ms ease, border-color 170ms ease, background 170ms ease;
+    }
+
+    .music-card:hover {
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--genre-color, var(--cyan)) 74%, white);
+      background:
+        radial-gradient(circle at 24% 20%, color-mix(in srgb, var(--genre-color, var(--cyan)) 42%, transparent), transparent 13rem),
+        linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.04)),
+        rgba(31, 36, 48, 0.96);
+    }
+
+    .music-card:disabled {
+      cursor: wait;
+      opacity: 0.66;
+      transform: none;
+    }
+
+    .music-visual {
+      position: relative;
+      display: grid;
+      align-content: end;
+      min-height: 0;
+      padding: 14px;
+      border-radius: 8px;
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 20px),
+        linear-gradient(180deg, rgba(9, 12, 18, 0.28), rgba(9, 12, 18, 0.76));
+      overflow: hidden;
+    }
+
+    .music-visual::before {
+      content: attr(data-genre);
+      position: absolute;
+      right: 12px;
+      top: 10px;
+      color: color-mix(in srgb, var(--genre-color, var(--cyan)) 78%, white);
+      font-size: 24px;
+      font-weight: 950;
+      letter-spacing: 0.04em;
+      opacity: 0.78;
+    }
+
+    .music-bars {
+      display: grid;
+      grid-template-columns: repeat(16, 1fr);
+      align-items: end;
+      gap: 5px;
+      height: 92px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .music-bars span {
+      height: calc(var(--h, 40) * 1%);
+      min-height: 8px;
+      border-radius: 999px 999px 4px 4px;
+      background: linear-gradient(180deg, color-mix(in srgb, var(--genre-color, var(--cyan)) 88%, white), rgba(247, 242, 232, 0.7));
+      box-shadow: 0 0 16px color-mix(in srgb, var(--genre-color, var(--cyan)) 42%, transparent);
+    }
+
+    .music-meta {
+      display: grid;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .music-meta strong {
+      font-size: clamp(24px, 3vw, 36px);
+      line-height: 1.05;
+      font-weight: 950;
+    }
+
+    .music-ref {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      color: #081011;
+      background: linear-gradient(135deg, var(--lime), color-mix(in srgb, var(--genre-color, var(--cyan)) 72%, white));
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .music-hook,
+    .music-vibe {
+      margin: 0;
+      color: #ddd8cf;
+      line-height: 1.55;
+      font-weight: 740;
+    }
+
+    .music-hook {
+      color: #fff8e8;
+      font-size: 16px;
+    }
+
+    .preview-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      min-height: 38px;
+      padding: 0 14px;
+      border: 1px solid color-mix(in srgb, var(--genre-color, var(--cyan)) 60%, transparent);
+      border-radius: 999px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.09);
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .preview-btn:hover {
+      background: color-mix(in srgb, var(--genre-color, var(--cyan)) 18%, rgba(255,255,255,0.08));
+    }
+
+    .music-taste-card {
+      margin: 14px 0 16px;
+      padding: 14px;
+      border: 1px solid rgba(183, 243, 74, 0.18);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 14% 22%, rgba(183, 243, 74, 0.12), transparent 10rem),
+        rgba(255, 255, 255, 0.045);
+    }
+
+    .music-pick-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .music-pick {
+      display: grid;
+      grid-template-columns: 10px 1fr;
+      gap: 8px;
+      align-items: center;
+      color: #efe9de;
+      font-size: 13px;
+      font-weight: 820;
+    }
+
+    .music-pick::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--genre-color, var(--cyan));
+      box-shadow: 0 0 16px var(--genre-color, var(--cyan));
+    }
+
     .noise-duel {
       display: grid;
       grid-template-columns: 1fr 74px 1fr;
@@ -1872,6 +2052,15 @@
         grid-template-columns: 1fr;
       }
 
+      .music-duel {
+        grid-template-columns: 1fr;
+      }
+
+      .music-card {
+        min-height: 360px;
+        grid-template-rows: 132px auto;
+      }
+
       .noise-card {
         min-height: 300px;
       }
@@ -1997,6 +2186,40 @@
         gap: 10px;
         padding: 12px;
         font-size: 21px;
+      }
+
+      .music-duel {
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .music-card {
+        min-height: 310px;
+        grid-template-rows: 108px auto;
+        gap: 12px;
+        padding: 12px;
+      }
+
+      .music-visual::before {
+        font-size: 18px;
+      }
+
+      .music-bars {
+        height: 70px;
+      }
+
+      .music-meta strong {
+        font-size: 25px;
+      }
+
+      .music-hook,
+      .music-vibe {
+        font-size: 13px;
+      }
+
+      .preview-btn {
+        min-height: 34px;
+        padding: 0 12px;
       }
 
       .noise-comic,
@@ -2271,6 +2494,35 @@
         </div>
       </section>
 
+      <section class="screen" id="screen-music">
+        <div class="game-grid">
+          <div class="main-panel">
+            <h2 class="section-title">音乐采样</h2>
+            <p class="section-note">每组先点试听，凭第一反应选更像你的那段。代表曲只是曲风参照，游戏里播放的是原创风格小样。</p>
+            <span class="card-index" id="musicIndex">01 / 08</span>
+            <div class="music-duel">
+              <button class="music-card" id="musicA"></button>
+              <div class="versus">VS</div>
+              <button class="music-card" id="musicB"></button>
+            </div>
+          </div>
+          <aside class="side-panel">
+            <div class="mascot">
+              <img src="assets/bpm-dog-avatar.png" alt="拍宝 BPMO">
+              <div class="bubble" id="musicBubble">耳朵会比脑子更诚实。先听，别急着解释。</div>
+            </div>
+            <div class="music-taste-card">
+              <div class="voiceprint-head">
+                <span>已收进歌单</span>
+                <strong id="musicTasteName">等待第一首</strong>
+              </div>
+              <div class="music-pick-list" id="musicPickList"></div>
+            </div>
+            <div class="meters" id="musicMeters"></div>
+          </aside>
+        </div>
+      </section>
+
       <section class="screen" id="screen-future">
         <div class="game-grid">
           <div class="main-panel">
@@ -2394,20 +2646,24 @@
 
   <script>
     const GAME_CONFIG = {
-      heartSampleCount: 18,
-      noiseSampleCount: 12,
+      heartSampleCount: 8,
+      musicSampleCount: 8,
+      noiseSampleCount: 8,
       futureChoiceLimit: 3,
       heartAdvanceDelay: 310,
+      musicAdvanceDelay: 260,
       noiseAdvanceDelay: 180,
       resultBuildDelay: 460,
       progress: {
         intro: 5,
         calibration: 10,
-        heartStart: 22,
-        heartSpan: 28,
-        noiseStart: 52,
-        noiseSpan: 22,
-        future: 76,
+        heartStart: 18,
+        heartSpan: 22,
+        musicStart: 42,
+        musicSpan: 22,
+        noiseStart: 66,
+        noiseSpan: 16,
+        future: 84,
         result: 100
       }
     };
@@ -2429,6 +2685,7 @@
         "screen-intro": 0.46,
         "screen-calibrate": 0.38,
         "screen-heart": 0.46,
+        "screen-music": 0.52,
         "screen-noise": 0.3,
         "screen-future": 0.44,
         "screen-result": 0.54
@@ -2614,6 +2871,212 @@
       [["你越负责，越容易被默认可以再多负责一点", "隐形"], ["每个人都能提需求，但没有人愿意做取舍", "失控"]]
     ];
 
+    const musicGenres = [
+      "Lo-fi", "Amapiano", "Synthwave", "Folk", "House", "R&B", "K-pop", "Jazz/Funk",
+      "Rock/Punk", "Shoegaze", "Hyperpop", "City Pop", "Hip-hop", "Indie Pop", "Phonk", "Ambient"
+    ];
+
+    const genreColors = {
+      "Lo-fi": "#9be7c8",
+      "Amapiano": "#ffd166",
+      "Synthwave": "#ff6fb1",
+      "Folk": "#d6ff70",
+      "House": "#6df0ff",
+      "R&B": "#c48cff",
+      "K-pop": "#ff8f68",
+      "Jazz/Funk": "#b6ff4a",
+      "Rock/Punk": "#ff5f6a",
+      "Shoegaze": "#a989ff",
+      "Hyperpop": "#44eadf",
+      "City Pop": "#ffbf57",
+      "Hip-hop": "#73a7ff",
+      "Indie Pop": "#8df5c8",
+      "Phonk": "#c3cbe0",
+      "Ambient": "#7e8aa0"
+    };
+
+    const musicPairs = [
+      [
+        {
+          id: "lofi",
+          genre: "Lo-fi",
+          ref: "Nujabes《Feather》",
+          pet: "口袋采样犬",
+          hook: "像凌晨桌灯旁边的一杯热水，慢慢把你从乱里捞回来。",
+          vibe: "你更在意舒服、留白和稳定的小节奏。",
+          dims: ["照护", "秩序"]
+        },
+        {
+          id: "amapiano",
+          genre: "Amapiano",
+          ref: "Tyler ICU《Mnike》",
+          pet: "阳光低音犬",
+          hook: "低音一进来，身体先点头，心情像被拉去晒太阳。",
+          vibe: "你更靠近松弛、社交感和自然流动。",
+          dims: ["自由", "连接"]
+        }
+      ],
+      [
+        {
+          id: "synthwave",
+          genre: "Synthwave",
+          ref: "Kavinsky《Nightcall》",
+          pet: "霓虹夜跑犬",
+          hook: "像半夜开车穿过霓虹，孤独但不丧，脑子里有一条电影支线。",
+          vibe: "你会被未知、未来感和一点冷酷浪漫点亮。",
+          dims: ["探索", "自由"]
+        },
+        {
+          id: "folk",
+          genre: "Folk",
+          ref: "Tracy Chapman《Fast Car》",
+          pet: "木吉他陪跑犬",
+          hook: "不靠大场面，几句真话就能把人带回自己的生活。",
+          vibe: "你更相信真实叙事、温柔解释和慢慢抵达。",
+          dims: ["照护", "解释"]
+        }
+      ],
+      [
+        {
+          id: "house",
+          genre: "House",
+          ref: "Daft Punk《One More Time》",
+          pet: "四拍跳灯犬",
+          hook: "四拍稳稳推着人往前，像混乱也能被跳成秩序。",
+          vibe: "你需要可持续的节拍、行动感和一点集体快乐。",
+          dims: ["组织", "自由"]
+        },
+        {
+          id: "rnb",
+          genre: "R&B",
+          ref: "SZA《Snooze》",
+          pet: "丝滑靠枕犬",
+          hook: "旋律像贴着耳边说话，情绪不是爆炸，是慢慢被听见。",
+          vibe: "你更靠近细腻关系、情绪纹理和被认真回应。",
+          dims: ["连接", "照护"]
+        }
+      ],
+      [
+        {
+          id: "kpop",
+          genre: "K-pop",
+          ref: "Girls' Generation《Gee》",
+          pet: "彩排高光犬",
+          hook: "副歌一来就很难不记住，像把存在感打到发光。",
+          vibe: "你享受表达、舞台感和被一起接住的快乐。",
+          dims: ["表达", "连接"]
+        },
+        {
+          id: "jazzfunk",
+          genre: "Jazz/Funk",
+          ref: "Stevie Wonder《Superstition》",
+          pet: "即兴贝斯犬",
+          hook: "律动有脑子也有身体，像聪明人突然开始跳舞。",
+          vibe: "你喜欢灵活、机智、会拐弯的表达方式。",
+          dims: ["探索", "表达"]
+        }
+      ],
+      [
+        {
+          id: "rockpunk",
+          genre: "Rock/Punk",
+          ref: "The Clash《London Calling》",
+          pet: "失真电吉他犬",
+          hook: "不想忍的时候，它替你把音量推到墙上。",
+          vibe: "你需要立场、出口和一点不服气的生命力。",
+          dims: ["表达", "自由"]
+        },
+        {
+          id: "shoegaze",
+          genre: "Shoegaze",
+          ref: "My Bloody Valentine《Only Shallow》",
+          pet: "云雾效果器犬",
+          hook: "声音像一层雾盖下来，不吵着解释，但情绪很大。",
+          vibe: "你更靠近内向深潜、氛围感和难以直说的感受。",
+          dims: ["探索", "照护"]
+        }
+      ],
+      [
+        {
+          id: "hyperpop",
+          genre: "Hyperpop",
+          ref: "Charli XCX《Vroom Vroom》",
+          pet: "像素爆米花犬",
+          hook: "闪、跳、怪、上头，像脑洞不小心开了霓虹滤镜。",
+          vibe: "你会被实验感、怪可爱和高速创造刺激到。",
+          dims: ["创造", "表达"]
+        },
+        {
+          id: "citypop",
+          genre: "City Pop",
+          ref: "Mariya Takeuchi《Plastic Love》",
+          pet: "落日兜风犬",
+          hook: "像傍晚开车路过海边，轻松里带一点成年人心事。",
+          vibe: "你喜欢体面、温暖、轻盈但不空的快乐。",
+          dims: ["连接", "自由"]
+        }
+      ],
+      [
+        {
+          id: "hiphop",
+          genre: "Hip-hop",
+          ref: "Outkast《Ms. Jackson》",
+          pet: "押韵拆招犬",
+          hook: "节奏先站稳，再把态度、故事和问题一格格说清楚。",
+          vibe: "你看重表达权、现实感和把复杂说出来的能力。",
+          dims: ["表达", "解释"]
+        },
+        {
+          id: "indiepop",
+          genre: "Indie Pop",
+          ref: "MGMT《Kids》",
+          pet: "卧室闪光犬",
+          hook: "像普通日子突然冒出一颗彩色泡泡，有点轻，有点真。",
+          vibe: "你喜欢小而亮的作品感，最好还带一点自己的怪味。",
+          dims: ["创造", "连接"]
+        }
+      ],
+      [
+        {
+          id: "phonk",
+          genre: "Phonk",
+          ref: "Kordhell《Murder In My Mind》",
+          pet: "暗巷漂移犬",
+          hook: "低频像戴上墨镜，情绪不解释，直接进入加速模式。",
+          vibe: "你需要力量感、边界感和能把自己拽起来的狠劲。",
+          dims: ["秩序", "探索"]
+        },
+        {
+          id: "ambient",
+          genre: "Ambient",
+          ref: "Brian Eno《An Ending (Ascent)》",
+          pet: "云层充电犬",
+          hook: "没有急着往前冲，只是把空间慢慢变宽。",
+          vibe: "你更需要恢复、留白和不被打扰的内在房间。",
+          dims: ["照护", "自由"]
+        }
+      ]
+    ];
+
+    const genreAudioPresets = {
+      lofi: { bpm: 74, notes: [0, 4, 7, 11, 9, 7, 4, 2], chord: [0, 4, 7, 11], wave: "triangle", drum: "soft" },
+      amapiano: { bpm: 112, notes: [0, 7, 9, 12, 7, 5, 9, 14], chord: [0, 4, 7, 12], wave: "sine", drum: "bounce" },
+      synthwave: { bpm: 96, notes: [0, 7, 12, 11, 7, 4, 9, 16], chord: [0, 3, 7, 12], wave: "sawtooth", drum: "drive" },
+      folk: { bpm: 82, notes: [0, 2, 4, 7, 4, 2, 0, -5], chord: [0, 4, 7], wave: "triangle", drum: "none" },
+      house: { bpm: 122, notes: [0, 4, 7, 9, 7, 4, 12, 9], chord: [0, 4, 7, 12], wave: "square", drum: "four" },
+      rnb: { bpm: 86, notes: [0, 3, 7, 10, 9, 7, 3, 5], chord: [0, 3, 7, 10], wave: "sine", drum: "soft" },
+      kpop: { bpm: 128, notes: [7, 9, 12, 14, 12, 9, 16, 14], chord: [0, 4, 7, 12], wave: "triangle", drum: "spark" },
+      jazzfunk: { bpm: 100, notes: [0, 3, 7, 10, 12, 10, 7, 5], chord: [0, 3, 7, 10], wave: "square", drum: "swing" },
+      rockpunk: { bpm: 148, notes: [0, 0, 7, 7, 5, 5, 3, 0], chord: [0, 5, 7], wave: "sawtooth", drum: "drive" },
+      shoegaze: { bpm: 92, notes: [0, 7, 11, 14, 11, 7, 4, 2], chord: [0, 4, 7, 11], wave: "sine", drum: "wash" },
+      hyperpop: { bpm: 160, notes: [12, 19, 16, 21, 14, 24, 16, 19], chord: [0, 4, 7, 12], wave: "square", drum: "spark" },
+      citypop: { bpm: 104, notes: [0, 4, 7, 11, 14, 12, 9, 7], chord: [0, 4, 9, 11], wave: "triangle", drum: "soft" },
+      hiphop: { bpm: 92, notes: [0, 0, 3, 5, 7, 5, 3, -2], chord: [0, 3, 7, 10], wave: "triangle", drum: "bounce" },
+      indiepop: { bpm: 118, notes: [0, 7, 9, 4, 12, 9, 7, 2], chord: [0, 4, 7, 9], wave: "triangle", drum: "spark" },
+      phonk: { bpm: 130, notes: [0, -5, 0, 3, -2, -7, 0, 5], chord: [0, 3, 7], wave: "sawtooth", drum: "drive" },
+      ambient: { bpm: 66, notes: [0, 7, 12, 14, 11, 7, 4, 0], chord: [0, 4, 7, 12], wave: "sine", drum: "none" }
+    };
+
     const futures = [
       { id: "creator", name: "深度创作者", alias: "灵感做饭人", gain: "把脑子里的火花端成真正能被看见的作品。", cost: "要忍受冷启动、反复打磨和没人立刻鼓掌。", dims: ["创造", "精进", "自由"] },
       { id: "explainer", name: "清晰解释者", alias: "人间翻译器", gain: "把复杂世界翻译成普通人终于能懂的一句话。", cost: "要不断消化混乱、误解和信息噪音。", dims: ["解释", "探索", "表达"] },
@@ -2725,6 +3188,7 @@
       echo: null,
       echoFeedback: null,
       bgm: null,
+      bgmDuckTimer: null,
       loopTimer: null,
       step: 0,
       enabled: getAudioPreference() !== "off",
@@ -2838,6 +3302,8 @@
         this.master.gain.cancelScheduledValues(now);
         this.master.gain.setTargetAtTime(0.0001, now, 0.08);
         if (this.bgm) this.bgm.pause();
+        clearTimeout(this.bgmDuckTimer);
+        this.bgmDuckTimer = null;
         clearInterval(this.loopTimer);
         this.loopTimer = null;
         this.started = false;
@@ -2874,6 +3340,45 @@
         if (this.started && this.enabled) this.playBgm();
         this.playUi();
         updateAudioUI();
+      },
+
+      duckBgm(ms = 2200) {
+        if (!this.bgm) return;
+        const target = this.bgmTarget();
+        this.bgm.volume = target * 0.28;
+        clearTimeout(this.bgmDuckTimer);
+        this.bgmDuckTimer = setTimeout(() => {
+          if (this.bgm && this.enabled) this.bgm.volume = this.bgmTarget();
+        }, ms);
+      },
+
+      playGenreSample(sample) {
+        if (!this.ctx || !this.enabled || !sample) return;
+        const preset = genreAudioPresets[sample.id] || genreAudioPresets.lofi;
+        const now = this.ctx.currentTime + 0.04;
+        const beat = 60 / preset.bpm;
+        this.duckBgm(Math.max(1800, beat * 8 * 1000));
+        this.pad(preset.chord.map(offset => noteToFrequency(offset)), now, beat * 8);
+        preset.notes.forEach((degree, index) => {
+          const time = now + index * beat * 0.5;
+          const peak = preset.drum === "drive" ? 0.12 : preset.drum === "spark" ? 0.16 : 0.11;
+          this.pluck(noteToFrequency(degree + 12), time, Math.min(0.42, beat * 0.86), this.leadBus, preset.wave, peak);
+          if (preset.drum === "spark" && index % 2 === 1) {
+            this.bell(noteToFrequency(degree + 24), time + beat * 0.18, 0.28, 0.055);
+          }
+        });
+        for (let i = 0; i < 8; i += 1) {
+          const time = now + i * beat;
+          if (["four", "drive", "bounce"].includes(preset.drum) || (preset.drum === "soft" && i % 2 === 0)) {
+            this.pulse(noteToFrequency(preset.drum === "drive" ? -17 : -12), time, Math.min(0.28, beat * 0.58));
+          }
+          if (preset.drum === "swing" && i % 2 === 1) {
+            this.pluck(noteToFrequency(-5), time + beat * 0.22, 0.18, this.pulseBus, "square", 0.045);
+          }
+          if (preset.drum === "wash" && i % 4 === 0) {
+            this.bell(noteToFrequency(19), time + beat * 0.34, beat * 1.7, 0.045);
+          }
+        }
       },
 
       startLoop() {
@@ -3164,14 +3669,19 @@
       state = {
         calibration: calibration[1],
         heartSet: sample(heartCards, GAME_CONFIG.heartSampleCount),
+        musicSet: musicPairs.slice(0, GAME_CONFIG.musicSampleCount),
         noiseSet: sample(noisePairs, GAME_CONFIG.noiseSampleCount),
         heartIndex: 0,
+        musicIndex: 0,
         noiseIndex: 0,
         locked: false,
         lastHeartFeedback: "",
+        lastMusicFeedback: "",
         melody: Object.fromEntries(melodyKeys.map(k => [k, 0])),
+        musicGenre: Object.fromEntries(musicGenres.map(k => [k, 0])),
         noise: Object.fromEntries(["模糊", "打断", "空转", "失控", "压迫", "低质社交", "否定", "隐形"].map(k => [k, 0])),
         nearScenes: [],
+        musicPicks: [],
         futureChoices: [],
         result: null
       };
@@ -3212,6 +3722,7 @@
         "screen-intro": "校准耳机",
         "screen-calibrate": "开机校准",
         "screen-heart": "心动采样",
+        "screen-music": "音乐采样",
         "screen-noise": "底噪消除",
         "screen-future": "未来试音",
         "screen-result": "发布专辑"
@@ -3413,8 +3924,8 @@
         state.locked = false;
         setAnswerDisabled(false);
         if (state.heartIndex >= state.heartSet.length) {
-          renderNoise();
-          showScreen("screen-noise", GAME_CONFIG.progress.noiseStart);
+          renderMusic();
+          showScreen("screen-music", GAME_CONFIG.progress.musicStart);
         } else {
           renderHeart();
         }
@@ -3461,6 +3972,98 @@
       if (choice === "near") return `${base} ${dims[0]}音轨 +2。`;
       if (choice === "far") return `${base} ${dims[0]}音轨先降一点。`;
       return base;
+    }
+
+    function renderMusic() {
+      const pair = state.musicSet[state.musicIndex];
+      $("musicIndex").textContent = formatIndex(state.musicIndex, state.musicSet.length);
+      $("musicA").innerHTML = renderMusicCard(pair[0], "A");
+      $("musicB").innerHTML = renderMusicCard(pair[1], "B");
+      $("musicA").style.setProperty("--genre-color", genreColors[pair[0].genre] || "#44eadf");
+      $("musicB").style.setProperty("--genre-color", genreColors[pair[1].genre] || "#44eadf");
+      $("musicA").onclick = () => answerMusic(0);
+      $("musicB").onclick = () => answerMusic(1);
+      document.querySelectorAll(".preview-btn").forEach(button => {
+        button.addEventListener("click", event => {
+          event.stopPropagation();
+          const side = Number(button.dataset.side);
+          previewMusic(side);
+        });
+      });
+      setMusicDisabled(false);
+      $("musicBubble").textContent = state.lastMusicFeedback || (state.musicIndex < 2
+        ? "耳朵会比脑子更诚实。先听，别急着解释。"
+        : "不要选最有品的，选你身体愿意多听 10 秒的。");
+      renderMusicTaste();
+      renderMeters("musicMeters", state.melody);
+      showScreen("screen-music", GAME_CONFIG.progress.musicStart + state.musicIndex / state.musicSet.length * GAME_CONFIG.progress.musicSpan);
+    }
+
+    function renderMusicCard(sample, sideLabel) {
+      const color = genreColors[sample.genre] || "#44eadf";
+      const seed = hashString(`${sample.id}-${state.musicIndex}-${sideLabel}`);
+      const bars = Array.from({ length: 16 }, (_, index) => {
+        const h = 18 + ((seed + index * 23) % 78);
+        return `<span style="--h:${h}"></span>`;
+      }).join("");
+      return `
+        <span class="music-visual" data-genre="${sample.genre}" style="--genre-color:${color}">
+          <span class="music-bars">${bars}</span>
+        </span>
+        <span class="music-meta" style="--genre-color:${color}">
+          <span class="music-ref">代表曲参照：${sample.ref}</span>
+          <strong>${sample.genre}</strong>
+          <p class="music-hook">${sample.hook}</p>
+          <p class="music-vibe">${sample.vibe}</p>
+          <span class="preview-btn" role="button" tabindex="0" data-side="${sideLabel === "A" ? 0 : 1}">试听这段</span>
+        </span>
+      `;
+    }
+
+    async function previewMusic(which) {
+      const pair = state.musicSet[state.musicIndex];
+      const sample = pair[which];
+      await lifeMixerAudio.start();
+      lifeMixerAudio.playGenreSample(sample);
+      $("musicBubble").textContent = `正在试听：${sample.genre}。如果它像把你叫醒，就选它。`;
+    }
+
+    function answerMusic(which) {
+      if (state.locked) return;
+      const selected = state.musicSet[state.musicIndex][which];
+      state.locked = true;
+      setMusicDisabled(true);
+      lifeMixerAudio.playGenreSample(selected);
+      selected.dims.forEach(dim => state.melody[dim] += 1);
+      state.musicGenre[selected.genre] += 3;
+      state.musicPicks.push(selected);
+      state.lastMusicFeedback = `收进歌单：${selected.genre}。拍宝听见了，你可能是「${selected.pet}」那一挂。`;
+      $("musicBubble").textContent = state.lastMusicFeedback;
+      renderMusicTaste();
+      renderMeters("musicMeters", state.melody);
+      state.musicIndex += 1;
+      setTimeout(() => {
+        state.locked = false;
+        if (state.musicIndex >= state.musicSet.length) {
+          renderNoise();
+          showScreen("screen-noise", GAME_CONFIG.progress.noiseStart);
+        } else {
+          renderMusic();
+        }
+      }, GAME_CONFIG.musicAdvanceDelay);
+    }
+
+    function setMusicDisabled(disabled) {
+      $("musicA").disabled = disabled;
+      $("musicB").disabled = disabled;
+    }
+
+    function renderMusicTaste() {
+      const top = ranked(state.musicGenre).filter(([, value]) => value > 0).slice(0, 3);
+      $("musicTasteName").textContent = top.length ? top.map(([genre]) => genre).join(" / ") : "等待第一首";
+      $("musicPickList").innerHTML = state.musicPicks.slice(-4).map(item => `
+        <span class="music-pick" style="--genre-color:${genreColors[item.genre] || "#44eadf"}">${item.genre} · ${item.pet}</span>
+      `).join("");
     }
 
     function renderNoise() {
@@ -3816,6 +4419,7 @@
     function buildResult() {
       const topMelody = ranked(state.melody).filter(([, v]) => v > -99).slice(0, 3).map(([k, v]) => ({ key: k, value: v }));
       const topNoise = ranked(state.noise).slice(0, 3).map(([k, v]) => ({ key: k, value: v }));
+      const topGenres = ranked(state.musicGenre).filter(([, v]) => v > 0).slice(0, 3).map(([k, v]) => ({ key: k, value: v }));
       const topMelodyKeys = topMelody.map(m => m.key);
       const futureScores = state.futureChoices.map((id, index) => {
         const f = futures.find(item => item.id === id);
@@ -3833,12 +4437,64 @@
       const mbti = mbtiHint(topMelodyKeys, topNoise.map(n => n.key));
       const roast = roastRules[`${topMelody[0].key}|${topNoise[0].key}`] || defaultRoast(topMelody[0].key, topNoise[0].key);
       const personaAlias = future.alias || future.name;
+      const musicProfile = buildMusicProfile(topGenres, topMelody[0].key);
       const oneLine = resultOneLine(topMelody[0].key, topNoise[0].key, personaAlias);
       const albumTitle = albumName(topMelody[0].key, topMelody[1].key, topNoise[0].key);
       const hiddenTrack = hiddenTrackLine(topMelody[0].key, topNoise[0].key);
-      const bgmLine = resultBgmLine(topMelody[0].key, topNoise[0].key, future);
+      const bgmLine = resultBgmLine(topMelody[0].key, topNoise[0].key, future, musicProfile);
       const friendGuess = buildFriendGuess(future, topMelody[0].key, topNoise[0].key);
-      state.result = { topMelody, topNoise, future, personaAlias, spark, advice, mbti, roast, oneLine, albumTitle, hiddenTrack, bgmLine, friendGuess };
+      state.result = { topMelody, topNoise, topGenres, musicProfile, future, personaAlias, spark, advice, mbti, roast, oneLine, albumTitle, hiddenTrack, bgmLine, friendGuess };
+    }
+
+    function buildMusicProfile(topGenres, fallbackMelody) {
+      const primary = topGenres[0]?.key || "Lo-fi";
+      const secondary = topGenres[1]?.key || fallbackGenreForMelody(fallbackMelody);
+      const sample = state.musicPicks.find(item => item.genre === primary) || musicPairs.flat().find(item => item.genre === primary) || musicPairs[0][0];
+      const secondarySample = musicPairs.flat().find(item => item.genre === secondary) || sample;
+      const lines = {
+        "Lo-fi": "你不是没热情，只是喜欢在低噪音里慢慢进入状态。",
+        "Amapiano": "你身体里有一块很会放松的地方，越自然越容易发光。",
+        "Synthwave": "你会被未来感和夜路点亮，孤独不一定是坏事，可能是你的片头曲。",
+        "Folk": "你对真话很敏感，华丽包装不如一句说到心里的生活经验。",
+        "House": "你需要一个稳定节拍，世界一旦开始对拍，你就能持续推进。",
+        "R&B": "你不是情绪化，你只是听得见关系里很细的音色。",
+        "K-pop": "你有高光体质，状态对了就会很想把能量抛给大家。",
+        "Jazz/Funk": "你喜欢聪明的即兴，最好事情有规则，但又能拐弯。",
+        "Rock/Punk": "你需要把不爽变成出口，有些边界必须被大声说出来。",
+        "Shoegaze": "你有很多不急着解释的感受，给够空间，它们会自己发光。",
+        "Hyperpop": "你脑子里的按钮很多，普通格式装不下时，就会开始变得很有趣。",
+        "City Pop": "你喜欢轻松但不浅的快乐，像把成年人心事放进落日兜风。",
+        "Hip-hop": "你会用节奏整理现实，把态度、经历和问题说得更有抓地力。",
+        "Indie Pop": "你容易被小而亮的东西打动，尤其是带一点私人怪味的真诚。",
+        "Phonk": "你需要一点狠劲给自己加速，但也要记得别把油门当刹车。",
+        "Ambient": "你最稀缺的可能是空间感，不被催的时候，你会慢慢恢复清晰。"
+      };
+      return {
+        primary,
+        secondary,
+        pet: sample.pet,
+        ref: sample.ref,
+        color: genreColors[primary] || "#44eadf",
+        line: lines[primary] || sample.vibe,
+        mixName: `${primary} x ${secondary}`,
+        friendOption: secondarySample.pet
+      };
+    }
+
+    function fallbackGenreForMelody(melody) {
+      const map = {
+        "创造": "Hyperpop",
+        "解释": "Hip-hop",
+        "探索": "Synthwave",
+        "组织": "House",
+        "连接": "R&B",
+        "表达": "K-pop",
+        "秩序": "Lo-fi",
+        "精进": "Jazz/Funk",
+        "自由": "City Pop",
+        "照护": "Ambient"
+      };
+      return map[melody] || "Lo-fi";
     }
 
     function futureDisplayName(future) {
@@ -3956,7 +4612,7 @@
       return `《${primaryMap[primary] || primary}：${secondary}混音 ${noiseMap[noise] || ""}》`;
     }
 
-    function resultBgmLine(melody, noise, future) {
+    function resultBgmLine(melody, noise, future, musicProfile) {
       const melodyMap = {
         "创造": "木片琴加一点闪光合成器，像灵感刚从锅里冒泡",
         "解释": "轻快钢片琴加温柔低音，像把乱线慢慢理顺",
@@ -3969,7 +4625,8 @@
         "自由": "轻快跳音和一点风感，像把日程表撕开一角",
         "照护": "柔软和弦加很小的铃声，像把灯调到刚刚好"
       };
-      return `我的人生 BGM：${future.alias || future.name} / 78 BPM / ${noise} 静音版。${melodyMap[melody] || "轻快但有留白，适合慢慢把自己调回来"}。`;
+      const genreLine = musicProfile ? `曲风更靠近 ${musicProfile.mixName}，参考气质：${musicProfile.ref}。` : "";
+      return `我的人生 BGM：${future.alias || future.name} / ${musicProfile?.primary || "轻音乐"} 混音 / ${noise} 静音版。${melodyMap[melody] || "轻快但有留白，适合慢慢把自己调回来"}。${genreLine}`;
     }
 
     function hiddenTrackLine(melody, noise) {
@@ -3992,8 +4649,8 @@
       const r = state.result;
       $("coverTitle").textContent = r.albumTitle;
       $("coverLine").textContent = r.oneLine;
-      $("coverAlias").textContent = r.personaAlias;
-      $("coverNoise").textContent = `${r.topNoise[0].key} 静音版`;
+      $("coverAlias").textContent = `${r.musicProfile.pet} / ${r.personaAlias}`;
+      $("coverNoise").textContent = `${r.musicProfile.primary} · ${r.topNoise[0].key} 静音版`;
       $("coverTracks").innerHTML = r.topMelody.map((m, i) => {
         const width = Math.max(24, 96 - i * 18);
         const color = melodyColors[m.key] || "#44eadf";
@@ -4010,10 +4667,11 @@
       $("resultOneLine").textContent = r.oneLine;
       $("personaStrip").innerHTML = [
         ["可晒外号", r.personaAlias],
-        ["人生 BGM", `${r.topNoise[0].key} 静音版`],
+        ["曲风萌宠", r.musicProfile.pet],
+        ["人生 BGM", r.musicProfile.mixName],
         ["盲猜答案", r.friendGuess.answer]
       ].map(([label, value]) => `<span class="persona-chip">${label}<strong>${value}</strong></span>`).join("");
-      $("melodyText").textContent = `我的主旋律是 ${r.topMelody[0].key}，副旋律是 ${r.topMelody[1].key}，隐藏旋律是 ${r.topMelody[2].key}。当前可晒外号：${futureDisplayName(r.future)}。${melodyTemplates[r.topMelody[0].key]}`;
+      $("melodyText").textContent = `我的主旋律是 ${r.topMelody[0].key}，副旋律是 ${r.topMelody[1].key}，隐藏旋律是 ${r.topMelody[2].key}。音乐采样更靠近 ${r.musicProfile.mixName}，像一只「${r.musicProfile.pet}」。${r.musicProfile.line} ${melodyTemplates[r.topMelody[0].key]}`;
       $("melodyTags").innerHTML = r.topMelody.map((m, i) => `<span class="tag" style="--cyan:${melodyColors[m.key]}">${i + 1}. ${m.key} ${Math.max(0, m.value)}</span>`).join("");
       $("sparkList").innerHTML = r.spark.map(s => {
         const prefix = s.fallback ? "相对没那么排斥：" : "当我能";
@@ -4026,13 +4684,13 @@
       $("mbtiText").textContent = r.mbti;
 
       $("shareAlbumTitle").textContent = `${r.albumTitle}`;
-      $("shareAlbumMeta").textContent = `外号：${r.personaAlias}。我先不公布答案，你猜我的主旋律是 ${r.topMelody[0].key}，还是最容易被 ${r.topNoise[0].key} 静音？`;
+      $("shareAlbumMeta").textContent = `外号：${r.personaAlias}。曲风萌宠：${r.musicProfile.pet}。我先不公布答案，你猜我的主旋律是 ${r.topMelody[0].key}，还是最容易被 ${r.topNoise[0].key} 静音？`;
       $("shareBars").innerHTML = r.topMelody.map((m, i) => `
         <div class="album-bar"><span style="width:${Math.max(18, 92 - i * 18)}%; background:linear-gradient(90deg, ${melodyColors[m.key]}, #f7f2e8)"></span></div>
       `).join("");
       $("shareManual").textContent = `打开方式：${r.advice[0]} 避免事项：${r.topNoise[0].key} 太重时，我会开始失真。`;
       $("shareRoast").textContent = `朋友请注意：${r.advice[1]} 拍宝补一句：“${r.roast}”`;
-      $("shareChallenge").textContent = `${r.friendGuess.prompt} ${r.bgmLine}`;
+      $("shareChallenge").textContent = `${r.friendGuess.prompt} 人生曲风：${r.musicProfile.mixName}。${r.bgmLine}`;
       $("shareGuessOptions").innerHTML = r.friendGuess.options.map((item, index) => `
         <div class="guess-option"><span>${String.fromCharCode(65 + index)}</span>${item.alias}</div>
       `).join("");
@@ -4080,7 +4738,7 @@
 
         drawCanvasPill(ctx, "PERSONAL ALBUM / READY TO SHARE", 92, 96, 360, "#b6ff4a", "#071011");
         if (dog) roundImage(ctx, dog, 716, 120, 230, 230, 24);
-        drawCanvasPill(ctx, r.personaAlias, 720, 374, 220, "#44eadf", "#071011");
+        drawCanvasPill(ctx, r.musicProfile.pet, 720, 374, 220, r.musicProfile.color, "#071011");
 
         const titleParts = albumCanvasTitleParts(r.albumTitle || "我的人生主旋律");
         ctx.fillStyle = "#fff8ea";
@@ -4101,15 +4759,20 @@
         });
         setCanvasFont(ctx, 32, 850);
         ctx.fillStyle = "#b6ff4a";
-        ctx.fillText(`人生调音台 · ${r.topNoise[0].key} 静音版`, 94, Math.min(468, titleBottom + 40));
+        ctx.fillText(`人生调音台 · ${r.musicProfile.primary} 混音 · ${r.topNoise[0].key} 静音版`, 94, Math.min(468, titleBottom + 40));
 
         const maxMelody = Math.max(1, ...r.topMelody.map(m => Math.max(0, m.value)));
         r.topMelody.forEach((m, i) => {
           const color = melodyColors[m.key] || "#44eadf";
-          const y = 640 + i * 126;
+          const y = 620 + i * 112;
           const width = Math.max(0.28, Math.max(0, m.value) / maxMelody);
           drawCanvasMeter(ctx, m.key, Math.max(0, m.value), 92, y, 860, 34, color, width);
         });
+
+        drawCanvasPill(ctx, `曲风萌宠：${r.musicProfile.pet}`, 92, 914, 330, r.musicProfile.color, "#071011");
+        setCanvasFont(ctx, 28, 850);
+        ctx.fillStyle = "rgba(255,248,234,0.74)";
+        wrapCanvasText(ctx, `人生 BGM：${r.musicProfile.mixName}｜代表气质：${r.musicProfile.ref}`, 452, 942, 500, 34, 1);
 
         ctx.fillStyle = "rgba(255,255,255,0.065)";
         roundRect(ctx, 76, 990, 928, 216, 24, true);
@@ -4150,7 +4813,7 @@
       lifeMixerAudio.playUi();
       const r = state.result;
       const guessOptions = r.friendGuess.options.map((item, index) => `${String.fromCharCode(65 + index)}. ${item.alias}`).join("\n");
-      const text = `我刚玩了《人生调音台》，调出了一张人格专辑：${r.albumTitle}。\n\n先别偷看答案，10 秒盲猜哪张最像我：\n${guessOptions}\n\nA-side：${r.topMelody.map(m => m.key).join(" / ")}\nB-side 底噪：${r.topNoise.map(n => n.key).join(" / ")}\n${r.bgmLine}\n拍宝听完后说：“${r.roast}”\n\n答案我先藏着：${r.friendGuess.answer}\n来玩：${location.href}`;
+      const text = `我刚玩了《人生调音台》，调出了一张人格专辑：${r.albumTitle}。\n\n先别偷看答案，10 秒盲猜哪张最像我：\n${guessOptions}\n\nA-side：${r.topMelody.map(m => m.key).join(" / ")}\n人生曲风：${r.musicProfile.mixName}（${r.musicProfile.pet}）\nB-side 底噪：${r.topNoise.map(n => n.key).join(" / ")}\n${r.bgmLine}\n拍宝听完后说：“${r.roast}”\n\n答案我先藏着：${r.friendGuess.answer}\n来玩：${location.href}`;
       try {
         await writeClipboardText(text);
         flashButtonLabel("copyBtn", "已复制");
@@ -4268,7 +4931,7 @@
         "如果你发现我的目标和行动互相打架，请直接提醒我，但语气要具体、友好、有建设性。"
       ];
 
-      return `这是我的《人生调音台》人格专辑。请把它当作一份“和我协作的用户偏好档案”，以后陪我想问题、写东西、做计划、复盘选择时都可以参考。\n\n## 1. 我的当前版本\n- 人格专辑：${r.albumTitle}\n- 可晒外号：${r.personaAlias}\n- 主旋律：${melodyNames.join(" / ")}\n- 主旋律强度：${melodyScores}\n- 底噪来源：${noiseNames.join(" / ")}\n- 底噪音量：${noiseScores}\n- 未来试音：${futureDisplayName(r.future)}\n- 人生 BGM：${r.bgmLine.replace(/^我的人生 BGM：/, "")}\n\n一句话理解我：${r.oneLine}\n\n## 2. 我会被什么点亮\n${aiList(sparkLines)}\n\n## 3. 我容易被什么静音\n${aiList(noiseNames.map(noise => `${noise}：${noiseTemplates[noise]}`))}\n\n低电量版本：${lowBattery[r.topNoise[0].key]}\n\n## 4. 和我协作时，请优先这样做\n${aiNumberedList(workModes)}\n\n## 5. 适合我的输出方式\n${aiList(outputPrefs)}\n- 默认格式请用：先给一句核心判断，再给 3-5 条结构化要点，最后给一个“现在就能做”的下一步。\n- 如果任务复杂，请拆成“我现在知道什么 / 还缺什么 / 下一步怎么验证”。\n\n## 6. 请尽量避开这些雷区\n${aiList(noiseGuards)}\n\n## 7. 当我卡住、拖延或没电时\n${aiList(stuckSupport)}\n\n## 8. 给我反馈的方式\n${aiList(feedbackRules)}\n\n## 9. 你可以这样开场问我\n${aiList(openingQuestions)}\n\n## 10. 请长期记住的使用规则\n${aiList(memoryRules)}\n\n## 11. 和朋友/AI相处小抄\n${aiList(r.advice)}\n\n## 12. MBTI 只能当旁路参考\n${r.mbti}\n\n最后，请像一个清醒、靠谱、有一点幽默感的长期搭档一样和我协作：别把我神化，也别把我标签化。帮我把真实想法调清楚，把下一步做出来。`;
+      return `这是我的《人生调音台》人格专辑。请把它当作一份“和我协作的用户偏好档案”，以后陪我想问题、写东西、做计划、复盘选择时都可以参考。\n\n## 1. 我的当前版本\n- 人格专辑：${r.albumTitle}\n- 可晒外号：${r.personaAlias}\n- 曲风萌宠：${r.musicProfile.pet}\n- 音乐采样：${r.musicProfile.mixName}\n- 代表气质：${r.musicProfile.ref}\n- 主旋律：${melodyNames.join(" / ")}\n- 主旋律强度：${melodyScores}\n- 底噪来源：${noiseNames.join(" / ")}\n- 底噪音量：${noiseScores}\n- 未来试音：${futureDisplayName(r.future)}\n- 人生 BGM：${r.bgmLine.replace(/^我的人生 BGM：/, "")}\n\n一句话理解我：${r.oneLine}\n\n## 2. 我的节奏感\n${r.musicProfile.line}\n请把这条当成互动节奏：如果我是 ${r.musicProfile.primary}，就不要一上来把我塞进过密、过硬、过吵的流程里；如果需要推进，请给我一个能跟上的拍点。\n\n## 3. 我会被什么点亮\n${aiList(sparkLines)}\n\n## 4. 我容易被什么静音\n${aiList(noiseNames.map(noise => `${noise}：${noiseTemplates[noise]}`))}\n\n低电量版本：${lowBattery[r.topNoise[0].key]}\n\n## 5. 和我协作时，请优先这样做\n${aiNumberedList(workModes)}\n\n## 6. 适合我的输出方式\n${aiList(outputPrefs)}\n- 默认格式请用：先给一句核心判断，再给 3-5 条结构化要点，最后给一个“现在就能做”的下一步。\n- 如果任务复杂，请拆成“我现在知道什么 / 还缺什么 / 下一步怎么验证”。\n\n## 7. 请尽量避开这些雷区\n${aiList(noiseGuards)}\n\n## 8. 当我卡住、拖延或没电时\n${aiList(stuckSupport)}\n\n## 9. 给我反馈的方式\n${aiList(feedbackRules)}\n\n## 10. 你可以这样开场问我\n${aiList(openingQuestions)}\n\n## 11. 请长期记住的使用规则\n${aiList(memoryRules)}\n\n## 12. 和朋友/AI相处小抄\n${aiList(r.advice)}\n\n## 13. MBTI 只能当旁路参考\n${r.mbti}\n\n最后，请像一个清醒、靠谱、有一点幽默感的长期搭档一样和我协作：别把我神化，也别把我标签化。帮我把真实想法调清楚，把下一步做出来。`;
     }
 
     async function copyAiBrief() {
