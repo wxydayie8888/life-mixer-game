@@ -932,10 +932,10 @@
 
     .sample-card {
       position: relative;
-      height: clamp(300px, 42vh, 430px);
+      height: clamp(330px, 44vh, 450px);
       min-height: 0;
       display: grid;
-      grid-template-rows: 1fr;
+      grid-template-rows: minmax(0, 1fr) auto;
       padding: 0;
       overflow: hidden;
       cursor: default;
@@ -953,8 +953,8 @@
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(180deg, rgba(10, 12, 18, 0.04), rgba(10, 12, 18, 0.72)),
-        radial-gradient(circle at 50% 42%, transparent 0 34%, rgba(10, 12, 18, 0.46) 78%);
+        linear-gradient(180deg, rgba(10, 12, 18, 0.04), rgba(10, 12, 18, 0.18)),
+        radial-gradient(circle at 50% 42%, transparent 0 44%, rgba(10, 12, 18, 0.22) 82%);
       pointer-events: none;
     }
 
@@ -1004,18 +1004,17 @@
       100% { border-color: rgba(255, 255, 255, 0.12); box-shadow: 0 18px 56px var(--shadow); }
     }
 
-    .comic-frame,
+    .comic-frame {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
     .comic-frame img {
       width: 100%;
       height: 100%;
-    }
-
-    .comic-frame {
-      position: absolute;
-      inset: 0;
-    }
-
-    .comic-frame img {
       display: block;
       object-fit: cover;
       transition: transform 320ms ease;
@@ -1040,19 +1039,18 @@
     }
 
     .sample-copy {
-      position: absolute;
-      inset: auto 22px 22px;
+      position: relative;
       z-index: 2;
       display: grid;
       gap: 14px;
       padding: clamp(16px, 3vw, 24px);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      border-radius: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 0;
       background:
         linear-gradient(135deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.035)),
-        rgba(10, 12, 18, 0.78);
-      backdrop-filter: blur(16px);
-      box-shadow: 0 16px 46px rgba(0, 0, 0, 0.28);
+        rgba(10, 12, 18, 0.9);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 -16px 46px rgba(0, 0, 0, 0.22);
     }
 
     .sample-copy::before {
@@ -1076,7 +1074,7 @@
       max-width: 740px;
       margin: 0;
       padding-right: 70px;
-      font-size: clamp(23px, 3.1vw, 38px);
+      font-size: clamp(22px, 2.7vw, 34px);
       line-height: 1.25;
       font-weight: 920;
       text-wrap: balance;
@@ -2164,13 +2162,13 @@
       }
 
       .sample-card {
-        height: 270px;
+        height: 330px;
       }
 
       .sample-copy {
-        inset: auto 10px 10px;
+        inset: auto 0 0;
         gap: 8px;
-        padding: 14px;
+        padding: 13px 14px;
       }
 
       .sample-copy::before {
@@ -3185,10 +3183,14 @@
       padBus: null,
       pulseBus: null,
       sparkleBus: null,
+      previewBus: null,
       echo: null,
       echoFeedback: null,
       bgm: null,
       bgmDuckTimer: null,
+      bgmRestoreTimer: null,
+      bgmFadeTimer: null,
+      bgmSuspendedForPreview: false,
       loopTimer: null,
       step: 0,
       enabled: getAudioPreference() !== "off",
@@ -3225,6 +3227,7 @@
         this.padBus = this.ctx.createGain();
         this.pulseBus = this.ctx.createGain();
         this.sparkleBus = this.ctx.createGain();
+        this.previewBus = this.ctx.createGain();
         this.echo = this.ctx.createDelay(1.6);
         this.echoFeedback = this.ctx.createGain();
         this.master.gain.value = this.masterTarget();
@@ -3232,12 +3235,14 @@
         this.padBus.gain.value = AUDIO_CONFIG.padVolume;
         this.pulseBus.gain.value = AUDIO_CONFIG.pulseVolume;
         this.sparkleBus.gain.value = AUDIO_CONFIG.sparkleVolume;
+        this.previewBus.gain.value = 1;
         this.echo.delayTime.value = 0.28;
         this.echoFeedback.gain.value = 0.18;
         this.leadBus.connect(this.master);
         this.padBus.connect(this.master);
         this.pulseBus.connect(this.master);
         this.sparkleBus.connect(this.master);
+        this.previewBus.connect(this.master);
         this.sparkleBus.connect(this.echo);
         this.echo.connect(this.echoFeedback);
         this.echoFeedback.connect(this.echo);
@@ -3268,11 +3273,12 @@
           this.bgm.load();
           if (wasPlaying && this.enabled) this.playBgm();
         }
-        this.bgm.volume = this.bgmTarget();
+        if (!this.bgmSuspendedForPreview) this.bgm.volume = this.bgmTarget();
       },
 
       async playBgm() {
         if (!this.enabled) return;
+        if (this.bgmSuspendedForPreview) return;
         this.ensureBgm();
         try {
           await this.bgm.play();
@@ -3304,6 +3310,11 @@
         if (this.bgm) this.bgm.pause();
         clearTimeout(this.bgmDuckTimer);
         this.bgmDuckTimer = null;
+        clearTimeout(this.bgmRestoreTimer);
+        clearInterval(this.bgmFadeTimer);
+        this.bgmRestoreTimer = null;
+        this.bgmFadeTimer = null;
+        this.bgmSuspendedForPreview = false;
         clearInterval(this.loopTimer);
         this.loopTimer = null;
         this.started = false;
@@ -3319,14 +3330,14 @@
         this.padBus.gain.setTargetAtTime(AUDIO_CONFIG.padVolume * (sceneId === "screen-result" ? 1.18 : 1), now, 0.9);
         this.pulseBus.gain.setTargetAtTime(AUDIO_CONFIG.pulseVolume * (sceneId === "screen-noise" ? 0.18 : 0.55), now, 0.8);
         this.sparkleBus.gain.setTargetAtTime(AUDIO_CONFIG.sparkleVolume * (sceneId === "screen-noise" ? 0.45 : 1), now, 0.7);
-        if (this.bgm) this.bgm.volume = this.bgmTarget(sceneId);
+        if (this.bgm && !this.bgmSuspendedForPreview) this.bgm.volume = this.bgmTarget(sceneId);
       },
 
       setVolume(value) {
         this.volume = clampAudioVolume(value);
         setAudioVolumePreference(this.volume);
         updateAudioUI();
-        if (this.bgm) this.bgm.volume = this.bgmTarget();
+        if (this.bgm && !this.bgmSuspendedForPreview) this.bgm.volume = this.bgmTarget();
         if (this.ctx && this.master && this.enabled) {
           this.setScene(this.currentScene);
         }
@@ -3336,20 +3347,85 @@
         if (!MUSIC_TRACKS[trackId]) return;
         this.trackId = trackId;
         setMusicTrackPreference(trackId);
+        this.resumeBgmAfterPreview(true);
         this.ensureBgm();
         if (this.started && this.enabled) this.playBgm();
         this.playUi();
         updateAudioUI();
       },
 
-      duckBgm(ms = 2200) {
-        if (!this.bgm) return;
-        const target = this.bgmTarget();
-        this.bgm.volume = target * 0.28;
+      suspendBgmForPreview(ms = 2200) {
+        if (!this.bgm || !this.enabled) return;
         clearTimeout(this.bgmDuckTimer);
-        this.bgmDuckTimer = setTimeout(() => {
-          if (this.bgm && this.enabled) this.bgm.volume = this.bgmTarget();
-        }, ms);
+        clearTimeout(this.bgmRestoreTimer);
+        clearInterval(this.bgmFadeTimer);
+        this.bgmSuspendedForPreview = true;
+        const steps = 8;
+        let step = 0;
+        const startVolume = this.bgm.volume;
+        this.bgmFadeTimer = setInterval(() => {
+          step += 1;
+          const next = Math.max(0, startVolume * (1 - step / steps));
+          this.bgm.volume = next;
+          if (step >= steps) {
+            clearInterval(this.bgmFadeTimer);
+            this.bgmFadeTimer = null;
+            if (this.bgm) this.bgm.pause();
+          }
+        }, 24);
+        this.bgmRestoreTimer = setTimeout(() => this.resumeBgmAfterPreview(), ms);
+      },
+
+      async resumeBgmAfterPreview(immediate = false) {
+        clearTimeout(this.bgmRestoreTimer);
+        clearInterval(this.bgmFadeTimer);
+        this.bgmRestoreTimer = null;
+        this.bgmFadeTimer = null;
+        if (!this.bgm || !this.enabled) {
+          this.bgmSuspendedForPreview = false;
+          return;
+        }
+        this.bgmSuspendedForPreview = false;
+        const target = this.bgmTarget();
+        if (immediate) {
+          this.bgm.volume = target;
+          return;
+        }
+        this.bgm.volume = 0;
+        try {
+          await this.bgm.play();
+        } catch (error) {
+          return;
+        }
+        let step = 0;
+        const steps = 12;
+        this.bgmFadeTimer = setInterval(() => {
+          step += 1;
+          this.bgm.volume = Math.min(target, target * step / steps);
+          if (step >= steps) {
+            clearInterval(this.bgmFadeTimer);
+            this.bgmFadeTimer = null;
+          }
+        }, 34);
+      },
+
+      resetPreviewBus() {
+        if (!this.ctx || !this.previewBus) return null;
+        const oldBus = this.previewBus;
+        const now = this.ctx.currentTime;
+        oldBus.gain.cancelScheduledValues(now);
+        oldBus.gain.setTargetAtTime(0.0001, now, 0.035);
+        setTimeout(() => {
+          try {
+            oldBus.disconnect();
+          } catch (error) {
+            // A stale preview bus may already be disconnected after rapid repeated previews.
+          }
+        }, 260);
+        this.previewBus = this.ctx.createGain();
+        this.previewBus.gain.value = 0.96;
+        this.previewBus.connect(this.master);
+        return this.previewBus;
       },
 
       playGenreSample(sample) {
@@ -3357,26 +3433,28 @@
         const preset = genreAudioPresets[sample.id] || genreAudioPresets.lofi;
         const now = this.ctx.currentTime + 0.04;
         const beat = 60 / preset.bpm;
-        this.duckBgm(Math.max(1800, beat * 8 * 1000));
-        this.pad(preset.chord.map(offset => noteToFrequency(offset)), now, beat * 8);
+        const durationMs = Math.max(1800, beat * 4.8 * 1000 + 360);
+        const previewBus = this.resetPreviewBus();
+        this.suspendBgmForPreview(durationMs);
+        this.pad(preset.chord.map(offset => noteToFrequency(offset)), now, beat * 4.6, previewBus, 0.04);
         preset.notes.forEach((degree, index) => {
           const time = now + index * beat * 0.5;
           const peak = preset.drum === "drive" ? 0.12 : preset.drum === "spark" ? 0.16 : 0.11;
-          this.pluck(noteToFrequency(degree + 12), time, Math.min(0.42, beat * 0.86), this.leadBus, preset.wave, peak);
+          this.pluck(noteToFrequency(degree + 12), time, Math.min(0.42, beat * 0.86), previewBus, preset.wave, peak);
           if (preset.drum === "spark" && index % 2 === 1) {
-            this.bell(noteToFrequency(degree + 24), time + beat * 0.18, 0.28, 0.055);
+            this.bell(noteToFrequency(degree + 24), time + beat * 0.18, 0.28, 0.055, previewBus);
           }
         });
-        for (let i = 0; i < 8; i += 1) {
+        for (let i = 0; i < 4; i += 1) {
           const time = now + i * beat;
           if (["four", "drive", "bounce"].includes(preset.drum) || (preset.drum === "soft" && i % 2 === 0)) {
-            this.pulse(noteToFrequency(preset.drum === "drive" ? -17 : -12), time, Math.min(0.28, beat * 0.58));
+            this.pulse(noteToFrequency(preset.drum === "drive" ? -17 : -12), time, Math.min(0.28, beat * 0.58), previewBus, 0.13);
           }
           if (preset.drum === "swing" && i % 2 === 1) {
-            this.pluck(noteToFrequency(-5), time + beat * 0.22, 0.18, this.pulseBus, "square", 0.045);
+            this.pluck(noteToFrequency(-5), time + beat * 0.22, 0.18, previewBus, "square", 0.045);
           }
           if (preset.drum === "wash" && i % 4 === 0) {
-            this.bell(noteToFrequency(19), time + beat * 0.34, beat * 1.7, 0.045);
+            this.bell(noteToFrequency(19), time + beat * 0.34, beat * 1.7, 0.045, previewBus);
           }
         }
       },
@@ -3465,7 +3543,7 @@
         overtone.stop(time + duration + 0.03);
       },
 
-      bell(freq, time, duration, peak = 0.12) {
+      bell(freq, time, duration, peak = 0.12, destination = this.sparkleBus) {
         if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
@@ -3479,27 +3557,27 @@
         gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
         osc.connect(filter);
         filter.connect(gain);
-        gain.connect(this.sparkleBus);
+        gain.connect(destination || this.sparkleBus);
         osc.start(time);
         osc.stop(time + duration + 0.04);
       },
 
-      pulse(freq, time, duration) {
+      pulse(freq, time, duration, destination = this.pulseBus, peak = 0.16) {
         if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = "sine";
         osc.frequency.setValueAtTime(freq, time);
         gain.gain.setValueAtTime(0.0001, time);
-        gain.gain.exponentialRampToValueAtTime(0.16, time + 0.06);
+        gain.gain.exponentialRampToValueAtTime(peak, time + 0.06);
         gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
         osc.connect(gain);
-        gain.connect(this.pulseBus);
+        gain.connect(destination || this.pulseBus);
         osc.start(time);
         osc.stop(time + duration + 0.03);
       },
 
-      pad(freqs, time, duration) {
+      pad(freqs, time, duration, destination = this.padBus, peak = 0.055) {
         freqs.forEach((freq, index) => {
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
@@ -3509,11 +3587,11 @@
           filter.type = "lowpass";
           filter.frequency.setValueAtTime(900 + index * 120, time);
           gain.gain.setValueAtTime(0.0001, time);
-          gain.gain.linearRampToValueAtTime(0.055 / (index + 1), time + 1.7);
+          gain.gain.linearRampToValueAtTime(peak / (index + 1), time + 1.7);
           gain.gain.linearRampToValueAtTime(0.0001, time + duration);
           osc.connect(filter);
           filter.connect(gain);
-          gain.connect(this.padBus);
+          gain.connect(destination || this.padBus);
           osc.start(time);
           osc.stop(time + duration + 0.06);
         });
@@ -3989,6 +4067,13 @@
           const side = Number(button.dataset.side);
           previewMusic(side);
         });
+        button.addEventListener("keydown", event => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          event.stopPropagation();
+          const side = Number(button.dataset.side);
+          previewMusic(side);
+        });
       });
       setMusicDisabled(false);
       $("musicBubble").textContent = state.lastMusicFeedback || (state.musicIndex < 2
@@ -4096,7 +4181,6 @@
     function comicPanelForText(text, { scene, dims = [], noise = "", tone = "heart" } = {}) {
       const seed = hashString(`${text}-${scene.label}-${noise}-${dims.join("/")}`);
       const palette = panelPalette(scene.label, tone);
-      const shortText = panelCaption(text);
       const motif = panelMotif(text, scene.label, noise);
       const drama = panelDrama(text, noise, tone);
       const offsetA = seed % 80;
@@ -4141,11 +4225,6 @@
           <g transform="translate(62 62)">
             <rect width="190" height="42" rx="21" fill="${palette.lime}" opacity="0.96"/>
             <text x="24" y="28" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="22" font-weight="900" fill="#071011">${escapeXml(scene.label)}</text>
-          </g>
-          <g transform="translate(64 392)">
-            <rect width="770" height="82" rx="22" fill="rgba(8, 11, 17, 0.72)" stroke="rgba(255,255,255,0.12)"/>
-            <text x="30" y="35" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="25" font-weight="900" fill="#f7f2e8">${escapeXml(shortText[0])}</text>
-            <text x="30" y="66" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="25" font-weight="900" fill="#f7f2e8">${escapeXml(shortText[1] || "")}</text>
           </g>
           <text x="786" y="74" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="56" font-weight="950" fill="${palette.a}" opacity="0.46">${escapeXml(motif)}</text>
         </svg>
@@ -4227,15 +4306,6 @@
       if (hit) return hit[1];
       if (noise) return "NO";
       return label.slice(0, 1);
-    }
-
-    function panelCaption(text) {
-      const clean = text.replace(/[“”]/g, "").replace(/，/g, "，");
-      const limit = 18;
-      if (clean.length <= limit) return [clean];
-      const first = clean.slice(0, limit);
-      const second = clean.slice(limit, limit * 2 - 2);
-      return [first, second ? `${second}${clean.length > limit * 2 - 2 ? "…" : ""}` : ""];
     }
 
     function sceneShape(label, palette, seed, motif, drama) {
